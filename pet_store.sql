@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 15, 2026 at 06:38 AM
+-- Generation Time: Mar 15, 2026 at 09:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -172,6 +172,7 @@ CREATE TABLE `products` (
   `id` int(11) NOT NULL,
   `product_name` varchar(100) NOT NULL,
   `category` varchar(50) DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `quantity_in_stock` int(11) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `supplier` int(11) DEFAULT NULL
@@ -181,15 +182,15 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `product_name`, `category`, `quantity_in_stock`, `price`, `supplier`) VALUES
-(1, 'Dog Food - Premium', 'food', 25, 45.99, 1),
-(2, 'Cat Food - Wet', 'food', 40, 2.50, 1),
-(3, 'Dog Leash', 'accessories', 15, 12.99, 2),
-(4, 'Cat Toy - Mouse', 'toy', 60, 3.25, 3),
-(5, 'Fish Tank Filter', 'equipment', 8, 35.50, 4),
-(6, 'Hamster Wheel', 'accessories', 12, 8.75, 3),
-(7, 'Bird Cage - Small', 'housing', 5, 45.00, 2),
-(8, 'Dog Bed - Large', 'accessories', 3, 65.00, 2);
+INSERT INTO `products` (`id`, `product_name`, `category`, `description`, `quantity_in_stock`, `price`, `supplier`) VALUES
+(1, 'Dog Food - Premium', 'food', NULL, 25, 45.99, 1),
+(2, 'Cat Food - Wet', 'food', NULL, 40, 2.50, 1),
+(3, 'Dog Leash', 'accessories', NULL, 15, 12.99, 2),
+(4, 'Cat Toy - Mouse', 'toy', NULL, 60, 3.25, 3),
+(5, 'Fish Tank Filter', 'equipment', NULL, 8, 35.50, 4),
+(6, 'Hamster Wheel', 'accessories', NULL, 12, 8.75, 3),
+(7, 'Bird Cage - Small', 'housing', NULL, 5, 45.00, 2),
+(8, 'Dog Bed - Large', 'accessories', NULL, 3, 65.00, 2);
 
 -- --------------------------------------------------------
 

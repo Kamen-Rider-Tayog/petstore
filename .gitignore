@@ -1,0 +1,24 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Uploads (except keep the directory structure)
+assets/uploads/*
+!assets/uploads/.gitkeep
+
+# Cache
+temp/
+cache/

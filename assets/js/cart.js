@@ -1,9 +1,12 @@
+// At the top of cart.js
+// BASE_URL is now defined from header.php
+
 // Add to cart function
 function addToCart(productId, customerId) {
     const qtySelect = document.getElementById(`qty_${productId}`);
     const quantity = qtySelect ? parseInt(qtySelect.value) : 1;
     
-    fetch('../backend/api/add_to_cart', {
+    fetch(BASE_URL + '/backend/api/add_to_cart.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -31,7 +34,7 @@ function addToCart(productId, customerId) {
 
 // Update cart count
 function updateCartCount(customerId) {
-    fetch('../backend/api/cart_count?customer_id=' + customerId)
+    fetch(BASE_URL + '/backend/api/cart_count.php?customer_id=' + customerId)
         .then(response => response.json())
         .then(data => {
             const cartCountElement = document.getElementById('cart-count');
@@ -44,7 +47,7 @@ function updateCartCount(customerId) {
 
 // Update cart quantity
 function updateCartQuantity(cartId, action, customerId) {
-    fetch('../backend/api/update_cart', {
+    fetch(BASE_URL + '/backend/api/update_cart.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -58,7 +61,6 @@ function updateCartQuantity(cartId, action, customerId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Reload cart page if on cart page
             if (window.location.pathname.includes('cart')) {
                 location.reload();
             } else {

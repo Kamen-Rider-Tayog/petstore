@@ -1,4 +1,7 @@
-<?php require_once '../backend/includes/header.php'; ?>
+<?php
+require_once '../backend/includes/header.php';
+require_once '../backend/functions/helpers.php';
+?>
 
 <h1>AJAX Pet Search</h1>
 
@@ -24,17 +27,19 @@
 <a href="index">Back to Home</a>
 
 <script>
+// Get base URL from PHP
+const BASE_URL = '<?php echo getBaseUrlForJS(); ?>';
+
 function searchPets() {
     const species = document.getElementById('species').value;
     const resultsDiv = document.getElementById('results');
     const loadingDiv = document.getElementById('loading');
     
-    // Show loading
     loadingDiv.style.display = 'block';
     resultsDiv.innerHTML = '';
     
-    // Correct path: from public folder to backend/api/
-    fetch('/petstore/backend/api/search_pets.php?species=' + encodeURIComponent(species))
+    // Use dynamic BASE_URL
+    fetch(BASE_URL + '/backend/api/search_pets.php?species=' + encodeURIComponent(species))
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.status);
