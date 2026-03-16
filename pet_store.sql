@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 15, 2026 at 03:20 PM
+-- Generation Time: Mar 16, 2026 at 09:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -193,6 +193,36 @@ INSERT INTO `employees` (`id`, `first_name`, `last_name`, `email`, `password`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `faqs`
+--
+
+CREATE TABLE `faqs` (
+  `id` int(11) NOT NULL,
+  `category` varchar(100) NOT NULL,
+  `question` text NOT NULL,
+  `answer` text NOT NULL,
+  `display_order` int(11) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `faqs`
+--
+
+INSERT INTO `faqs` (`id`, `category`, `question`, `answer`, `display_order`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'General', 'Do you offer grooming services?', 'Yes! We provide professional grooming services for dogs and cats. Our certified groomers use only the highest quality products and techniques.', 1, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(2, 'General', 'Can I return products?', 'We offer a 30-day return policy on most products. Items must be unused and in their original packaging. Please contact us for return instructions.', 2, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(3, 'General', 'Do you have a veterinary clinic?', 'Yes, our on-site veterinary clinic is staffed by licensed veterinarians. We offer wellness exams, vaccinations, and emergency care.', 3, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(4, 'Orders', 'How long does shipping take?', 'Standard shipping takes 3-5 business days. Express shipping is available for 1-2 business days. Free shipping on orders over .', 1, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(5, 'Orders', 'Can I track my order?', 'Yes, you will receive a tracking number via email once your order ships. You can also view your order status in your account dashboard.', 2, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(6, 'Services', 'Do you offer boarding services?', 'Yes, we provide safe and comfortable boarding for dogs and cats. Our facility includes climate-controlled rooms, daily exercise, and 24/7 supervision.', 1, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46'),
+(7, 'Services', 'What vaccinations do you require?', 'We require current vaccinations including Rabies, DHPP, and Bordetella for dogs, and FVRCP for cats. Please bring vaccination records when visiting.', 2, 1, '2026-03-15 14:49:46', '2026-03-15 14:49:46');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `orders`
 --
 
@@ -239,7 +269,7 @@ CREATE TABLE `pets` (
   `gender` enum('male','female') DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `status` enum('available','sold','reserved','adopted') DEFAULT 'available',
+  `pet_status` enum('available','sold','reserved','adopted') DEFAULT 'available',
   `image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -250,7 +280,7 @@ CREATE TABLE `pets` (
 -- Dumping data for table `pets`
 --
 
-INSERT INTO `pets` (`id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `price`, `description`, `status`, `image`, `created_at`, `updated_at`, `featured`) VALUES
+INSERT INTO `pets` (`id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `price`, `description`, `pet_status`, `image`, `created_at`, `updated_at`, `featured`) VALUES
 (1, 'Max', 'dog', NULL, NULL, 2, NULL, 350.00, 'Friendly golden retriever, great with kids and other pets.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
 (2, 'Luna', 'cat', NULL, NULL, 3, NULL, 180.00, 'Playful tabby cat, loves to cuddle and play with toys.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
 (3, 'Coco', 'rabbit', NULL, NULL, 4, NULL, 75.50, 'Gentle lop-eared rabbit, perfect for first-time owners.', 'sold', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
@@ -414,7 +444,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `setting_key`, `setting_value`, `created_at`, `updated_at`) VALUES
-(1, 'store_name', 'Ria Pet Store', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+(1, 'store_name', 'Pet Store', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
 (2, 'store_email', 'info@petstore.com', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
 (3, 'tax_rate', '0', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
 (4, 'currency', 'PHP', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
@@ -516,6 +546,14 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `employees`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `faqs`
+--
+ALTER TABLE `faqs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_category` (`category`),
+  ADD KEY `idx_active` (`is_active`);
 
 --
 -- Indexes for table `orders`
@@ -635,6 +673,12 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `employees`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `faqs`
+--
+ALTER TABLE `faqs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `orders`

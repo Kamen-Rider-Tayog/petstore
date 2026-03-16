@@ -1,193 +1,259 @@
 <?php
-require_once '../../backend/includes/header.php';
+require_once __DIR__ . '/../../backend/includes/header.php';
 
-// Get featured pets
-$featured_pets = $conn->query("SELECT * FROM pets WHERE featured = 1 LIMIT 4");
+$page_title       = 'Home';
+$page_description = 'Ria Pet Store - Your one-stop shop for pets, supplies, and services.';
+$page_styles      = [asset('css/index.css')];
 
-// Get featured products
-$featured_products = $conn->query("SELECT * FROM products WHERE featured = 1 LIMIT 4");
+// ── Featured products (products: id, product_name, category, price, sale_price, on_sale, featured) ──
+$featured_products = Cache::get('home_featured_products');
+if ($featured_products === null) {
+    $r = $conn->query(
+        "SELECT id, product_name, category, price, sale_price, on_sale, featured
+         FROM products
+         WHERE featured = 1
+         ORDER BY id DESC
+         LIMIT 4"
+    );
+    $featured_products = $r->fetch_all(MYSQLI_ASSOC);
+    Cache::put('home_featured_products', $featured_products, 86400);
+}
 
-// Get popular services (simplified - using service_type from appointments)
-$popular_services = $conn->query("SELECT DISTINCT service_type FROM appointments WHERE status = 'completed' LIMIT 3");
+// ── Available pets (pets: id, name, species, breed, age, price, pet_status) ──
+$featured_pets = Cache::get('home_featured_pets');
+if ($featured_pets === null) {
+    $r = $conn->query(
+        "SELECT id, name, species, breed, age, price
+         FROM pets
+         WHERE pet_status = 'available'
+         ORDER BY id DESC
+         LIMIT 4"
+    );
+    $featured_pets = $r->fetch_all(MYSQLI_ASSOC);
+    Cache::put('home_featured_pets', $featured_pets, 86400);
+}
 
-// Get testimonials
-$testimonials = $conn->query("SELECT r.*, c.first_name, c.last_name, p.name as product_name FROM product_reviews r JOIN customers c ON r.customer_id = c.id JOIN products p ON r.product_id = p.id WHERE r.status = 'approved' ORDER BY r.created_at DESC LIMIT 3");
+// ── Featured services (services: id, service_name, category, description, price, duration_minutes, featured) ──
+$featured_services = Cache::get('home_featured_services');
+if ($featured_services === null) {
+    $r = $conn->query(
+        "SELECT id, service_name, category, description, price, duration_minutes
+         FROM services
+         WHERE featured = 1
+         LIMIT 3"
+    );
+    $featured_services = $r->fetch_all(MYSQLI_ASSOC);
+    Cache::put('home_featured_services', $featured_services, 3600);
+}
+
+// ── Latest approved reviews (product_reviews: id, product_id, customer_id, rating, review_text, status) ──
+$reviews = Cache::get('home_reviews');
+if ($reviews === null) {
+    $r = $conn->query(
+        "SELECT pr.rating, pr.review_text, pr.created_at,
+                p.product_name,
+                CONCAT(c.first_name, ' ', LEFT(c.last_name, 1), '.') AS reviewer
+         FROM product_reviews pr
+         JOIN products  p ON pr.product_id  = p.id
+         JOIN customers c ON pr.customer_id = c.id
+         WHERE pr.status = 'approved'
+         ORDER BY pr.created_at DESC
+         LIMIT 3"
+    );
+    $reviews = $r->fetch_all(MYSQLI_ASSOC);
+    Cache::put('home_reviews', $reviews, 3600);
+}
+
+// ── Stats ──
+$stats = Cache::get('home_stats');
+if ($stats === null) {
+    $stats = [
+        'pets'     => $conn->query("SELECT COUNT(*) FROM pets WHERE pet_status = 'available'")->fetch_row()[0],
+        'products' => $conn->query("SELECT COUNT(*) FROM products")->fetch_row()[0],
+        'services' => $conn->query("SELECT COUNT(*) FROM services")->fetch_row()[0],
+    ];
+    Cache::put('home_stats', $stats, 3600);
+}
 ?>
-<!-- Hero Section -->
+
+<!-- HERO -->
 <section class="hero">
-        <div class="hero-content">
-            <h1>Welcome to Pet Paradise</h1>
-            <p>Your one-stop destination for all your pet needs. From adorable pets to premium products, we have everything your furry friends need to live their best life.</p>
-            <div class="hero-buttons">
-                <a href="/petstore/pets" class="btn btn-primary">Shop Pets</a>
-                <a href="/petstore/products" class="btn btn-secondary">Shop Products</a>
-                <a href="/petstore/book_appointment" class="btn btn-outline">Book Service</a>
+    <div class="hero-content">
+        <h1>Find Your Perfect Pet Companion</h1>
+        <p>Quality pets, premium supplies, and professional care — all in one place.</p>
+        <div class="hero-buttons">
+            <a href="/petstore/pets"     class="btn btn-primary">Browse Pets</a>
+            <a href="/petstore/products" class="btn btn-outline-white">Shop Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- STATS BAR -->
+<section class="stats-bar">
+    <div class="stat-item">
+        <span class="stat-number"><?php echo $stats['pets']; ?>+</span>
+        <span class="stat-label">Pets Available</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number"><?php echo $stats['products']; ?>+</span>
+        <span class="stat-label">Products</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number"><?php echo $stats['services']; ?></span>
+        <span class="stat-label">Services</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">10+</span>
+        <span class="stat-label">Years of Care</span>
+    </div>
+</section>
+
+<!-- AVAILABLE PETS -->
+<?php if (!empty($featured_pets)): ?>
+<section class="home-section">
+    <div class="section-header">
+        <h2>Available Pets</h2>
+        <p>Find your new best friend</p>
+    </div>
+    <div class="pets-grid">
+        <?php foreach ($featured_pets as $pet): ?>
+            <div class="pet-card">
+                <div class="pet-card-image">
+                    <span class="pet-species-badge"><?php echo ucfirst(e($pet['species'])); ?></span>
+                </div>
+                <div class="pet-card-body">
+                    <h3><?php echo e($pet['name']); ?></h3>
+                    <?php if ($pet['breed']): ?>
+                        <p class="pet-breed"><?php echo e($pet['breed']); ?></p>
+                    <?php endif; ?>
+                    <p class="pet-age"><?php echo (int)$pet['age']; ?> <?php echo $pet['age'] == 1 ? 'year' : 'years'; ?> old</p>
+                    <p class="pet-price"><?php echo CURRENCY_SYMBOL . number_format($pet['price'], 2); ?></p>
+                </div>
+                <div class="pet-card-footer">
+                    <a href="/petstore/pet_details?id=<?php echo (int)$pet['id']; ?>"
+                       class="btn btn-primary btn-small">
+                        Meet <?php echo e($pet['name']); ?>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="hero-image">
-            <img src="../../assets/images/hero-pets.jpg" alt="Happy pets" onerror="this.onerror=null; this.src='../../assets/images/placeholder-hero.jpg'">
-        </div>
-    </section>
+        <?php endforeach; ?>
+    </div>
+    <div class="section-footer">
+        <a href="/petstore/pets" class="btn btn-outline">View All Pets</a>
+    </div>
+</section>
+<?php endif; ?>
 
-    <!-- Featured Pets Section -->
-    <section class="featured-section">
-        <div class="container">
-            <h2>Featured Pets</h2>
-            <p>Meet some of our most beloved pets waiting for their forever homes</p>
-
-            <div class="pets-grid">
-                <?php while ($pet = $featured_pets->fetch_assoc()): ?>
-                    <div class="pet-card">
-                        <div class="pet-image">
-                            <img src="../../assets/images/pets/<?php echo $pet['id']; ?>.jpg" alt="<?php echo htmlspecialchars($pet['name']); ?>" onerror="this.onerror=null; this.src='../../assets/images/placeholder-pet.jpg'">
-                            <?php if ($pet['featured']): ?>
-                                <span class="badge featured">Featured</span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="pet-info">
-                            <h3><?php echo htmlspecialchars($pet['name']); ?></h3>
-                            <p class="pet-details"><?php echo htmlspecialchars($pet['species']); ?> • <?php echo htmlspecialchars($pet['breed']); ?> • <?php echo $pet['age']; ?> years old</p>
-                            <p class="pet-description"><?php echo htmlspecialchars(substr($pet['description'], 0, 100)); ?>...</p>
-                            <div class="pet-price">$<?php echo number_format($pet['price'], 2); ?></div>
-                            <a href="/petstore/pet_details?id=<?php echo $pet['id']; ?>" class="btn btn-small">View Details</a>
-                        </div>
+<!-- FEATURED PRODUCTS -->
+<?php if (!empty($featured_products)): ?>
+<section class="home-section home-section-alt">
+    <div class="section-header">
+        <h2>Featured Products</h2>
+        <p>Premium supplies for your pet</p>
+    </div>
+    <div class="products-grid">
+        <?php foreach ($featured_products as $product): ?>
+            <div class="product-card">
+                <div class="product-info">
+                    <?php if ($product['on_sale']): ?>
+                        <span class="badge sale">Sale</span>
+                    <?php elseif ($product['featured']): ?>
+                        <span class="badge featured">Featured</span>
+                    <?php endif; ?>
+                    <h3>
+                        <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>">
+                            <?php echo e($product['product_name']); ?>
+                        </a>
+                    </h3>
+                    <p class="product-category"><?php echo ucfirst(e($product['category'])); ?></p>
+                    <div class="product-price">
+                        <?php if ($product['on_sale'] && $product['sale_price']): ?>
+                            <span class="original-price"><?php echo CURRENCY_SYMBOL . number_format($product['price'], 2); ?></span>
+                            <span class="sale-price"><?php echo CURRENCY_SYMBOL . number_format($product['sale_price'], 2); ?></span>
+                        <?php else: ?>
+                            <span class="regular-price"><?php echo CURRENCY_SYMBOL . number_format($product['price'], 2); ?></span>
+                        <?php endif; ?>
                     </div>
-                <?php endwhile; ?>
+                </div>
+                <div class="product-actions">
+                    <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>"
+                       class="btn btn-outline btn-small">View</a>
+                    <button data-add-to-cart="<?php echo (int)$product['id']; ?>"
+                            class="btn btn-primary btn-small">Add to Cart</button>
+                </div>
             </div>
+        <?php endforeach; ?>
+    </div>
+    <div class="section-footer">
+        <a href="/petstore/products" class="btn btn-outline">View All Products</a>
+    </div>
+</section>
+<?php endif; ?>
 
-            <div class="section-footer">
-                <a href="/petstore/pets" class="btn btn-outline">View All Pets</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Products Section -->
-    <section class="featured-section products-section">
-        <div class="container">
-            <h2>Featured Products</h2>
-            <p>Premium products for your pet's health and happiness</p>
-
-            <div class="products-grid">
-                <?php while ($product = $featured_products->fetch_assoc()): ?>
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="../../assets/images/products/<?php echo $product['id']; ?>.jpg" alt="<?php echo htmlspecialchars($product['name']); ?>" onerror="this.onerror=null; this.src='../../assets/images/placeholder-product.jpg'">
-                            <?php if ($product['featured']): ?>
-                                <span class="badge featured">Featured</span>
-                            <?php endif; ?>
-                            <?php if ($product['on_sale']): ?>
-                                <span class="badge sale">Sale</span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="product-info">
-                            <h3><?php echo htmlspecialchars($product['name']); ?></h3>
-                            <p class="product-category"><?php echo htmlspecialchars($product['category']); ?></p>
-                            <div class="product-price">
-                                <?php if ($product['on_sale'] && $product['sale_price']): ?>
-                                    <span class="original-price">$<?php echo number_format($product['price'], 2); ?></span>
-                                    <span class="sale-price">$<?php echo number_format($product['sale_price'], 2); ?></span>
-                                <?php else: ?>
-                                    <span class="regular-price">$<?php echo number_format($product['price'], 2); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="product-rating">
-                                <?php
-                                $rating = $product['rating'] ?? 0;
-                                for ($i = 1; $i <= 5; $i++) {
-                                    echo $i <= $rating ? '★' : '☆';
-                                }
-                                ?>
-                                <span class="review-count">(<?php echo $product['review_count'] ?? 0; ?>)</span>
-                            </div>
-                        </div>
-                        <div class="product-actions">
-                            <a href="/petstore/product_details?id=<?php echo $product['id']; ?>" class="btn btn-small">View Details</a>
-                            <button onclick="addToCart(<?php echo $product['id']; ?>)" class="btn btn-small btn-primary">Add to Cart</button>
-                        </div>
+<!-- SERVICES -->
+<?php if (!empty($featured_services)): ?>
+<section class="home-section">
+    <div class="section-header">
+        <h2>Our Services</h2>
+        <p>Professional care for your pet</p>
+    </div>
+    <div class="services-grid">
+        <?php foreach ($featured_services as $svc): ?>
+            <div class="service-card">
+                <div class="service-card-body">
+                    <h3><?php echo e($svc['service_name']); ?></h3>
+                    <p><?php echo e($svc['description']); ?></p>
+                    <div class="service-meta">
+                        <span class="service-price"><?php echo CURRENCY_SYMBOL . number_format($svc['price'], 2); ?></span>
+                        <span class="service-duration"><?php echo (int)$svc['duration_minutes']; ?> min</span>
                     </div>
-                <?php endwhile; ?>
+                </div>
+                <a href="/petstore/book_appointment" class="btn btn-outline btn-small">Book Now</a>
             </div>
+        <?php endforeach; ?>
+    </div>
+    <div class="section-footer">
+        <a href="/petstore/services" class="btn btn-outline">All Services</a>
+    </div>
+</section>
+<?php endif; ?>
 
-            <div class="section-footer">
-                <a href="/petstore/products" class="btn btn-outline">View All Products</a>
+<!-- REVIEWS -->
+<?php if (!empty($reviews)): ?>
+<section class="home-section home-section-alt">
+    <div class="section-header">
+        <h2>What Our Customers Say</h2>
+        <p>Real reviews from real pet owners</p>
+    </div>
+    <div class="reviews-grid">
+        <?php foreach ($reviews as $review): ?>
+            <div class="review-card">
+                <div class="review-stars">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <span class="star <?php echo $i <= (int)$review['rating'] ? 'filled' : ''; ?>">&#9733;</span>
+                    <?php endfor; ?>
+                </div>
+                <p class="review-text">"<?php echo e($review['review_text']); ?>"</p>
+                <div class="review-meta">
+                    <span class="reviewer-name"><?php echo e($review['reviewer']); ?></span>
+                    <span class="review-product">on <?php echo e($review['product_name']); ?></span>
+                </div>
             </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ABOUT / CTA -->
+<section class="home-section cta-section">
+    <div class="cta-content">
+        <h2>About Ria Pet Store</h2>
+        <p>We've been caring for pets and their owners since 2010. From finding the perfect companion to keeping them healthy and happy, we're here every step of the way.</p>
+        <div class="cta-actions">
+            <a href="/petstore/pets"     class="btn btn-primary">Adopt a Pet</a>
+            <a href="/petstore/services" class="btn btn-outline">Our Services</a>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Services Section -->
-    <section class="services-section">
-        <div class="container">
-            <h2>Our Services</h2>
-            <p>Professional care for your beloved pets</p>
-
-            <div class="services-grid">
-                <?php if ($popular_services && $popular_services->num_rows > 0): ?>
-                    <?php while ($service = $popular_services->fetch_assoc()): ?>
-                        <div class="service-card">
-                            <div class="service-icon">
-                                <i class="icon-<?php echo strtolower(str_replace(' ', '-', $service['service_type'])); ?>"></i>
-                            </div>
-                            <h3><?php echo ucfirst(htmlspecialchars($service['service_type'])); ?></h3>
-                            <p>Professional <?php echo htmlspecialchars($service['service_type']); ?> services for your pets</p>
-                            <a href="/petstore/book_appointment" class="btn btn-small">Book Now</a>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <div class="service-card">
-                        <div class="service-icon"><i class="icon-services"></i></div>
-                        <h3>Professional Services</h3>
-                        <p>Quality pet care services available</p>
-                        <a href="/petstore/book_appointment" class="btn btn-small">Book Now</a>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <div class="section-footer">
-                <a href="/petstore/products" class="btn btn-outline">View All Services</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials-section">
-        <div class="container">
-            <h2>What Our Customers Say</h2>
-            <p>Don't just take our word for it - hear from our happy customers</p>
-
-            <div class="testimonials-grid">
-                <?php while ($testimonial = $testimonials->fetch_assoc()): ?>
-                    <div class="testimonial-card">
-                        <div class="testimonial-rating">
-                            <?php
-                            for ($i = 1; $i <= 5; $i++) {
-                                echo $i <= $testimonial['rating'] ? '★' : '☆';
-                            }
-                            ?>
-                        </div>
-                        <blockquote><?php echo htmlspecialchars($testimonial['review_text']); ?></blockquote>
-                        <cite>
-                            <strong><?php echo htmlspecialchars($testimonial['first_name'] . ' ' . $testimonial['last_name']); ?></strong>
-                            <br>
-                            <small>About <?php echo htmlspecialchars($testimonial['product_name']); ?></small>
-                        </cite>
-                    </div>
-                <?php endwhile; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="newsletter-section">
-        <div class="container">
-            <div class="newsletter-content">
-                <h2>Stay Updated</h2>
-                <p>Subscribe to our newsletter for the latest pet care tips, special offers, and new arrivals.</p>
-                <form class="newsletter-form" method="post" action="newsletter_signup.php">
-                    <input type="email" name="email" placeholder="Enter your email address" required>
-                    <button type="submit" class="btn btn-primary">Subscribe</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-<?php include '../../backend/includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../backend/includes/footer.php'; ?>

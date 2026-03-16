@@ -1,0 +1,255 @@
+c:/xampp/htdocs/petstore/
+├─] .env (ignored)
+├── .env.example
+├── .gitignore
+├── .htaccess
+├─] .vscode/ (ignored)
+├── admin/
+│   ├── appointments/
+│   │   ├── appointments.php
+│   │   ├── appointment_delete.php
+│   │   ├── appointment_details.php
+│   │   └── appointment_edit.php
+│   ├── auth/
+│   │   ├── login.php
+│   │   ├── login_process.php
+│   │   └── logout.php
+│   ├── css/
+│   │   └── admin.css
+│   ├── customers/
+│   │   ├── customers.php
+│   │   ├── customer_delete.php
+│   │   ├── customer_details.php
+│   │   └── customer_edit.php
+│   ├── employees/
+│   │   ├── employees.php
+│   │   ├── employee_delete.php
+│   │   ├── employee_details.php
+│   │   └── employee_edit.php
+│   ├── includes/
+│   │   ├── auth.php
+│   │   ├── footer.php
+│   │   ├── header.php
+│   │   └── sidebar.php
+│   ├── inventory/
+│   │   ├── manage_categories.php
+│   │   ├── products.php
+│   │   ├── product_add.php
+│   │   ├── product_delete.php
+│   │   └── product_edit.php
+│   ├── orders/
+│   │   ├── manage_orders.php
+│   │   ├── orders.php
+│   │   ├── order_details.php
+│   │   └── order_edit.php
+│   ├── pages/
+│   │   ├── dashboard.php
+│   │   └── settings.php
+│   ├── pets/
+│   │   ├── manage_pets.php
+│   │   ├── pets.php
+│   │   ├── pet_add.php
+│   │   ├── pet_delete.php
+│   │   └── pet_edit.php
+│   ├── reviews/
+│   │   └── manage_reviews.php
+│   ├── services/
+│   │   ├── services.php
+│   │   ├── services_add.php
+│   │   ├── services_delete.php
+│   │   └── services_edit.php
+│   ├── suppliers/
+│   │   └── manage_suppliers.php
+│   └── tools/
+│       ├── backups.php
+│       ├── bulk_operations.php
+│       ├── featured_products.php
+│       ├── reports.php
+│       └── search_analytics.php
+├── assets/
+│   ├── css/
+│   │   ├── 404.css
+│   │   ├── about.css
+│   │   ├── admin.css
+│   │   ├── admin_backups.css
+│   │   ├── admin_bulk_operations.css
+│   │   ├── admin_featured_products.css
+│   │   ├── admin_login.css
+│   │   ├── admin_manage_categories.css
+│   │   ├── admin_manage_reviews.css
+│   │   ├── admin_manage_suppliers.css
+│   │   ├── admin_products.css
+│   │   ├── admin_reports.css
+│   │   ├── admin_search_analytics.css
+│   │   ├── admin_settings.css
+│   │   ├── advanced_search.css
+│   │   ├── animations.css
+│   │   ├── appointments.css
+│   │   ├── base.css
+│   │   ├── cancel_appointment.css
+│   │   ├── cancel_order.css
+│   │   ├── cart.css
+│   │   ├── categories.css
+│   │   ├── category_products.css
+│   │   ├── checkout.css
+│   │   ├── components.css
+│   │   ├── contact.css
+│   │   ├── contact_process.css
+│   │   ├── customer_order.css
+│   │   ├── dogs.css
+│   │   ├── edit_profile.css
+│   │   ├── faq.css
+│   │   ├── featured.css
+│   │   ├── footer.css
+│   │   ├── index.css
+│   │   ├── install.css
+│   │   ├── layout.css
+│   │   ├── login.css
+│   │   ├── login_process.css
+│   │   ├── logout.css
+│   │   ├── low_stock.css
+│   │   ├── my_appointments.css
+│   │   ├── navigation.css
+│   │   ├── new_arrivals.css
+│   │   ├── on_sale.css
+│   │   ├── order_confirmation.css
+│   │   ├── order_details.css
+│   │   ├── order_history.css
+│   │   ├── pets.css
+│   │   ├── pet_details.css
+│   │   ├── place_order.css
+│   │   ├── print.css
+│   │   ├── privacy.css
+│   │   ├── products.css
+│   │   ├── product_details.css
+│   │   ├── product_reviews.css
+│   │   ├── recently_viewed.css
+│   │   ├── register.css
+│   │   ├── register_process.css
+│   │   ├── reschedule_appointment.css
+│   │   ├── search.css
+│   │   ├── search_pets.css
+│   │   ├── search_results.css
+│   │   ├── services.css
+│   │   ├── service_details.css
+│   │   ├── sitemap.css
+│   │   ├── supplier_products.css
+│   │   ├── terms.css
+│   │   ├── user_profile.css
+│   │   ├── utilities.css
+│   │   └── write_review.css
+│   ├── images/
+│   └── js/
+│       ├── appointment.js
+│       ├── cart.js
+│       ├── contact.js
+│       ├── filters.js
+│       ├── live_search.js
+│       └── main.js
+├── backend/
+│   ├── admin/
+│   ├── api/
+│   │   ├── add_to_cart.php
+│   │   ├── cart_count.php
+│   │   ├── filter_products.php
+│   │   ├── get_available_slots.php
+│   │   ├── get_cart.php
+│   │   ├── get_customer_orders.php
+│   │   ├── get_pets.php
+│   │   ├── live_search.php
+│   │   ├── load_more.php
+│   │   ├── remove_from_cart.php
+│   │   ├── search_pets.php
+│   │   ├── search_products.php
+│   │   └── update_cart.php
+│   ├── config/
+│   │   ├── config.php
+│   │   └── database.php
+│   ├── functions/
+│   │   ├── cache.php
+│   │   └── helpers.php
+│   ├── includes/
+│   │   ├── appointment_functions.php
+│   │   ├── auth.php
+│   │   ├── cart_functions.php
+│   │   ├── constants.php
+│   │   ├── filter_functions.php
+│   │   ├── footer.php
+│   │   ├── header.php
+│   │   ├── navigation.php
+│   │   ├── order_functions.php
+│   │   └── search_functions.php
+│   └── uploads/
+│       └── handle_upload.php
+├── database/
+│   └── install.php
+├── file tree.txt
+├── index.html
+├── pet_store.sql
+├── public/
+│   ├── .htaccess
+│   ├── appointments/
+│   │   ├── appointments.php
+│   │   ├── book_appointment.php
+│   │   ├── cancel_appointment.php
+│   │   ├── my_appointments.php
+│   │   └── reschedule_appointment.php
+│   ├── auth/
+│   │   ├── login.php
+│   │   ├── login_process.php
+│   │   ├── logout.php
+│   │   ├── register.php
+│   │   └── register_process.php
+│   ├── cart/
+│   │   ├── cancel_order.php
+│   │   ├── cart.php
+│   │   ├── checkout.php
+│   │   ├── order_confirmation.php
+│   │   └── place_order.php
+│   ├── errors/
+│   │   └── 404.php
+│   ├── orders/
+│   │   ├── contact.php
+│   │   ├── contact_process.php
+│   │   ├── customer_order.php
+│   │   ├── order_details.php
+│   │   └── order_history.php
+│   ├── pages/
+│   │   ├── about.php
+│   │   ├── faq.php
+│   │   ├── index.php
+│   │   ├── privacy.php
+│   │   ├── sitemap.php
+│   │   └── terms.php
+│   ├── pets/
+│   │   ├── dogs.php
+│   │   ├── pets.php
+│   │   ├── pet_details.php
+│   │   └── search_pets.php
+│   ├── reviews/
+│   │   ├── product_reviews.php
+│   │   └── write_review.php
+│   ├── shop/
+│   │   ├── advanced_search.php
+│   │   ├── categories.php
+│   │   ├── category_products.php
+│   │   ├── featured.php
+│   │   ├── low_stock.php
+│   │   ├── new_arrivals.php
+│   │   ├── on_sale.php
+│   │   ├── products.php
+│   │   ├── product_details.php
+│   │   ├── recently_viewed.php
+│   │   ├── search.php
+│   │   ├── search_results.php
+│   │   ├── services.php
+│   │   ├── service_details.php
+│   │   └── supplier_products.php
+│   └── user/
+│       ├── edit_profile.php
+│       └── user_profile.php
+├── robots.txt
+├── sitemap.xml
+└── storage/
+    └── cache/
+        └── a099cadd303feb8e54cc026adae5057b.cache

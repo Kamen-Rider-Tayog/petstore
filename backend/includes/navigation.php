@@ -1,120 +1,107 @@
 <?php
-// Get cart count for logged-in users
+// Cart count for logged-in users
 $cart_count = 0;
 if (isset($_SESSION['customer_id'])) {
-    $stmt = $conn->prepare("SELECT SUM(quantity) as total FROM cart WHERE customer_id = ?");
+    $stmt = $conn->prepare("SELECT COALESCE(SUM(quantity), 0) AS total FROM cart WHERE customer_id = ?");
     $stmt->bind_param("i", $_SESSION['customer_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $cart_data = $result->fetch_assoc();
-    $cart_count = $cart_data['total'] ?? 0;
+    $cart_count = (int) $stmt->get_result()->fetch_assoc()['total'];
     $stmt->close();
 }
 
-// Get categories for mega menu
-$categories = $conn->query("SELECT * FROM categories WHERE parent_id IS NULL ORDER BY category_name");
+// Categories from cache
+$cache_key  = 'categories_menu';
+$categories = Cache::get($cache_key);
+
+if ($categories === null) {
+    $result      = $conn->query("SELECT id, parent_id, category_name FROM categories ORDER BY parent_id ASC, category_name ASC");
+    $parent_cats = [];
+    $child_cats  = [];
+
+    while ($cat = $result->fetch_assoc()) {
+        if (is_null($cat['parent_id'])) {
+            $cat['children'] = [];
+            $parent_cats[$cat['id']] = $cat;
+        } else {
+            $child_cats[$cat['parent_id']][] = $cat;
+        }
+    }
+    foreach ($child_cats as $pid => $children) {
+        if (isset($parent_cats[$pid])) {
+            $parent_cats[$pid]['children'] = $children;
+        }
+    }
+    $categories = array_values($parent_cats);
+    Cache::put($cache_key, $categories, 3600);
+}
 ?>
 
 <nav class="main-nav">
     <div class="nav-container">
+
         <!-- Logo -->
         <div class="nav-logo">
             <a href="/petstore/">
-                <img src="<?php echo asset('images/logo.png'); ?>" alt="Ria Pet Store" onerror="this.onerror=null; this.src='<?php echo asset('images/logo-placeholder.png'); ?>'">
-                <span class="logo-text">Ria Pet Store</span>
+                <span class="logo-text"><?php echo APP_NAME; ?></span>
             </a>
         </div>
 
-        <!-- Desktop Navigation -->
+        <!-- Desktop links -->
         <div class="nav-menu">
             <ul class="nav-list">
-                <li class="nav-item">
-                    <a href="/petstore/" class="nav-link">Home</a>
-                </li>
+                <li class="nav-item"><a href="/petstore/" class="nav-link">Home</a></li>
 
-                <!-- Products Mega Menu -->
                 <li class="nav-item has-mega-menu">
                     <a href="/petstore/products" class="nav-link">Products</a>
                     <div class="mega-menu">
                         <div class="mega-menu-content">
-                            <?php while ($category = $categories->fetch_assoc()): ?>
+                            <?php foreach ($categories as $category): ?>
                                 <div class="mega-menu-column">
-                                    <h3><?php echo htmlspecialchars($category['category_name']); ?></h3>
+                                    <h3><?php echo e($category['category_name']); ?></h3>
                                     <ul>
-                                        <?php
-                                        $sub_stmt = $conn->prepare("SELECT * FROM categories WHERE parent_id = ? ORDER BY category_name");
-                                        $sub_stmt->bind_param("i", $category['id']);
-                                        $sub_stmt->execute();
-                                        $subcategories = $sub_stmt->get_result();
-                                        ?>
-                                        <?php while ($sub = $subcategories->fetch_assoc()): ?>
-                                            <li><a href="/petstore/products?category=<?php echo urlencode($sub['category_name']); ?>"><?php echo htmlspecialchars($sub['category_name']); ?></a></li>
-                                        <?php endwhile; ?>
-                                        <?php if ($subcategories->num_rows === 0): ?>
-                                            <li><a href="/petstore/products?category=<?php echo urlencode($category['category_name']); ?>">All <?php echo htmlspecialchars($category['category_name']); ?></a></li>
+                                        <?php if (!empty($category['children'])): ?>
+                                            <?php foreach ($category['children'] as $sub): ?>
+                                                <li><a href="/petstore/products?category=<?php echo urlencode($sub['category_name']); ?>"><?php echo e($sub['category_name']); ?></a></li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li><a href="/petstore/products?category=<?php echo urlencode($category['category_name']); ?>">All <?php echo e($category['category_name']); ?></a></li>
                                         <?php endif; ?>
                                     </ul>
                                 </div>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                             <div class="mega-menu-column">
                                 <h3>Quick Links</h3>
                                 <ul>
-                                    <li><a href="/petstore/products?featured=1">Featured Products</a></li>
+                                    <li><a href="/petstore/products?featured=1">Featured</a></li>
                                     <li><a href="/petstore/products?on_sale=1">On Sale</a></li>
-                                    <li><a href="/petstore/products?sort=rating">Top Rated</a></li>
-                                    <li><a href="/petstore/search">Search All Products</a></li>
+                                    <li><a href="/petstore/search">Search All</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a href="/petstore/pets" class="nav-link">Pets</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/petstore/services" class="nav-link">Services</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/petstore/book_appointment" class="nav-link">Appointments</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/petstore/about" class="nav-link">About</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/petstore/contact" class="nav-link">Contact</a>
-                </li>
+                <li class="nav-item"><a href="/petstore/pets"     class="nav-link">Pets</a></li>
+                <li class="nav-item"><a href="/petstore/services" class="nav-link">Services</a></li>
             </ul>
         </div>
 
-        <!-- User Actions -->
+        <!-- Actions: search + user icon only -->
         <div class="nav-actions">
-            <!-- Search -->
             <div class="nav-search">
                 <form action="/petstore/search" method="get" class="search-form">
-                    <input type="text" name="q" placeholder="Search products..." required>
-                    <button type="submit"><i class="icon-search"></i></button>
+                    <input type="text" name="q" placeholder="Search..." aria-label="Search">
+                    <button type="submit" aria-label="Search">&#128269;</button>
                 </form>
             </div>
 
-            <!-- Cart -->
-            <a href="/petstore/cart" class="nav-cart">
-                <i class="icon-cart"></i>
-                <span class="cart-count"><?php echo $cart_count; ?></span>
-            </a>
-
-            <!-- User Menu -->
             <?php if (isset($_SESSION['customer_id'])): ?>
                 <div class="nav-user has-dropdown">
-                    <button class="user-menu-toggle">
-                        <i class="icon-user"></i>
-                        <span><?php echo htmlspecialchars($_SESSION['customer_name'] ?? 'Account'); ?></span>
+                    <button class="user-icon-btn" aria-label="User menu">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                     </button>
                     <div class="dropdown-menu">
+                        <div class="dropdown-name"><?php echo e($_SESSION['customer_name'] ?? 'Account'); ?></div>
                         <a href="/petstore/user_profile">My Profile</a>
                         <a href="/petstore/order_history">Order History</a>
                         <a href="/petstore/my_appointments">My Appointments</a>
@@ -122,115 +109,87 @@ $categories = $conn->query("SELECT * FROM categories WHERE parent_id IS NULL ORD
                     </div>
                 </div>
             <?php else: ?>
-                <div class="nav-auth">
-                    <a href="/petstore/login" class="btn btn-outline">Login</a>
-                    <a href="/petstore/register" class="btn btn-primary">Register</a>
+                <div class="nav-user has-dropdown">
+                    <button class="user-icon-btn" aria-label="Account">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="/petstore/login"    class="dropdown-btn">Login</a>
+                        <a href="/petstore/register" class="dropdown-btn dropdown-btn-primary">Register</a>
+                    </div>
                 </div>
             <?php endif; ?>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-nav-toggle" aria-label="Toggle mobile menu">
-                <i class="icon-menu"></i>
-            </button>
+            <button class="mobile-nav-toggle" aria-label="Toggle menu">&#9776;</button>
         </div>
     </div>
 
-    <!-- Mobile Navigation -->
-    <div class="mobile-nav">
+    <!-- Mobile Nav -->
+    <div class="mobile-nav" id="mobileNav" aria-hidden="true">
         <div class="mobile-nav-header">
             <span class="mobile-nav-title">Menu</span>
-            <button class="mobile-nav-close">
-                <i class="icon-close"></i>
-            </button>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close">&#10005;</button>
         </div>
-
         <ul class="mobile-nav-list">
-            <li><a href="index.php">Home</a></li>
+            <li><a href="/petstore/">Home</a></li>
             <li class="has-submenu">
-                <a href="products.php">Products</a>
+                <a href="/petstore/products">Products</a>
                 <ul class="submenu">
-                    <?php
-                    $categories->data_seek(0); // Reset pointer
-                    while ($category = $categories->fetch_assoc()):
-                    ?>
-                        <li><a href="products.php?category=<?php echo urlencode($category['category_name']); ?>"><?php echo htmlspecialchars($category['category_name']); ?></a></li>
-                    <?php endwhile; ?>
+                    <?php foreach ($categories as $category): ?>
+                        <li><a href="/petstore/products?category=<?php echo urlencode($category['category_name']); ?>"><?php echo e($category['category_name']); ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </li>
-            <li><a href="pets.php">Pets</a></li>
-            <li><a href="services.php">Services</a></li>
-            <li><a href="book_appointment.php">Appointments</a></li>
-            <li><a href="about.php">About</a></li>
-            <li><a href="contact.php">Contact</a></li>
+            <li><a href="/petstore/pets">Pets</a></li>
+            <li><a href="/petstore/services">Services</a></li>
         </ul>
-
         <?php if (isset($_SESSION['customer_id'])): ?>
             <div class="mobile-nav-user">
-                <div class="user-info">
-                    <i class="icon-user"></i>
-                    <span><?php echo htmlspecialchars($_SESSION['customer_name'] ?? 'Account'); ?></span>
-                </div>
+                <div class="user-info"><?php echo e($_SESSION['customer_name'] ?? 'Account'); ?></div>
                 <ul class="mobile-nav-user-menu">
-                    <li><a href="profile.php">My Profile</a></li>
-                    <li><a href="order_history.php">Order History</a></li>
-                    <li><a href="my_appointments.php">My Appointments</a></li>
-                    <li><a href="logout.php">Logout</a></li>
+                    <li><a href="/petstore/user_profile">My Profile</a></li>
+                    <li><a href="/petstore/order_history">Order History</a></li>
+                    <li><a href="/petstore/my_appointments">My Appointments</a></li>
+                    <li><a href="/petstore/logout">Logout</a></li>
                 </ul>
             </div>
         <?php else: ?>
             <div class="mobile-nav-auth">
-                <a href="login.php" class="btn btn-block">Login</a>
-                <a href="register.php" class="btn btn-primary btn-block">Register</a>
+                <a href="/petstore/login"    class="btn btn-block">Login</a>
+                <a href="/petstore/register" class="btn btn-primary btn-block">Register</a>
             </div>
         <?php endif; ?>
     </div>
 </nav>
 
-<link rel="stylesheet" href="../assets/css/navigation.css">
-
 <script>
-// Mobile navigation functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggle = document.querySelector('.mobile-nav-toggle');
-    const mobileNav = document.querySelector('.mobile-nav');
-    const mobileClose = document.querySelector('.mobile-nav-close');
-    const submenuToggles = document.querySelectorAll('.has-submenu > a');
+(function () {
+    var toggle   = document.querySelector('.mobile-nav-toggle');
+    var nav      = document.getElementById('mobileNav');
+    var closeBtn = document.getElementById('mobileNavClose');
 
-    // Toggle mobile menu
-    if (mobileToggle) {
-        mobileToggle.addEventListener('click', function() {
-            mobileNav.classList.toggle('active');
-            document.body.classList.toggle('mobile-menu-open');
-        });
-    }
+    function open()  { nav.classList.add('active');    nav.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+    function close() { nav.classList.remove('active'); nav.setAttribute('aria-hidden','true');  document.body.style.overflow=''; }
 
-    // Close mobile menu
-    if (mobileClose) {
-        mobileClose.addEventListener('click', function() {
-            mobileNav.classList.remove('active');
-            document.body.classList.remove('mobile-menu-open');
-        });
-    }
-
-    // Toggle submenus
-    submenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const li = this.parentElement;
-            li.classList.toggle('active');
-            const submenu = li.querySelector('.submenu');
-            if (submenu) {
-                submenu.style.display = li.classList.contains('active') ? 'block' : 'none';
-            }
-        });
-    });
-
-    // Close menu when clicking outside
+    if (toggle)   toggle.addEventListener('click', open);
+    if (closeBtn) closeBtn.addEventListener('click', close);
     document.addEventListener('click', function(e) {
-        if (!mobileNav.contains(e.target) && !mobileToggle.contains(e.target)) {
-            mobileNav.classList.remove('active');
-            document.body.classList.remove('mobile-menu-open');
-        }
+        if (nav && nav.classList.contains('active') && !nav.contains(e.target) && e.target !== toggle) close();
     });
-});
+
+    document.querySelectorAll('.has-submenu > a').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var li = this.parentElement;
+            var sm = li.querySelector('.submenu');
+            var open = li.classList.contains('active');
+            li.parentElement.querySelectorAll('.has-submenu').forEach(function(s) {
+                s.classList.remove('active');
+                var m = s.querySelector('.submenu');
+                if (m) m.style.display = 'none';
+            });
+            if (!open) { li.classList.add('active'); if (sm) sm.style.display = 'block'; }
+        });
+    });
+}());
 </script>
