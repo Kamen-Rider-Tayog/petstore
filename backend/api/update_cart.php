@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once '../config/database.php';
+
+require_once __DIR__ . '/../includes/cart_functions.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -9,59 +10,55 @@ if (!$input) {
     exit;
 }
 
-$cart_id = $input['cart_id'] ?? 0;
+$cart_id = isset($input['cart_id']) ? (int)$input['cart_id'] : 0;
 $action = $input['action'] ?? '';
-$customer_id = $input['customer_id'] ?? 0;
+$newQuantity = isset($input['quantity']) ? (int)$input['quantity'] : null;
 
 if (!$cart_id || !$action) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }
 
+$response = ['success' => true];
+
 if ($action === 'remove') {
-    // Remove item from cart
-    $stmt = $conn->prepare("DELETE FROM cart WHERE id = ?");
-    $stmt->bind_param("i", $cart_id);
-    $stmt->execute();
+    $response = removeFromCart($cart_id);
 } else {
-    // Update quantity
-    $stmt = $conn->prepare("SELECT quantity FROM cart WHERE id = ?");
-    $stmt->bind_param("i", $cart_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $item = $result->fetch_assoc();
-    
-    if ($item) {
-        $new_quantity = $item['quantity'];
-        
-        if ($action === 'increase') {
-            $new_quantity++;
-        } elseif ($action === 'decrease' && $item['quantity'] > 1) {
-            $new_quantity--;
-        }
-        
-        if ($new_quantity != $item['quantity']) {
-            $update = $conn->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
-            $update->bind_param("ii", $new_quantity, $cart_id);
-            $update->execute();
-            $update->close();
+    // Determine desired quantity
+    $items = getCartItems();
+    $item = null;
+    foreach ($items as $row) {
+        if ($row['cart_id'] == $cart_id) {
+            $item = $row;
+            break;
         }
     }
+
+    if (!$item) {
+        echo json_encode(['success' => false, 'message' => 'Cart item not found']);
+        exit;
+    }
+
+    $quantity = $item['quantity'];
+    if ($action === 'increase') {
+        $quantity++;
+    } elseif ($action === 'decrease') {
+        $quantity = max(1, $quantity - 1);
+    } elseif ($newQuantity !== null) {
+        $quantity = max(1, $newQuantity);
+    }
+
+    $response = updateCartQuantity($cart_id, $quantity);
 }
 
-// Get updated cart info
-$count_stmt = $conn->prepare("SELECT SUM(quantity) as total FROM cart WHERE customer_id = ?");
-$count_stmt->bind_param("i", $customer_id);
-$count_stmt->execute();
-$count_result = $count_stmt->get_result();
-$count_row = $count_result->fetch_assoc();
+// Fetch updated cart totals
+$items = getCartItems();
+$cartTotal = 0;
+foreach ($items as $row) {
+    $cartTotal += $row['subtotal'];
+}
 
-echo json_encode([
-    'success' => true,
-    'cart_count' => $count_row['total'] ?? 0
-]);
+$response['cart_total'] = $cartTotal;
+$response['cart_count'] = getCartCount();
 
-$stmt->close();
-$count_stmt->close();
-$conn->close();
-?>
+echo json_encode($response);

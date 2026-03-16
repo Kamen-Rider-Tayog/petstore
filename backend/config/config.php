@@ -55,7 +55,7 @@ class Config
     private static function loadDefaults()
     {
         self::$config = [
-            'APP_NAME' => 'Pet Store',
+            'APP_NAME' => 'Ria Pet Store',
             'APP_ENV' => 'development',
             'APP_URL' => 'http://localhost/petstore',
             'APP_DEBUG' => true,
@@ -65,7 +65,9 @@ class Config
             'DB_NAME' => 'pet_store',
             'UPLOAD_MAX_SIZE' => 2097152,
             'UPLOAD_ALLOWED_TYPES' => 'image/jpeg,image/png,image/gif',
-            'UPLOAD_PATH' => '../assets/uploads/'
+            'UPLOAD_PATH' => '../assets/uploads/',
+            'PLACEHOLDER_IMAGE_SMALL' => 'https://via.placeholder.com/200x150?text=No+Image',
+            'PLACEHOLDER_IMAGE_LARGE' => 'https://via.placeholder.com/400x300?text=No+Image',
         ];
         
         foreach (self::$config as $key => $value) {
@@ -106,10 +108,20 @@ class Config
     }
     
     /**
-     * Get asset URL
+     * Get asset URL with automatic image fallback
      */
     public static function asset($path)
     {
+        if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $path)) {
+            $absolute_path = __DIR__ . '/../../assets/' . ltrim($path, '/');
+            if (!file_exists($absolute_path) || !is_file($absolute_path)) {
+                // Determine whether to use a specific or generic placeholder
+                if (strpos($path, 'team') !== false) {
+                    return self::baseUrl('assets/images/team-placeholder.jpg');
+                }
+                return self::get('PLACEHOLDER_IMAGE_LARGE', 'https://via.placeholder.com/400x300?text=No+Image');
+            }
+        }
         return self::baseUrl('assets/' . ltrim($path, '/'));
     }
     

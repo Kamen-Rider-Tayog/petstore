@@ -1,10 +1,102 @@
-RewriteEngine On
+ErrorDocument 404 /petstore/public/errors/404.php
 
-# Remove public from URL
+RewriteEngine On
+RewriteBase /petstore/
+
+# Don't rewrite real files or directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirect index.html to root
+RewriteRule ^index\.html$ / [R=301,L]
+
+# Remove /public/ from visible URLs (redirect external requests)
 RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,R=301]
 
-# Internally route to public folder
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ public/$1 [L]
+# Route requests to appropriate subdirectories in public folder
+# Map logical paths to physical subdirectory paths
+
+# Auth pages: login, register, logout
+RewriteCond %{REQUEST_URI} ^/(login|register|logout)/?$ [OR]
+RewriteCond %{REQUEST_URI} ^/(login|register|logout)_process/?$
+RewriteRule ^(?:login|register|logout)(?:_process)?/?$ public/auth/$0.php [L]
+
+# Shop pages: products, categories, search
+RewriteCond %{REQUEST_URI} ^/(products|product_details|categories|category_products|featured|on_sale|new_arrivals|search|search_results|advanced_search|services|service_details|supplier_products|low_stock|recently_viewed)/?$
+RewriteRule ^(.+)/?$ public/shop/$1.php [L]
+
+# User pages: profile, edit_profile
+RewriteCond %{REQUEST_URI} ^/(user_profile|edit_profile)/?$
+RewriteRule ^(.+)/?$ public/user/$1.php [L]
+
+# Cart pages
+RewriteCond %{REQUEST_URI} ^/(cart|checkout|place_order|cancel_order|order_confirmation)/?$
+RewriteRule ^(.+)/?$ public/cart/$1.php [L]
+
+# Pet pages
+RewriteCond %{REQUEST_URI} ^/(pets|pet_details|dogs|search_pets)/?$
+RewriteRule ^(.+)/?$ public/pets/$1.php [L]
+
+# Review pages  
+RewriteCond %{REQUEST_URI} ^/(product_reviews|write_review)/?$
+RewriteRule ^(.+)/?$ public/reviews/$1.php [L]
+
+# Appointment pages
+RewriteCond %{REQUEST_URI} ^/(appointments|book_appointment|cancel_appointment|reschedule_appointment|my_appointments)/?$
+RewriteRule ^(.+)/?$ public/appointments/$1.php [L]
+
+# Order/contact form pages
+RewriteCond %{REQUEST_URI} ^/(order_history|order_details|customer_order|contact|contact_process|newsletter_signup)/?$
+RewriteRule ^(.+)/?$ public/orders/$1.php [L]
+
+# Static pages
+RewriteCond %{REQUEST_URI} ^/(about|faq|privacy|terms|sitemap)/?$
+RewriteRule ^(.+)/?$ public/pages/$1.php [L]
+
+# Admin panel
+RewriteCond %{REQUEST_URI} ^/admin/(.+)/?$
+RewriteRule ^admin/(.+)/?$ admin/$1.php [L]
+
+RewriteRule ^admin/?$ admin/pages/dashboard.php [L]
+
+# Root/home page
+RewriteRule ^/?$ public/pages/index.php [L]
+
+# Disable directory listing
+Options -Indexes
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /petstore/(.*)\.php\ HTTP/
+RewriteRule ^(.*)\.php$ /$1 [R=301,L]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Prevent access to sensitive files
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Prevent access to config files
+<FilesMatch "config\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>

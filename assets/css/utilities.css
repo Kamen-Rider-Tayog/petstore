@@ -1,0 +1,140 @@
+/* MODULE: UTILITIES */
+/* ===== PRINT STYLES ===== */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  .btn,
+  .mobile-nav-toggle,
+  .mini-cart,
+  .notification-container {
+    display: none !important;
+  }
+
+  .hero {
+    background: white !important;
+    color: black !important;
+  }
+
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles */
+.btn:focus,
+.form-control:focus,
+a:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .btn {
+    border: 2px solid;
+  }
+
+  .card {
+    border: 2px solid #333;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.items-center { align-items: center; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+.nav-cart:hover .mini-cart,
+.nav-cart:focus-within .mini-cart {
+  display: block;
+}
+
+.mini-cart-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.mini-cart-items {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.mini-cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mini-cart-more {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.mini-cart-total {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 20px 0;
+  background: #2c3e50;
+  color: white;
+  margin-top: 40px;
+}
+
+main.container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}

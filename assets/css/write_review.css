@@ -1,0 +1,62 @@
+.product-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.product-info h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.review-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.rating-input {
+    display: flex;
+    gap: 5px;
+}
+
+.rating-input input[type="radio"] {
+    display: none;
+}
+
+.star {
+    font-size: 2em;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rating-input input[type="radio"]:checked ~ .star,
+.star:hover,
+.star:hover ~ .star {
+    color: #ffc107;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #007bff;
+}

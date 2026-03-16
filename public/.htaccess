@@ -1,10 +1,14 @@
 RewriteEngine On
+RewriteBase /petstore/public/
 
-# Remove .php extension from URLs
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^(.*)$ $1.php [L]
+# Don't rewrite if it's a real file or directory
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-# Directory listing off
+# Remove .php extension from direct requests
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.+)$ $1\.php [L]
+
+# Disable directory listing
 Options -Indexes

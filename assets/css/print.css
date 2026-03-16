@@ -1,0 +1,380 @@
+/* ===========================================
+   RIA PET STORE - PRINT STYLESHEET
+   =========================================== */
+
+/* ===== BASE PRINT STYLES ===== */
+@media print {
+  /* Hide elements not needed for printing */
+  .main-nav,
+  .mobile-nav,
+  .nav-actions,
+  .mobile-nav-toggle,
+  .back-to-top,
+  .loading-spinner,
+  .notification,
+  .modal-overlay,
+  .cart,
+  .search-form,
+  footer .social-links,
+  footer .newsletter,
+  .btn,
+  .hero-buttons,
+  .product-actions,
+  .appointment-actions,
+  .admin-sidebar,
+  .admin-header .btn,
+  .tab-navigation,
+  .pagination {
+    display: none !important;
+  }
+
+  /* Reset body for print */
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+    background: #fff !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Container adjustments */
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Typography adjustments */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  h1 {
+    font-size: 24pt;
+  }
+  h2 {
+    font-size: 18pt;
+  }
+  h3 {
+    font-size: 14pt;
+  }
+  h4 {
+    font-size: 12pt;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Links */
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    color: #666;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20pt;
+    page-break-inside: avoid;
+  }
+
+  th,
+  td {
+    border: 1pt solid #000;
+    padding: 8pt;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+  }
+
+  /* Forms - hide inputs, show values */
+  input,
+  textarea,
+  select {
+    border: none !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    display: none;
+  }
+
+  input[type="checkbox"]:checked:before,
+  input[type="radio"]:checked:before {
+    content: "✓";
+    display: inline-block;
+    margin-right: 5pt;
+  }
+
+  /* Cards and sections */
+  .pet-card,
+  .product-card,
+  .service-card,
+  .testimonial-card,
+  .appointment-card {
+    border: 1pt solid #ccc !important;
+    margin-bottom: 15pt;
+    page-break-inside: avoid;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  /* Hero section */
+  .hero {
+    background: #fff !important;
+    color: #000 !important;
+    padding: 20pt 0 !important;
+    text-align: center;
+  }
+
+  .hero-content h1 {
+    font-size: 20pt;
+    margin-bottom: 10pt;
+  }
+
+  /* Featured sections */
+  .featured-section {
+    page-break-before: always;
+    margin-bottom: 20pt;
+  }
+
+  .featured-section h2 {
+    border-bottom: 2pt solid #000;
+    padding-bottom: 5pt;
+    margin-bottom: 15pt;
+  }
+
+  /* Grid layouts - convert to blocks */
+  .pets-grid,
+  .products-grid,
+  .services-grid,
+  .testimonials-grid {
+    display: block !important;
+  }
+
+  .pet-card,
+  .product-card,
+  .service-card,
+  .testimonial-card {
+    display: block !important;
+    margin-bottom: 15pt;
+    page-break-inside: avoid;
+  }
+
+  /* Badges */
+  .badge {
+    border: 1pt solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    padding: 2pt 5pt !important;
+    font-size: 10pt;
+  }
+
+  /* Price styling */
+  .price,
+  .product-price {
+    font-weight: bold;
+    font-size: 12pt;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #666;
+  }
+
+  .sale-price {
+    color: #000;
+  }
+
+  /* Ratings */
+  .rating {
+    font-size: 12pt;
+  }
+
+  /* Footer */
+  .main-footer {
+    background: #fff !important;
+    color: #000 !important;
+    border-top: 2pt solid #000;
+    margin-top: 30pt;
+    padding-top: 15pt;
+  }
+
+  .footer-content {
+    display: block !important;
+  }
+
+  .footer-section {
+    margin-bottom: 20pt;
+  }
+
+  .footer-section h3 {
+    border-bottom: 1pt solid #000;
+    padding-bottom: 3pt;
+    margin-bottom: 8pt;
+  }
+
+  .footer-bottom {
+    border-top: 1pt solid #000;
+    margin-top: 15pt;
+    padding-top: 10pt;
+    text-align: center;
+  }
+
+  /* Admin pages */
+  .admin-container {
+    display: block !important;
+  }
+
+  .admin-main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .admin-table {
+    font-size: 10pt;
+  }
+
+  /* Orders */
+  .order-details {
+    page-break-inside: avoid;
+  }
+
+  .order-summary {
+    border: 1pt solid #000;
+    padding: 10pt;
+    margin-bottom: 15pt;
+  }
+
+  /* Appointments */
+  .appointment-details {
+    page-break-inside: avoid;
+  }
+
+  /* Reports */
+  .report-section {
+    page-break-before: always;
+    margin-bottom: 20pt;
+  }
+
+  .report-section h3 {
+    border-bottom: 1pt solid #000;
+    padding-bottom: 5pt;
+  }
+
+  /* Charts - hide for print */
+  .chart-container {
+    display: none !important;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .no-page-break {
+    page-break-inside: avoid;
+  }
+
+  /* Hide decorative elements */
+  .icon,
+  .social-link,
+  .back-to-top,
+  .mobile-nav-toggle {
+    display: none !important;
+  }
+
+  /* Ensure sufficient contrast */
+  .text-muted,
+  .text-secondary {
+    color: #333 !important;
+  }
+
+  /* Print-specific utilities */
+  .print-only {
+    display: block !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+
+  /* Headers and footers for pages */
+  @page :first {
+    @top-center {
+      content: "Ria Pet Store - " string(title);
+    }
+    @bottom-center {
+      content: "Page " counter(page) " of " counter(pages);
+    }
+  }
+
+  @page {
+    @top-right {
+      content: "Ria Pet Store";
+    }
+    @bottom-center {
+      content: "Page " counter(page) " of " counter(pages);
+    }
+    @bottom-right {
+      content: string(date);
+    }
+  }
+}
+
+/* ===== PRINT PREVIEW STYLES ===== */
+/* These styles apply when viewing print preview in browser */
+@media screen and (max-width: 0) {
+  /* Hide print-only elements on screen */
+  .print-only {
+    display: none;
+  }
+}
+
+/* ===== HIGH CONTRAST PRINT ===== */
+@media print and (prefers-contrast: high) {
+  * {
+    border-color: #000 !important;
+  }
+
+  .btn,
+  .badge {
+    border: 2pt solid #000 !important;
+  }
+}
