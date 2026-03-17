@@ -31,6 +31,8 @@ define('ASSET_VERSION', '2.1');
     <link rel="stylesheet" href="<?php echo asset('css/navigation.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
     <link rel="stylesheet" href="<?php echo asset('css/footer.css');     ?>?v=<?php echo ASSET_VERSION; ?>">
     <link rel="stylesheet" href="<?php echo asset('css/animations.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/icons.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/btn.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
     <link rel="stylesheet" href="<?php echo asset('css/print.css');      ?>" media="print">
 
     <?php if (!empty($page_styles)): ?>

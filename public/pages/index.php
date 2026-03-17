@@ -58,17 +58,6 @@ if ($reviews === null) {
     Cache::put('home_reviews', $reviews, 3600);
 }
 
-// ── Stats ──────────────────────────────────────────────────
-$stats = Cache::get('home_stats');
-if ($stats === null) {
-    $stats = [
-        'pets'     => $conn->query("SELECT COUNT(*) FROM pets WHERE pet_status = 'available'")->fetch_row()[0],
-        'products' => $conn->query("SELECT COUNT(*) FROM products")->fetch_row()[0],
-        'services' => $conn->query("SELECT COUNT(*) FROM services")->fetch_row()[0],
-    ];
-    Cache::put('home_stats', $stats, 3600);
-}
-
 // Inject index.css into the page now that header has already output <head>
 // We do this via inline style injection since header already closed <head>
 echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VERSION . '">';
@@ -80,29 +69,13 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <h1>Find Your Perfect Pet Companion</h1>
         <p>Quality pets, premium supplies, and professional care — all in one place.</p>
         <div class="hero-buttons">
-            <a href="/Ria-Pet-Store/pets"     class="btn btn-primary">Browse Pets</a>
-            <a href="/Ria-Pet-Store/products" class="btn btn-outline-white">Shop Products</a>
+            <a href="<?php echo url('pets'); ?>" class="btn btn-primary">
+                <?php echo icon('paw', 18); ?> Browse Pets
+            </a>
+            <a href="<?php echo url('products'); ?>" class="btn btn-outline-white">
+                <?php echo icon('package', 18); ?> Shop Products
+            </a>
         </div>
-    </div>
-</section>
-
-<!-- STATS BAR -->
-<section class="stats-bar">
-    <div class="stat-item">
-        <span class="stat-number"><?php echo $stats['pets']; ?>+</span>
-        <span class="stat-label">Pets Available</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number"><?php echo $stats['products']; ?>+</span>
-        <span class="stat-label">Products</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number"><?php echo $stats['services']; ?></span>
-        <span class="stat-label">Services</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number">10+</span>
-        <span class="stat-label">Years of Care</span>
     </div>
 </section>
 
@@ -128,15 +101,17 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
                     <p class="pet-price"><?php echo CURRENCY_SYMBOL . number_format($pet['price'], 2); ?></p>
                 </div>
                 <div class="pet-card-footer">
-                    <a href="/Ria-Pet-Store/pet_details?id=<?php echo (int)$pet['id']; ?>" class="btn btn-primary btn-small">
-                        Meet <?php echo e($pet['name']); ?>
+                    <a href="<?php echo url('pet_details?id=' . (int)$pet['id']); ?>" class="btn btn-primary btn-small">
+                        Meet <?php echo e($pet['name']); ?> <?php echo icon('arrow-right', 14); ?>
                     </a>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/Ria-Pet-Store/pets" class="btn btn-outline">View All Pets</a>
+        <a href="<?php echo url('pets'); ?>" class="btn btn-outline">
+            View All Pets <?php echo icon('arrow-right', 16); ?>
+        </a>
     </div>
 </section>
 <?php endif; ?>
@@ -152,13 +127,9 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <?php foreach ($featured_products as $product): ?>
             <div class="product-card">
                 <div class="product-info">
-                    <?php if ($product['on_sale']): ?>
-                        <span class="badge sale">Sale</span>
-                    <?php elseif ($product['featured']): ?>
-                        <span class="badge featured">Featured</span>
-                    <?php endif; ?>
+                    <!-- Badges removed -->
                     <h3>
-                        <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>">
+                        <a href="<?php echo url('product_details?id=' . (int)$product['id']); ?>">
                             <?php echo e($product['product_name']); ?>
                         </a>
                     </h3>
@@ -173,14 +144,20 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
                     </div>
                 </div>
                 <div class="product-actions">
-                    <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>" class="btn btn-outline btn-small">View</a>
-                    <button data-add-to-cart="<?php echo (int)$product['id']; ?>" class="btn btn-primary btn-small">Add to Cart</button>
+                    <a href="<?php echo url('product_details?id=' . (int)$product['id']); ?>" class="btn btn-outline btn-small">
+                        <?php echo icon('eye', 14); ?> View
+                    </a>
+                    <button data-add-to-cart="<?php echo (int)$product['id']; ?>" class="btn btn-primary btn-small">
+                        <?php echo icon('cart', 14); ?> Add
+                    </button>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/Ria-Pet-Store/products" class="btn btn-outline">View All Products</a>
+        <a href="<?php echo url('products'); ?>" class="btn btn-outline">
+            View All Products <?php echo icon('arrow-right', 16); ?>
+        </a>
     </div>
 </section>
 <?php endif; ?>
@@ -203,12 +180,16 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
                         <span class="service-duration"><?php echo (int)$svc['duration_minutes']; ?> min</span>
                     </div>
                 </div>
-                <a href="/Ria-Pet-Store/book_appointment" class="btn btn-outline btn-small">Book Now</a>
+                <a href="<?php echo url('book_appointment'); ?>" class="btn btn-outline btn-small">
+                    <?php echo icon('calendar', 14); ?> Book Now
+                </a>
             </div>
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/Ria-Pet-Store/services" class="btn btn-outline">All Services</a>
+        <a href="<?php echo url('services'); ?>" class="btn btn-outline">
+            All Services <?php echo icon('arrow-right', 16); ?>
+        </a>
     </div>
 </section>
 <?php endif; ?>
@@ -224,9 +205,7 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <?php foreach ($reviews as $review): ?>
             <div class="review-card">
                 <div class="review-stars">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <span class="star <?php echo $i <= (int)$review['rating'] ? 'filled' : ''; ?>">&#9733;</span>
-                    <?php endfor; ?>
+                    <?php echo star_rating($review['rating'], 16); ?>
                 </div>
                 <p class="review-text">"<?php echo e($review['review_text']); ?>"</p>
                 <div class="review-meta">
@@ -245,8 +224,12 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <h2>About Ria Pet Store</h2>
         <p>We've been caring for pets and their owners since 2010. From finding the perfect companion to keeping them healthy and happy, we're here every step of the way.</p>
         <div class="cta-actions">
-            <a href="/Ria-Pet-Store/pets"     class="btn btn-primary">Adopt a Pet</a>
-            <a href="/Ria-Pet-Store/services" class="btn btn-outline">Our Services</a>
+            <a href="<?php echo url('pets'); ?>" class="btn btn-primary">
+                <?php echo icon('paw', 18); ?> Adopt a Pet
+            </a>
+            <a href="<?php echo url('services'); ?>" class="btn btn-outline">
+                <?php echo icon('heart', 18); ?> Our Services
+            </a>
         </div>
     </div>
 </section>

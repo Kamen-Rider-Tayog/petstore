@@ -1,4 +1,5 @@
 <?php
+// Cart count
 $cart_count = 0;
 if (isset($_SESSION['customer_id'])) {
     $stmt = $conn->prepare("SELECT COALESCE(SUM(quantity), 0) AS total FROM cart WHERE customer_id = ?");
@@ -8,154 +9,139 @@ if (isset($_SESSION['customer_id'])) {
     $stmt->close();
 }
 
-$cache_key  = 'categories_menu';
-$categories = Cache::get($cache_key);
-if ($categories === null) {
-    $result      = $conn->query("SELECT id, parent_id, category_name FROM categories ORDER BY parent_id ASC, category_name ASC");
-    $parent_cats = [];
-    $child_cats  = [];
-    while ($cat = $result->fetch_assoc()) {
-        if (is_null($cat['parent_id'])) { $cat['children'] = []; $parent_cats[$cat['id']] = $cat; }
-        else { $child_cats[$cat['parent_id']][] = $cat; }
-    }
-    foreach ($child_cats as $pid => $children) {
-        if (isset($parent_cats[$pid])) $parent_cats[$pid]['children'] = $children;
-    }
-    $categories = array_values($parent_cats);
-    Cache::put($cache_key, $categories, 3600);
+// Time-based greeting
+$hour = (int) date('G');
+if ($hour < 12) {
+    $greeting = 'Good Morning';
+    $icon = 'sun';
+} elseif ($hour < 18) {
+    $greeting = 'Good Afternoon';
+    $icon = 'sunset';
+} else {
+    $greeting = 'Good Evening';
+    $icon = 'moon';
 }
+
+$greeting_text = isset($_SESSION['customer_name'])
+    ? $greeting . ', ' . e($_SESSION['customer_name'])
+    : $greeting;
 ?>
 
 <nav class="main-nav">
-    <div class="nav-container">
 
-        <!-- Logo -->
+    <!-- ── TOP ROW ── -->
+    <div class="nav-top">
+
+        <!-- Left: greeting -->
+        <div class="nav-greeting">
+            <?php echo icon($icon, 16, '', true); ?>
+            <span><?php echo $greeting_text; ?></span>
+        </div>
+
+        <!-- Center: logo (absolute) -->
         <div class="nav-logo">
-            <a href="/Ria-Pet-Store/">
+            <a href="<?php echo url(''); ?>">
                 <span class="logo-text"><?php echo APP_NAME; ?></span>
             </a>
         </div>
 
-        <!-- Centered links -->
-        <div class="nav-menu">
-            <ul class="nav-list">
+        <!-- Right: search, cart, user/login, mobile toggle -->
+        <div class="nav-top-actions">
 
-                <!-- Products — click dropdown -->
-                <li class="nav-item nav-has-dropdown" id="navProducts">
-                    <button class="nav-link nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
-                        Products
-                        <svg class="nav-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="nav-dropdown" role="menu">
-                        <div class="nav-dropdown-inner">
-                            <div class="nav-dropdown-col">
-                                <p class="nav-dropdown-heading">Accessories</p>
-                                <ul>
-                                    <li><a href="/Ria-Pet-Store/products?category=Accessories">All Accessories</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Beds">Beds</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Collars">Collars</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Leashes">Leashes</a></li>
-                                </ul>
-                            </div>
-                            <div class="nav-dropdown-col">
-                                <p class="nav-dropdown-heading">Food</p>
-                                <ul>
-                                    <li><a href="/Ria-Pet-Store/products?category=Food">All Food</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Bird+Food">Bird Food</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Cat+Food">Cat Food</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Dog+Food">Dog Food</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Fish+Food">Fish Food</a></li>
-                                </ul>
-                            </div>
-                            <div class="nav-dropdown-col">
-                                <p class="nav-dropdown-heading">Health</p>
-                                <ul>
-                                    <li><a href="/Ria-Pet-Store/products?category=Health">All Health</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Medications">Medications</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Supplements">Supplements</a></li>
-                                </ul>
-                            </div>
-                            <div class="nav-dropdown-col">
-                                <p class="nav-dropdown-heading">Housing</p>
-                                <ul>
-                                    <li><a href="/Ria-Pet-Store/products?category=Housing">All Housing</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Bowls">Bowls</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Cages">Cages</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Tanks">Tanks</a></li>
-                                </ul>
-                            </div>
-                            <div class="nav-dropdown-col">
-                                <p class="nav-dropdown-heading">Toys</p>
-                                <ul>
-                                    <li><a href="/Ria-Pet-Store/products?category=Toys">All Toys</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Chew+Toys">Chew Toys</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Interactive+Toys">Interactive Toys</a></li>
-                                    <li><a href="/Ria-Pet-Store/products?category=Plush+Toys">Plush Toys</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="nav-item"><a href="/Ria-Pet-Store/pets"     class="nav-link">Pets</a></li>
-                <li class="nav-item"><a href="/Ria-Pet-Store/services" class="nav-link">Services</a></li>
-            </ul>
-        </div>
-
-        <!-- Right actions -->
-        <div class="nav-actions">
-            <a href="/Ria-Pet-Store/search" class="nav-icon-btn" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <!-- Search -->
+            <a href="<?php echo url('search'); ?>" class="nav-icon-btn" aria-label="Search">
+                <?php echo icon('search', 20); ?>
             </a>
 
+            <!-- Cart with count -->
+            <a href="<?php echo url('cart'); ?>" class="nav-icon-btn" aria-label="Cart">
+                <?php echo icon('cart', 20); ?>
+                <?php if ($cart_count > 0): ?>
+                    <span class="cart-count-badge"><?php echo $cart_count; ?></span>
+                <?php endif; ?>
+            </a>
+
+            <!-- User / Login -->
             <?php if (isset($_SESSION['customer_id'])): ?>
-                <a href="/Ria-Pet-Store/user_profile" class="nav-icon-btn" aria-label="My Account">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                <a href="<?php echo url('user_profile'); ?>" class="nav-icon-btn" aria-label="My Profile">
+                    <?php echo icon('user', 20); ?>
                 </a>
             <?php else: ?>
-                <a href="/Ria-Pet-Store/login" class="nav-icon-btn" aria-label="Login">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                <a href="<?php echo url('login'); ?>" class="nav-icon-btn" aria-label="Login">
+                    <?php echo icon('user', 20); ?>
                 </a>
             <?php endif; ?>
 
-            <button class="mobile-nav-toggle" aria-label="Toggle menu">&#9776;</button>
+            <!-- Mobile hamburger -->
+            <button class="mobile-nav-toggle" aria-label="Toggle menu">
+                <?php echo icon('menu', 22); ?>
+            </button>
         </div>
     </div>
 
-    <!-- Mobile Nav -->
+    <!-- ── BOTTOM ROW: plain nav links ── -->
+    <div class="nav-bottom">
+        <ul class="nav-list">
+            <li><a href="<?php echo url('products'); ?>" class="nav-link">Products</a></li>
+            <li><a href="<?php echo url('pets'); ?>" class="nav-link">Pets</a></li>
+            <li><a href="<?php echo url('services'); ?>" class="nav-link">Services</a></li>
+            <li><a href="<?php echo url('appointments'); ?>" class="nav-link">Appointments</a></li>
+        </ul>
+    </div>
+
+    <!-- ── Mobile panel ── -->
     <div class="mobile-nav" id="mobileNav" aria-hidden="true">
         <div class="mobile-nav-header">
-            <span class="mobile-nav-title">Menu</span>
-            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close">&#10005;</button>
+            <span class="mobile-nav-title"><?php echo APP_NAME; ?></span>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close">
+                <?php echo icon('close', 20); ?>
+            </button>
+        </div>
+        <div class="mobile-greeting">
+            <?php echo icon($icon, 16, '', true); ?>
+            <span><?php echo $greeting_text; ?></span>
         </div>
         <ul class="mobile-nav-list">
-            <li><a href="/Ria-Pet-Store/products">Products</a></li>
-            <li><a href="/Ria-Pet-Store/pets">Pets</a></li>
-            <li><a href="/Ria-Pet-Store/services">Services</a></li>
-            <li><a href="/Ria-Pet-Store/search">Search</a></li>
+            <li><a href="<?php echo url('products'); ?>"><?php echo icon('package', 18); ?> Products</a></li>
+            <li><a href="<?php echo url('pets'); ?>"><?php echo icon('paw', 18); ?> Pets</a></li>
+            <li><a href="<?php echo url('services'); ?>"><?php echo icon('heart', 18); ?> Services</a></li>
+            <li><a href="<?php echo url('appointments'); ?>"><?php echo icon('calendar', 18); ?> Appointments</a></li>
+            <li><a href="<?php echo url('search'); ?>"><?php echo icon('search', 18); ?> Search</a></li>
+            <li><a href="<?php echo url('categories'); ?>"><?php echo icon('tag', 18); ?> Categories</a></li>
+            <li><a href="<?php echo url('featured'); ?>"><?php echo icon('star', 18); ?> Featured</a></li>
+            <li><a href="<?php echo url('on_sale'); ?>"><?php echo icon('tag', 18); ?> On Sale</a></li>
         </ul>
+        
         <?php if (isset($_SESSION['customer_id'])): ?>
             <div class="mobile-nav-user">
-                <div class="user-info"><?php echo e($_SESSION['customer_name'] ?? 'Account'); ?></div>
+                <div class="mobile-nav-user-header">
+                    <?php echo icon('user', 20); ?>
+                    <span><?php echo e($_SESSION['customer_name']); ?></span>
+                </div>
                 <ul class="mobile-nav-user-menu">
-                    <li><a href="/Ria-Pet-Store/user_profile">My Profile</a></li>
-                    <li><a href="/Ria-Pet-Store/order_history">Order History</a></li>
-                    <li><a href="/Ria-Pet-Store/my_appointments">My Appointments</a></li>
-                    <li><a href="/Ria-Pet-Store/logout">Logout</a></li>
+                    <li><a href="<?php echo url('user_profile'); ?>"><?php echo icon('user', 16); ?> My Profile</a></li>
+                    <li><a href="<?php echo url('order_history'); ?>"><?php echo icon('package', 16); ?> Order History</a></li>
+                    <li><a href="<?php echo url('my_appointments'); ?>"><?php echo icon('calendar', 16); ?> My Appointments</a></li>
+                    <li><a href="<?php echo url('recently_viewed'); ?>"><?php echo icon('eye', 16); ?> Recently Viewed</a></li>
+                    <li><a href="<?php echo url('logout'); ?>"><?php echo icon('x', 16); ?> Logout</a></li>
                 </ul>
             </div>
         <?php else: ?>
             <div class="mobile-nav-auth">
-                <a href="/Ria-Pet-Store/login"    class="btn btn-block">Login</a>
-                <a href="/Ria-Pet-Store/register" class="btn btn-primary btn-block">Register</a>
+                <a href="<?php echo url('login'); ?>" class="btn btn-secondary btn-block">
+                    <?php echo icon('user', 16); ?> Login
+                </a>
+                <a href="<?php echo url('register'); ?>" class="btn btn-primary btn-block">
+                    <?php echo icon('user', 16); ?> Register
+                </a>
             </div>
         <?php endif; ?>
     </div>
+
 </nav>
 
 <script>
 (function () {
-    /* ── Mobile nav ── */
     var toggle   = document.querySelector('.mobile-nav-toggle');
     var nav      = document.getElementById('mobileNav');
     var closeBtn = document.getElementById('mobileNavClose');
@@ -165,36 +151,6 @@ if ($categories === null) {
 
     if (toggle)   toggle.addEventListener('click', openNav);
     if (closeBtn) closeBtn.addEventListener('click', closeNav);
-
-    /* ── Products click dropdown ── */
-    var productsItem = document.getElementById('navProducts');
-    if (productsItem) {
-        var btn      = productsItem.querySelector('.nav-dropdown-btn');
-        var dropdown = productsItem.querySelector('.nav-dropdown');
-
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var isOpen = productsItem.classList.contains('open');
-            closeAllDropdowns();
-            if (!isOpen) {
-                productsItem.classList.add('open');
-                btn.setAttribute('aria-expanded', 'true');
-            }
-        });
-    }
-
-    function closeAllDropdowns() {
-        document.querySelectorAll('.nav-has-dropdown').forEach(function (el) {
-            el.classList.remove('open');
-            var b = el.querySelector('[aria-expanded]');
-            if (b) b.setAttribute('aria-expanded', 'false');
-        });
-    }
-
-    /* Close on outside click */
-    document.addEventListener('click', function () { closeAllDropdowns(); });
-
-    /* Close mobile on outside click */
     document.addEventListener('click', function (e) {
         if (nav && nav.classList.contains('active') && !nav.contains(e.target) && e.target !== toggle) closeNav();
     });

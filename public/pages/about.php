@@ -116,7 +116,7 @@ $page_title = "About Us - " . APP_NAME;
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="css/about.css">
+<link rel="stylesheet" href="<?php echo asset('css/about.css'); ?>">
 
 <div class="about-page">
     <!-- Hero Section -->
@@ -160,22 +160,22 @@ include '../../backend/includes/header.php';
                 </p>
                 <div class="mission-values">
                     <div class="value-item">
-                        <div class="value-icon">❤️</div>
+                        <div class="value-icon"><?php echo icon('heart', 32); ?></div>
                         <h3>Compassion</h3>
                         <p>We treat every pet with the love and care they deserve.</p>
                     </div>
                     <div class="value-item">
-                        <div class="value-icon">⭐</div>
+                        <div class="value-icon"><?php echo icon('star', 32); ?></div>
                         <h3>Quality</h3>
                         <p>We only offer products that meet our high standards of excellence.</p>
                     </div>
                     <div class="value-item">
-                        <div class="value-icon">🤝</div>
+                        <div class="value-icon"><?php echo icon('user', 32); ?></div>
                         <h3>Trust</h3>
                         <p>Building lasting relationships with our customers is our top priority.</p>
                     </div>
                     <div class="value-item">
-                        <div class="value-icon">🌱</div>
+                        <div class="value-icon"><?php echo icon('sun', 32); ?></div>
                         <h3>Sustainability</h3>
                         <p>We're committed to environmentally friendly practices and products.</p>
                     </div>
@@ -281,9 +281,9 @@ include '../../backend/includes/header.php';
                     <?php foreach ($team_members as $member): ?>
                     <div class="team-member">
                         <div class="member-image">
-                            <img src="<?php echo Config::asset('images/' . htmlspecialchars($member['image'] ?? 'team-placeholder.jpg')); ?>"
+                            <img src="<?php echo asset('images/' . htmlspecialchars($member['image'] ?? 'team-placeholder.jpg')); ?>"
                                  alt="<?php echo htmlspecialchars($member['name']); ?>"
-                                 onerror="this.onerror=null; this.src='<?php echo Config::asset('images/team-placeholder.jpg'); ?>'">
+                                 onerror="this.onerror=null; this.src='<?php echo asset('images/team-placeholder.jpg'); ?>'">
                         </div>
                         <div class="member-info">
                             <h3><?php echo htmlspecialchars($member['name']); ?></h3>
@@ -291,7 +291,7 @@ include '../../backend/includes/header.php';
                             <p class="member-bio"><?php echo htmlspecialchars($member['bio']); ?></p>
                             <?php if (isset($member['email'])): ?>
                             <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="member-email">
-                                <?php echo htmlspecialchars($member['email']); ?>
+                                <?php echo icon('mail', 14); ?> <?php echo htmlspecialchars($member['email']); ?>
                             </a>
                             <?php endif; ?>
                         </div>
@@ -309,7 +309,7 @@ include '../../backend/includes/header.php';
                 <h2>Why Choose <?php echo APP_NAME; ?>?</h2>
                 <div class="reasons-grid">
                     <div class="reason-item">
-                        <div class="reason-icon">🏆</div>
+                        <div class="reason-icon"><?php echo icon('user', 32); ?></div>
                         <h3>Expert Knowledge</h3>
                         <p>
                             Our team includes certified veterinarians and pet care specialists
@@ -318,7 +318,7 @@ include '../../backend/includes/header.php';
                     </div>
 
                     <div class="reason-item">
-                        <div class="reason-icon">📦</div>
+                        <div class="reason-icon"><?php echo icon('package', 32); ?></div>
                         <h3>Quality Products</h3>
                         <p>
                             We carefully select only the highest quality products from trusted
@@ -327,7 +327,7 @@ include '../../backend/includes/header.php';
                     </div>
 
                     <div class="reason-item">
-                        <div class="reason-icon">🚚</div>
+                        <div class="reason-icon"><?php echo icon('truck', 32); ?></div>
                         <h3>Fast Delivery</h3>
                         <p>
                             Enjoy fast, reliable shipping on all orders. Most items ship within
@@ -336,7 +336,7 @@ include '../../backend/includes/header.php';
                     </div>
 
                     <div class="reason-item">
-                        <div class="reason-icon">💬</div>
+                        <div class="reason-icon"><?php echo icon('message', 32); ?></div>
                         <h3>24/7 Support</h3>
                         <p>
                             Our customer service team is available around the clock to answer
@@ -345,7 +345,7 @@ include '../../backend/includes/header.php';
                     </div>
 
                     <div class="reason-item">
-                        <div class="reason-icon">🏠</div>
+                        <div class="reason-icon"><?php echo icon('marker', 32); ?></div>
                         <h3>Local Store</h3>
                         <p>
                             Visit our physical store for personalized service, grooming appointments,
@@ -354,7 +354,7 @@ include '../../backend/includes/header.php';
                     </div>
 
                     <div class="reason-item">
-                        <div class="reason-icon">🌟</div>
+                        <div class="reason-icon"><?php echo icon('heart', 32); ?></div>
                         <h3>Community Focus</h3>
                         <p>
                             We're proud to support local animal shelters and community events,
@@ -373,8 +373,12 @@ include '../../backend/includes/header.php';
                 <h2>Ready to Give Your Pet the Best?</h2>
                 <p>Join thousands of happy pet owners who trust <?php echo APP_NAME; ?> for their pet care needs.</p>
                 <div class="cta-buttons">
-                    <a href="pets.php" class="btn btn-primary">Shop Now</a>
-                    <a href="contact.php" class="btn btn-secondary">Contact Us</a>
+                    <a href="<?php echo url('pets'); ?>" class="btn btn-primary">
+                        <?php echo icon('paw', 18); ?> Shop Now
+                    </a>
+                    <a href="<?php echo url('contact'); ?>" class="btn btn-secondary">
+                        <?php echo icon('message', 18); ?> Contact Us
+                    </a>
                 </div>
             </div>
         </div>
