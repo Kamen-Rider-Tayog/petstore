@@ -59,10 +59,9 @@ if (!$appointment) {
 }
 
 require_once '../../backend/includes/header.php';
-<link rel="stylesheet" href="../../assets/css/reschedule_appointment.css">
-
 ?>
 
+<link rel="stylesheet" href="../../assets/css/reschedule_appointment.css">
 <main>
     <h2>Reschedule Appointment</h2>
 

@@ -7,7 +7,7 @@
 /* TOP ROW */
 .nav-top {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0.75rem 5vw; position: relative; border-bottom: 0.0625rem solid var(--nav-border);
+  padding: 0.75rem 5vw; position: relative;
 }
 
 /* Greeting */
@@ -53,7 +53,7 @@
 }
 
 /* BOTTOM ROW */
-.nav-bottom { background: var(--nav-bottom-bg); display: flex; justify-content: center; }
+.nav-bottom { background: var(--nav--bg); display: flex; justify-content: center; }
 
 .nav-list { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
 .nav-list li { position: relative; }

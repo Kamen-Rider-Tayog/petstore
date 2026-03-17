@@ -1,129 +1,55 @@
-/* Terms of Service Styles */
-        .terms-hero {
-            background: #667eea;
-            color: white;
-            padding: 3rem 0;
-            text-align: center;
-        }
+/* ===== TERMS OF SERVICE PAGE STYLES ===== */
 
-        .terms-hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
+/* Content Section */
+.terms-content { padding: 4rem 0; background: var(--bg-secondary); }
+.terms-container {
+  max-width: 900px; margin: 0 auto;
+  background: var(--card-bg); border-radius: 1rem;
+  box-shadow: var(--card-shadow); border: 1px solid var(--card-border); overflow: hidden;
+}
 
-        .terms-content {
-            padding: 4rem 0;
-            background: #f8f9fa;
-        }
+.terms-header {
+  background: linear-gradient(135deg, var(--accent-500), var(--accent-600));
+  color: white; padding: 2rem; text-align: center;
+}
+.terms-header h1 { margin: 0; font-size: 2rem; }
+.last-updated { font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem; }
 
-        .terms-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+.terms-body { padding: 3rem; }
+.terms-section { margin-bottom: 2.5rem; }
 
-        .terms-header {
-            background: #667eea;
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
+.terms-section h2 {
+  color: var(--text-primary); font-size: 1.5rem; margin-bottom: 1rem;
+  padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-500);
+}
+.terms-section h3 {
+  color: var(--text-primary); font-size: 1.2rem; margin: 1.5rem 0 0.5rem 0;
+}
+.terms-section p {
+  line-height: 1.7; color: var(--text-secondary); margin-bottom: 1rem;
+}
+.terms-section ul { margin: 1rem 0; padding-left: 2rem; }
+.terms-section li {
+  margin-bottom: 0.5rem; line-height: 1.6; color: var(--text-secondary);
+}
 
-        .terms-header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
+.important-note {
+  background: var(--accent-50); border-left: 4px solid var(--accent-500);
+  padding: 1.5rem; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0;
+}
+.important-note h4 {
+  color: var(--accent-700); margin-bottom: 0.5rem; font-size: 1.1rem;
+}
 
-        .last-updated {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
+.contact-info {
+  background: var(--bg-secondary); padding: 2rem; border-radius: 0.5rem; margin-top: 2rem;
+}
+.contact-info h3 { color: var(--text-primary); margin-bottom: 1rem; }
+.contact-info p { margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
 
-        .terms-body {
-            padding: 3rem;
-        }
-
-        .terms-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .terms-section h2 {
-            color: #333;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .terms-section h3 {
-            color: #555;
-            font-size: 1.2rem;
-            margin: 1.5rem 0 0.5rem 0;
-        }
-
-        .terms-section p {
-            line-height: 1.7;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .terms-section ul {
-            margin: 1rem 0;
-            padding-left: 2rem;
-        }
-
-        .terms-section li {
-            margin-bottom: 0.5rem;
-            line-height: 1.6;
-            color: #666;
-        }
-
-        .important-note {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-left: 4px solid #f39c12;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .important-note h4 {
-            color: #d68910;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .contact-info {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-        }
-
-        .contact-info h3 {
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .contact-info p {
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .terms-hero h1 {
-                font-size: 2rem;
-            }
-
-            .terms-body {
-                padding: 2rem;
-            }
-
-            .terms-section h2 {
-                font-size: 1.3rem;
-            }
-        }
+/* Responsive */
+@media (max-width: 768px) {
+  .terms-hero h1 { font-size: 2rem; }
+  .terms-body { padding: 2rem; }
+  .terms-section h2 { font-size: 1.3rem; }
+}

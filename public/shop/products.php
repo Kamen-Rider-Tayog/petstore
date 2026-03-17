@@ -1,7 +1,7 @@
 <?php
+$page_title  = 'Products';
 require_once __DIR__ . '/../../backend/includes/header.php';
 
-$page_title  = 'Products';
 $page_styles = [asset('css/products.css')];
 
 // ── Filters ──
@@ -73,7 +73,7 @@ if ($cat_options === null) {
     <div class="filter-actions">
         <button type="submit" class="btn btn-primary btn-small">Filter</button>
         <?php if ($categoryFilter || $searchTerm): ?>
-            <a href="/Ria-Pet-Store/products" class="btn btn-outline btn-small">Clear</a>
+            <a href="<?php echo url('products'); ?>" class="btn btn-outline btn-small">Clear</a>
         <?php endif; ?>
     </div>
 </form>
@@ -88,7 +88,7 @@ if ($cat_options === null) {
             <div class="product-card">
                 <div class="product-info">
                     <h3>
-                        <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>">
+                        <a href="<?php echo url('product_details?id=' . (int)$product['id']); ?>">
                             <?php echo e($product['product_name']); ?>
                         </a>
                     </h3>
@@ -108,8 +108,10 @@ if ($cat_options === null) {
                     </p>
                 </div>
                 <div class="product-actions">
-                    <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>"
-                       class="btn btn-outline btn-small">View</a>
+                    <a href="<?php echo url('product_details?id=' . (int)$product['id']); ?>"
+                       class="btn btn-outline btn-small">
+                        <?php echo icon('eye', 14); ?> View
+                    </a>
                     <?php if ($inStock): ?>
                         <select id="qty_<?php echo $product['id']; ?>" class="qty-select" aria-label="Quantity">
                             <?php for ($i = 1; $i <= min(10, (int)$product['quantity_in_stock']); $i++): ?>
@@ -117,7 +119,9 @@ if ($cat_options === null) {
                             <?php endfor; ?>
                         </select>
                         <button data-add-to-cart="<?php echo (int)$product['id']; ?>"
-                                class="btn btn-primary btn-small">Add to Cart</button>
+                                class="btn btn-primary btn-small">
+                            <?php echo icon('cart', 14); ?>
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>

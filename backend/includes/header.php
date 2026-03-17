@@ -21,8 +21,19 @@ define('ASSET_VERSION', '2.1');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo isset($page_description) ? e($page_description) : 'Ria Pet Store - Your one-stop shop for pets, supplies, and services.'; ?>">
-    <title><?php echo isset($page_title) ? e($page_title) . ' | ' . APP_NAME : APP_NAME; ?></title>
+    <title><?php 
+        if (isset($page_title) && $page_title !== 'Home' && $page_title !== '') {
+            echo APP_NAME . ' | ' . e($page_title);
+        } else {
+            echo APP_NAME;
+        }?>
+    </title>
     <link rel="icon" type="image/x-icon" href="<?php echo asset('images/favicon.ico'); ?>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="<?php echo asset('css/base.css');       ?>?v=<?php echo ASSET_VERSION; ?>">
     <link rel="stylesheet" href="<?php echo asset('css/layout.css');     ?>?v=<?php echo ASSET_VERSION; ?>">

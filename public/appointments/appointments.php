@@ -1,7 +1,6 @@
 <?php
 require_once '../../backend/config/database.php';
 require_once '../../backend/includes/header.php';
-<link rel="stylesheet" href="../../assets/css/appointments.css">
 
 
 $query = "
@@ -23,6 +22,8 @@ $query = "
 
 $result = $conn->query($query);
 ?>
+
+<link rel="stylesheet" href="../../assets/css/appointments.css">
 
 <h1>Appointments</h1>
 
@@ -53,6 +54,6 @@ $result = $conn->query($query);
 </table>
 
 <br>
-<a href="index">Back to Home</a>
+<a href="<?php echo url(''); ?>">Back to Home</a>
 
 <?php require_once '../../backend/includes/footer.php'; ?>

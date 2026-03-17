@@ -1,4 +1,6 @@
 <?php
+$page_title  = 'About Us';
+
 require_once __DIR__ . '/../../backend/config/config.php';
 require_once __DIR__ . '/../../backend/config/database.php';
 require_once __DIR__ . '/../../backend/functions/helpers.php';
@@ -12,15 +14,17 @@ try {
     
     if ($result->num_rows > 0) {
         // Get active employees with positions to display as team members
+        // Exclude super admin and admin roles for security
         $sql = "SELECT 
                     CONCAT(first_name, ' ', last_name) as name,
                     position,
                     notes as bio,
-                    email,
                     'team-placeholder.jpg' as image
                 FROM employees 
                 WHERE position IS NOT NULL 
-                ORDER BY id ASC";
+                AND role NOT IN ('super_admin', 'admin')
+                ORDER BY id ASC
+                LIMIT 6"; // Limit to 6 team members for performance
         
         $result = $conn->query($sql);
         
@@ -37,29 +41,44 @@ try {
     }
 }
 
-// If no team members found from database, use default team members
+// If no team members found from database, use default team members (without emails)
 if (empty($team_members)) {
     $team_members = [
         [
             'name' => 'Sarah Johnson',
             'position' => 'Founder & CEO',
-            'bio' => 'With over 15 years in veterinary medicine, Sarah founded PetStore to provide quality pet care products and services.',
-            'image' => 'team-sarah.jpg',
-            'email' => 'sarah@petstore.com'
+            'bio' => 'With over 15 years in veterinary medicine, Sarah founded Ria Pet Store to provide quality pet care products and services.',
+            'image' => 'team-sarah.jpg'
         ],
         [
             'name' => 'Mike Chen',
             'position' => 'Head Veterinarian',
             'bio' => 'Dr. Chen specializes in small animal medicine and has been with us since our first year of operation.',
-            'image' => 'team-mike.jpg',
-            'email' => 'mike@petstore.com'
+            'image' => 'team-mike.jpg'
         ],
         [
             'name' => 'Emily Rodriguez',
             'position' => 'Pet Care Specialist',
             'bio' => 'Emily is passionate about pet nutrition and behavior training. She helps customers choose the best products for their pets.',
-            'image' => 'team-emily.jpg',
-            'email' => 'emily@petstore.com'
+            'image' => 'team-emily.jpg'
+        ],
+        [
+            'name' => 'David Kim',
+            'position' => 'Grooming Specialist',
+            'bio' => 'David has been grooming pets for over 10 years and specializes in both dogs and cats.',
+            'image' => 'team-placeholder.jpg'
+        ],
+        [
+            'name' => 'Lisa Thompson',
+            'position' => 'Customer Service Manager',
+            'bio' => 'Lisa ensures every customer receives the best possible experience when shopping with us.',
+            'image' => 'team-placeholder.jpg'
+        ],
+        [
+            'name' => 'James Wilson',
+            'position' => 'Pet Nutritionist',
+            'bio' => 'James helps pet owners choose the right nutrition for their furry family members.',
+            'image' => 'team-placeholder.jpg'
         ]
     ];
 }
@@ -87,7 +106,7 @@ try {
     }
 
     // Get total products
-    $result = $conn->query("SELECT COUNT(*) as total FROM products");
+    $result = $conn->query("SELECT COUNT(*) as total FROM products WHERE status = 'active'");
     if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $stats['products'] = $row['total'];
@@ -112,7 +131,6 @@ try {
     ];
 }
 
-$page_title = "About Us - " . APP_NAME;
 include '../../backend/includes/header.php';
 ?>
 
@@ -289,11 +307,6 @@ include '../../backend/includes/header.php';
                             <h3><?php echo htmlspecialchars($member['name']); ?></h3>
                             <p class="member-position"><?php echo htmlspecialchars($member['position']); ?></p>
                             <p class="member-bio"><?php echo htmlspecialchars($member['bio']); ?></p>
-                            <?php if (isset($member['email'])): ?>
-                            <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="member-email">
-                                <?php echo icon('mail', 14); ?> <?php echo htmlspecialchars($member['email']); ?>
-                            </a>
-                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>

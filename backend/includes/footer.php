@@ -60,6 +60,7 @@
                 <ul>
                     <li><a href="<?php echo url('faq'); ?>"><?php echo icon('help', 16); ?> FAQ</a></li>
                     <li><a href="<?php echo url('contact'); ?>"><?php echo icon('message', 16); ?> Contact Us</a></li>
+                    <li><a href="<?php echo url('about'); ?>"><?php echo icon('info', 16); ?> About Us</a></li>
                 </ul>
             </div>
 

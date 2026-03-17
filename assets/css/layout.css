@@ -139,7 +139,7 @@ footer {
 .back-to-top {
   position: fixed; bottom: 1.5rem; right: 1.5rem;
   width: 2.5rem; height: 2.5rem;
-  background: var(--pink-primary); color: var(--white);
+  background: var(--pink-primary); color: var(--accent-dark);
   border: none; border-radius: 50%; font-size: 1.2rem;
   cursor: pointer; opacity: 0; visibility: hidden;
   transition: opacity 0.2s, visibility 0.2s; z-index: 400;

@@ -2,7 +2,7 @@
 .main-footer {
   background: var(--footer-bg); color: var(--footer-text);
   width: 100%; border-top: 0.0625rem solid var(--footer-border);
-  margin-top: 3rem; box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* Top section - Full Width */
@@ -90,7 +90,7 @@
 }
 
 /* Bottom bar - Full Width */
-.footer-bottom-wrap { border-top: 0.0625rem solid var(--footer-border); padding: 0 8vw; width: 100%; }
+.footer-bottom-wrap { padding: 0 8vw; width: 100%; }
 .footer-bottom {
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 0.75rem; padding: 1.5rem 0; max-width: 1400px; margin: 0 auto;
