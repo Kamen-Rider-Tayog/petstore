@@ -23,7 +23,7 @@ if ($featured_products === null) {
 $featured_pets = Cache::get('home_featured_pets');
 if ($featured_pets === null) {
     $r = $conn->query(
-        "SELECT id, name, species, breed, age, price
+        "SELECT id, name, species, breed, age
          FROM pets WHERE pet_status = 'available' ORDER BY id DESC LIMIT 4"
     );
     $featured_pets = $r->fetch_all(MYSQLI_ASSOC);
@@ -98,7 +98,6 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
                         <p class="pet-breed"><?php echo e($pet['breed']); ?></p>
                     <?php endif; ?>
                     <p class="pet-age"><?php echo (int)$pet['age']; ?> <?php echo $pet['age'] == 1 ? 'year' : 'years'; ?> old</p>
-                    <p class="pet-price"><?php echo CURRENCY_SYMBOL . number_format($pet['price'], 2); ?></p>
                 </div>
                 <div class="pet-card-footer">
                     <a href="<?php echo url('pet_details?id=' . (int)$pet['id']); ?>" class="btn btn-primary btn-small">

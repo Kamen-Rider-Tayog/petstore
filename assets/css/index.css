@@ -4,6 +4,7 @@
 .hero {
   background: linear-gradient(135deg, var(--accent-200), var(--accent-300));
   padding: 4rem 2rem; text-align: center; width: 100%;
+  height: 85dvh;
 }
 .hero-content { max-width: 800px; margin: 0 auto; }
 .hero h1 {
@@ -57,7 +58,6 @@
 .pet-card-body h3 { margin: 0 0 0.5rem 0; font-size: 1.25rem; color: var(--text-primary); }
 .pet-breed { color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 0.5rem; }
 .pet-age { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; }
-.pet-price { font-size: 1.25rem; font-weight: 600; color: var(--accent-600); margin: 0; }
 
 .pet-card-footer { padding: 1rem 1.5rem 1.5rem; }
 .pet-card-footer .btn { width: 100%; }
