@@ -1,7 +1,9 @@
 DirectoryIndex index.php index.html
 
+Options -Indexes
+
 RewriteEngine On
-RewriteBase /petstore/
+RewriteBase /Ria-Pet-Store/
 
 # Pass through real files and directories (css, js, images, etc.)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -81,6 +83,3 @@ RewriteRule ^sitemap$                 public/pages/sitemap.php [QSA,L]
 
 # ── 404 fallback ────────────────────────────────────────────
 RewriteRule ^404$                     public/errors/404.php [QSA,L]
-
-# Block directory listing
-Options -Indexes

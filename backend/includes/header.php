@@ -11,6 +11,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 date_default_timezone_set(DEFAULT_TIMEZONE);
+
+// Cache-bust version — increment this whenever CSS/JS changes
+define('ASSET_VERSION', '2.1');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,18 +24,18 @@ date_default_timezone_set(DEFAULT_TIMEZONE);
     <title><?php echo isset($page_title) ? e($page_title) . ' | ' . APP_NAME : APP_NAME; ?></title>
     <link rel="icon" type="image/x-icon" href="<?php echo asset('images/favicon.ico'); ?>">
 
-    <link rel="stylesheet" href="<?php echo asset('css/base.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/layout.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/components.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/utilities.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/navigation.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/footer.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/animations.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset('css/print.css'); ?>" media="print">
+    <link rel="stylesheet" href="<?php echo asset('css/base.css');       ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/layout.css');     ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/components.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/utilities.css');  ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/navigation.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/footer.css');     ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/animations.css'); ?>?v=<?php echo ASSET_VERSION; ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/print.css');      ?>" media="print">
 
-    <?php if (isset($page_styles)): ?>
+    <?php if (!empty($page_styles)): ?>
         <?php foreach ($page_styles as $style): ?>
-            <link rel="stylesheet" href="<?php echo $style; ?>">
+            <link rel="stylesheet" href="<?php echo $style; ?>?v=<?php echo ASSET_VERSION; ?>">
         <?php endforeach; ?>
     <?php endif; ?>
 

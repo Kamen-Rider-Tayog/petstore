@@ -20,7 +20,7 @@ function loadAvailableSlots(date, container) {
   container.innerHTML = "<p>Loading available slots…</p>";
 
   fetch(
-    `/petstore/backend/api/get_available_slots.php?service_id=${serviceId}&date=${encodeURIComponent(date)}`,
+    `/Ria-Pet-Store/backend/api/get_available_slots.php?service_id=${serviceId}&date=${encodeURIComponent(date)}`,
   )
     .then((res) => res.json())
     .then((data) => {

@@ -1,4 +1,4 @@
-c:/xampp/htdocs/petstore/
+c:/xampp/htdocs/Ria-Pet-Store/
 ├─] .env (ignored)
 ├── .env.example
 ├── .gitignore
@@ -184,10 +184,9 @@ c:/xampp/htdocs/petstore/
 ├── database/
 │   └── install.php
 ├── file tree.txt
-├── index.html
+├── index.php
 ├── pet_store.sql
 ├── public/
-│   ├── .htaccess
 │   ├── appointments/
 │   │   ├── appointments.php
 │   │   ├── book_appointment.php
@@ -252,4 +251,10 @@ c:/xampp/htdocs/petstore/
 ├── sitemap.xml
 └── storage/
     └── cache/
-        └── a099cadd303feb8e54cc026adae5057b.cache
+        ├── 0f15ea13765c62433d91f7ca81f1999b.cache
+        ├── 6fd856e1d2ef4e1c800a25daed7f0140.cache
+        ├── 98b7c02406bd0f6d7b5e7edff194393a.cache
+        ├── 98d910e36f6b2361d6615320be7090b5.cache
+        ├── a099cadd303feb8e54cc026adae5057b.cache
+        ├── b94ae0f47140cce385db2926966b3bd7.cache
+        └── eadbbc5cbb03598f1096ad08549a2784.cache

@@ -10,9 +10,9 @@ http_response_code(404);
     <p>The page you're looking for seems to have wandered off. Don't worry, we'll help you find your way back!</p>
 
     <div class="error-actions">
-        <a href="/petstore/" class="btn btn-primary">Go Home</a>
+        <a href="/Ria-Pet-Store/" class="btn btn-primary">Go Home</a>
         <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
-        <a href="/petstore/contact" class="btn btn-outline">Contact Us</a>
+        <a href="/Ria-Pet-Store/contact" class="btn btn-outline">Contact Us</a>
     </div>
 </div>
 

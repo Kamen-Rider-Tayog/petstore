@@ -13,7 +13,7 @@ searchInput.addEventListener("input", function () {
 
   // Fetch suggestions
   fetch(
-    `/petstore/backend/api/live_search.php?term=${encodeURIComponent(term)}`,
+    `/Ria-Pet-Store/backend/api/live_search.php?term=${encodeURIComponent(term)}`,
   )
     .then((response) => response.json())
     .then((data) => {

@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://localhost/petstore/</loc>
+    <loc>http://localhost/Ria-Pet-Store/</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/public/pets.php</loc>
+    <loc>http://localhost/Ria-Pet-Store/public/pets.php</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/public/products.php</loc>
+    <loc>http://localhost/Ria-Pet-Store/public/products.php</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/public/login.php</loc>
+    <loc>http://localhost/Ria-Pet-Store/public/login.php</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/public/register.php</loc>
+    <loc>http://localhost/Ria-Pet-Store/public/register.php</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/public/cart.php</loc>
+    <loc>http://localhost/Ria-Pet-Store/public/cart.php</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>http://localhost/petstore/admin/</loc>
+    <loc>http://localhost/Ria-Pet-Store/admin/</loc>
     <lastmod><?php echo date('Y-m-d'); ?></lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>

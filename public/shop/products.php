@@ -73,7 +73,7 @@ if ($cat_options === null) {
     <div class="filter-actions">
         <button type="submit" class="btn btn-primary btn-small">Filter</button>
         <?php if ($categoryFilter || $searchTerm): ?>
-            <a href="/petstore/products" class="btn btn-outline btn-small">Clear</a>
+            <a href="/Ria-Pet-Store/products" class="btn btn-outline btn-small">Clear</a>
         <?php endif; ?>
     </div>
 </form>
@@ -88,7 +88,7 @@ if ($cat_options === null) {
             <div class="product-card">
                 <div class="product-info">
                     <h3>
-                        <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>">
+                        <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>">
                             <?php echo e($product['product_name']); ?>
                         </a>
                     </h3>
@@ -108,7 +108,7 @@ if ($cat_options === null) {
                     </p>
                 </div>
                 <div class="product-actions">
-                    <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>"
+                    <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>"
                        class="btn btn-outline btn-small">View</a>
                     <?php if ($inStock): ?>
                         <select id="qty_<?php echo $product['id']; ?>" class="qty-select" aria-label="Quantity">

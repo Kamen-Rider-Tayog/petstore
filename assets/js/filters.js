@@ -31,7 +31,7 @@ function updateResults() {
     '<div class="loading">Loading...</div>';
 
   // Fetch filtered results
-  fetch("/petstore/backend/api/filter_products.php", {
+  fetch("/Ria-Pet-Store/backend/api/filter_products.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(filters),

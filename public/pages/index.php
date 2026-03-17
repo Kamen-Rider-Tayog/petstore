@@ -1,70 +1,64 @@
 <?php
-require_once __DIR__ . '/../../backend/includes/header.php';
-
+// Set page meta BEFORE header loads (header uses these variables)
 $page_title       = 'Home';
 $page_description = 'Ria Pet Store - Your one-stop shop for pets, supplies, and services.';
-$page_styles      = [asset('css/index.css')];
 
-// ── Featured products (products: id, product_name, category, price, sale_price, on_sale, featured) ──
+require_once __DIR__ . '/../../backend/includes/header.php';
+
+// Now asset() is available — add page-specific CSS
+$page_styles = [asset('css/index.css')];
+
+// ── Featured products ──────────────────────────────────────
 $featured_products = Cache::get('home_featured_products');
 if ($featured_products === null) {
     $r = $conn->query(
         "SELECT id, product_name, category, price, sale_price, on_sale, featured
-         FROM products
-         WHERE featured = 1
-         ORDER BY id DESC
-         LIMIT 4"
+         FROM products WHERE featured = 1 ORDER BY id DESC LIMIT 4"
     );
     $featured_products = $r->fetch_all(MYSQLI_ASSOC);
     Cache::put('home_featured_products', $featured_products, 86400);
 }
 
-// ── Available pets (pets: id, name, species, breed, age, price, pet_status) ──
+// ── Available pets ─────────────────────────────────────────
 $featured_pets = Cache::get('home_featured_pets');
 if ($featured_pets === null) {
     $r = $conn->query(
         "SELECT id, name, species, breed, age, price
-         FROM pets
-         WHERE pet_status = 'available'
-         ORDER BY id DESC
-         LIMIT 4"
+         FROM pets WHERE pet_status = 'available' ORDER BY id DESC LIMIT 4"
     );
     $featured_pets = $r->fetch_all(MYSQLI_ASSOC);
     Cache::put('home_featured_pets', $featured_pets, 86400);
 }
 
-// ── Featured services (services: id, service_name, category, description, price, duration_minutes, featured) ──
+// ── Featured services ──────────────────────────────────────
 $featured_services = Cache::get('home_featured_services');
 if ($featured_services === null) {
     $r = $conn->query(
         "SELECT id, service_name, category, description, price, duration_minutes
-         FROM services
-         WHERE featured = 1
-         LIMIT 3"
+         FROM services WHERE featured = 1 LIMIT 3"
     );
     $featured_services = $r->fetch_all(MYSQLI_ASSOC);
     Cache::put('home_featured_services', $featured_services, 3600);
 }
 
-// ── Latest approved reviews (product_reviews: id, product_id, customer_id, rating, review_text, status) ──
+// ── Latest approved reviews ────────────────────────────────
 $reviews = Cache::get('home_reviews');
 if ($reviews === null) {
     $r = $conn->query(
-        "SELECT pr.rating, pr.review_text, pr.created_at,
+        "SELECT pr.rating, pr.review_text,
                 p.product_name,
                 CONCAT(c.first_name, ' ', LEFT(c.last_name, 1), '.') AS reviewer
          FROM product_reviews pr
          JOIN products  p ON pr.product_id  = p.id
          JOIN customers c ON pr.customer_id = c.id
          WHERE pr.status = 'approved'
-         ORDER BY pr.created_at DESC
-         LIMIT 3"
+         ORDER BY pr.created_at DESC LIMIT 3"
     );
     $reviews = $r->fetch_all(MYSQLI_ASSOC);
     Cache::put('home_reviews', $reviews, 3600);
 }
 
-// ── Stats ──
+// ── Stats ──────────────────────────────────────────────────
 $stats = Cache::get('home_stats');
 if ($stats === null) {
     $stats = [
@@ -74,6 +68,10 @@ if ($stats === null) {
     ];
     Cache::put('home_stats', $stats, 3600);
 }
+
+// Inject index.css into the page now that header has already output <head>
+// We do this via inline style injection since header already closed <head>
+echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VERSION . '">';
 ?>
 
 <!-- HERO -->
@@ -82,8 +80,8 @@ if ($stats === null) {
         <h1>Find Your Perfect Pet Companion</h1>
         <p>Quality pets, premium supplies, and professional care — all in one place.</p>
         <div class="hero-buttons">
-            <a href="/petstore/pets"     class="btn btn-primary">Browse Pets</a>
-            <a href="/petstore/products" class="btn btn-outline-white">Shop Products</a>
+            <a href="/Ria-Pet-Store/pets"     class="btn btn-primary">Browse Pets</a>
+            <a href="/Ria-Pet-Store/products" class="btn btn-outline-white">Shop Products</a>
         </div>
     </div>
 </section>
@@ -123,15 +121,14 @@ if ($stats === null) {
                 </div>
                 <div class="pet-card-body">
                     <h3><?php echo e($pet['name']); ?></h3>
-                    <?php if ($pet['breed']): ?>
+                    <?php if (!empty($pet['breed'])): ?>
                         <p class="pet-breed"><?php echo e($pet['breed']); ?></p>
                     <?php endif; ?>
                     <p class="pet-age"><?php echo (int)$pet['age']; ?> <?php echo $pet['age'] == 1 ? 'year' : 'years'; ?> old</p>
                     <p class="pet-price"><?php echo CURRENCY_SYMBOL . number_format($pet['price'], 2); ?></p>
                 </div>
                 <div class="pet-card-footer">
-                    <a href="/petstore/pet_details?id=<?php echo (int)$pet['id']; ?>"
-                       class="btn btn-primary btn-small">
+                    <a href="/Ria-Pet-Store/pet_details?id=<?php echo (int)$pet['id']; ?>" class="btn btn-primary btn-small">
                         Meet <?php echo e($pet['name']); ?>
                     </a>
                 </div>
@@ -139,7 +136,7 @@ if ($stats === null) {
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/petstore/pets" class="btn btn-outline">View All Pets</a>
+        <a href="/Ria-Pet-Store/pets" class="btn btn-outline">View All Pets</a>
     </div>
 </section>
 <?php endif; ?>
@@ -161,7 +158,7 @@ if ($stats === null) {
                         <span class="badge featured">Featured</span>
                     <?php endif; ?>
                     <h3>
-                        <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>">
+                        <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>">
                             <?php echo e($product['product_name']); ?>
                         </a>
                     </h3>
@@ -176,16 +173,14 @@ if ($stats === null) {
                     </div>
                 </div>
                 <div class="product-actions">
-                    <a href="/petstore/product_details?id=<?php echo (int)$product['id']; ?>"
-                       class="btn btn-outline btn-small">View</a>
-                    <button data-add-to-cart="<?php echo (int)$product['id']; ?>"
-                            class="btn btn-primary btn-small">Add to Cart</button>
+                    <a href="/Ria-Pet-Store/product_details?id=<?php echo (int)$product['id']; ?>" class="btn btn-outline btn-small">View</a>
+                    <button data-add-to-cart="<?php echo (int)$product['id']; ?>" class="btn btn-primary btn-small">Add to Cart</button>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/petstore/products" class="btn btn-outline">View All Products</a>
+        <a href="/Ria-Pet-Store/products" class="btn btn-outline">View All Products</a>
     </div>
 </section>
 <?php endif; ?>
@@ -208,12 +203,12 @@ if ($stats === null) {
                         <span class="service-duration"><?php echo (int)$svc['duration_minutes']; ?> min</span>
                     </div>
                 </div>
-                <a href="/petstore/book_appointment" class="btn btn-outline btn-small">Book Now</a>
+                <a href="/Ria-Pet-Store/book_appointment" class="btn btn-outline btn-small">Book Now</a>
             </div>
         <?php endforeach; ?>
     </div>
     <div class="section-footer">
-        <a href="/petstore/services" class="btn btn-outline">All Services</a>
+        <a href="/Ria-Pet-Store/services" class="btn btn-outline">All Services</a>
     </div>
 </section>
 <?php endif; ?>
@@ -250,8 +245,8 @@ if ($stats === null) {
         <h2>About Ria Pet Store</h2>
         <p>We've been caring for pets and their owners since 2010. From finding the perfect companion to keeping them healthy and happy, we're here every step of the way.</p>
         <div class="cta-actions">
-            <a href="/petstore/pets"     class="btn btn-primary">Adopt a Pet</a>
-            <a href="/petstore/services" class="btn btn-outline">Our Services</a>
+            <a href="/Ria-Pet-Store/pets"     class="btn btn-primary">Adopt a Pet</a>
+            <a href="/Ria-Pet-Store/services" class="btn btn-outline">Our Services</a>
         </div>
     </div>
 </section>
