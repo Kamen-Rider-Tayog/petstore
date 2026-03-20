@@ -86,6 +86,7 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── animations.css
 │   │   ├── appointments.css
 │   │   ├── base.css
+│   │   ├── btn.css
 │   │   ├── cancel_appointment.css
 │   │   ├── cancel_order.css
 │   │   ├── cart.css
@@ -97,10 +98,12 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── contact_process.css
 │   │   ├── customer_order.css
 │   │   ├── dogs.css
+│   │   ├── dropdown.css
 │   │   ├── edit_profile.css
 │   │   ├── faq.css
 │   │   ├── featured.css
 │   │   ├── footer.css
+│   │   ├── icons.css
 │   │   ├── index.css
 │   │   ├── install.css
 │   │   ├── layout.css
@@ -128,7 +131,6 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── register_process.css
 │   │   ├── reschedule_appointment.css
 │   │   ├── search.css
-│   │   ├── search_pets.css
 │   │   ├── search_results.css
 │   │   ├── services.css
 │   │   ├── service_details.css
@@ -141,26 +143,35 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   ├── images/
 │   └── js/
 │       ├── appointment.js
-│       ├── cart.js
 │       ├── contact.js
-│       ├── filters.js
-│       ├── live_search.js
-│       └── main.js
+│       ├── core/
+│       │   ├── app.js
+│       │   └── utils.js
+│       ├── features/
+│       │   ├── cart.js
+│       │   └── filter.js
+│       ├── forms/
+│       │   └── validation.js
+│       └── ui/
+│           ├── back-to-top.js
+│           ├── dropdown.js
+│           ├── images.js
+│           ├── modals.js
+│           ├── notifications.js
+│           ├── scroll.js
+│           └── tooltips.js
 ├── backend/
 │   ├── admin/
 │   ├── api/
 │   │   ├── add_to_cart.php
 │   │   ├── cart_count.php
+│   │   ├── filter_pets.php
 │   │   ├── filter_products.php
 │   │   ├── get_available_slots.php
 │   │   ├── get_cart.php
-│   │   ├── get_customer_orders.php
-│   │   ├── get_pets.php
 │   │   ├── live_search.php
 │   │   ├── load_more.php
 │   │   ├── remove_from_cart.php
-│   │   ├── search_pets.php
-│   │   ├── search_products.php
 │   │   └── update_cart.php
 │   ├── config/
 │   │   ├── config.php
@@ -178,6 +189,8 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── header.php
 │   │   ├── navigation.php
 │   │   ├── order_functions.php
+│   │   ├── pet_card.php
+│   │   ├── product_card.php
 │   │   └── search_functions.php
 │   └── uploads/
 │       └── handle_upload.php
@@ -221,10 +234,8 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── sitemap.php
 │   │   └── terms.php
 │   ├── pets/
-│   │   ├── dogs.php
 │   │   ├── pets.php
-│   │   ├── pet_details.php
-│   │   └── search_pets.php
+│   │   └── pet_details.php
 │   ├── reviews/
 │   │   ├── product_reviews.php
 │   │   └── write_review.php
@@ -253,8 +264,8 @@ c:/xampp/htdocs/Ria-Pet-Store/
     └── cache/
         ├── 0f15ea13765c62433d91f7ca81f1999b.cache
         ├── 6fd856e1d2ef4e1c800a25daed7f0140.cache
-        ├── 98b7c02406bd0f6d7b5e7edff194393a.cache
         ├── 98d910e36f6b2361d6615320be7090b5.cache
         ├── a099cadd303feb8e54cc026adae5057b.cache
         ├── b94ae0f47140cce385db2926966b3bd7.cache
-        └── eadbbc5cbb03598f1096ad08549a2784.cache
+        ├── eadbbc5cbb03598f1096ad08549a2784.cache
+        └── f6323b31f14e87e345afb417991781ac.cache

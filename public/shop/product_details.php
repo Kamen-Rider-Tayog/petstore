@@ -1,25 +1,32 @@
 <?php
-require_once '../../backend/config/database.php';
-require_once '../../backend/includes/header.php';
-<link rel="stylesheet" href="../../assets/css/product_details.css">
+// Get product ID from URL
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-
-$productId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if (!$productId) {
-    header('Location: products');
+if ($id <= 0) {
+    header('Location: ' . url('products'));
     exit;
 }
 
-$stmt = $conn->prepare('SELECT * FROM products WHERE id = ? LIMIT 1');
-$stmt->bind_param('i', $productId);
+require_once __DIR__ . '/../../backend/config/database.php';
+
+// Fetch product details
+$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
+$stmt->bind_param("i", $id);
 $stmt->execute();
-$product = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$product = $result->fetch_assoc();
+$stmt->close();
 
 if (!$product) {
-    header('Location: products');
+    header('Location: ' . url('products'));
     exit;
 }
+
+// Set page title and meta
+$page_title = $product['product_name'] . ' - Product Details';
+$page_description = "View details for {$product['product_name']}. " . substr(strip_tags($product['description'] ?? ''), 0, 150);
+
+require_once __DIR__ . '/../../backend/includes/header.php';
 
 // Track recently viewed products
 if (!isset($_SESSION['recently_viewed']) || !is_array($_SESSION['recently_viewed'])) {
@@ -28,72 +35,210 @@ if (!isset($_SESSION['recently_viewed']) || !is_array($_SESSION['recently_viewed
 
 // Remove existing entry if already viewed
 foreach ($_SESSION['recently_viewed'] as $key => $item) {
-    if ($item['id'] === $productId) {
+    if ($item['id'] === $id) {
         unset($_SESSION['recently_viewed'][$key]);
         break;
     }
 }
 
-$_SESSION['recently_viewed'] = array_values(array_merge([
-    [
-        'id' => $productId,
-        'name' => $product['product_name'],
-        'image' => $product['image'] ?? '',
-    ]
-], $_SESSION['recently_viewed']));
+// Add current product to recently viewed
+array_unshift($_SESSION['recently_viewed'], [
+    'id' => $id,
+    'name' => $product['product_name'],
+    'price' => $product['price'],
+    'image' => $product['image'] ?? ''
+]);
 
 // Keep only last 5
 $_SESSION['recently_viewed'] = array_slice($_SESSION['recently_viewed'], 0, 5);
 
-// Related products (same category)
-$relatedStmt = $conn->prepare('SELECT * FROM products WHERE category = ? AND id <> ? ORDER BY product_name LIMIT 4');
-$relatedStmt->bind_param('si', $product['category'], $productId);
+// Get related products (same category)
+$relatedStmt = $conn->prepare("SELECT id, product_name, price, product_image FROM products WHERE category = ? AND id != ? LIMIT 4");
+$relatedStmt->bind_param("si", $product['category'], $id);
 $relatedStmt->execute();
 $relatedProducts = $relatedStmt->get_result();
+$relatedStmt->close();
+
+$inStock = (int)$product['quantity_in_stock'] > 0;
+$onSale = !empty($product['on_sale']) && !empty($product['sale_price']);
+$displayPrice = $onSale ? $product['sale_price'] : $product['price'];
+$originalPrice = $onSale ? $product['price'] : null;
 ?>
 
-<h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
+<link rel="stylesheet" href="http://localhost/Ria-Pet-Store/assets/css/shop/product_details.css?v=<?php echo ASSET_VERSION; ?>">
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
-    <div>
-        <?php $imageUrl = (!empty($product['image']) ? asset('images/' . $product['image']) : Config::get('PLACEHOLDER_IMAGE_LARGE')); ?>
-        <img src="<?php echo $imageUrl; ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" style="max-width: 100%; border: 1px solid #ddd;" />
-    </div>
-
-    <div>
-        <p><strong>Category:</strong> <?php echo ucfirst(htmlspecialchars($product['category'])); ?></p>
-        <p><strong>Price:</strong> ₱<?php echo number_format($product['price'], 2); ?></p>
-        <p><strong>Stock:</strong> <?php echo $product['quantity_in_stock'] > 0 ? 'In stock (' . $product['quantity_in_stock'] . ')' : '<span style="color:red;">Out of stock</span>'; ?></p>
-        <p><strong>Description:</strong><br /><?php echo nl2br(htmlspecialchars($product['description'] ?: 'No description available.')); ?></p>
-
-        <?php if ($product['quantity_in_stock'] > 0): ?>
-        <div style="margin-top: 15px; display: flex; gap: 8px; align-items: center;">
-            <label for="qty_<?php echo $productId; ?>">Qty</label>
-            <select id="qty_<?php echo $productId; ?>" style="width: 80px; padding: 5px;">
-                <?php for ($i = 1; $i <= min(10, $product['quantity_in_stock']); $i++): ?>
-                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                <?php endfor; ?>
-            </select>
-            <button data-add-to-cart="<?php echo $productId; ?>" style="padding: 8px 14px;">Add to Cart</button>
+<div class="product-details-page">
+    <!-- Back navigation -->
+    <div class="back-nav">
+        <div class="container">
+            <a href="<?php echo url('products'); ?>" class="back-link">
+                <?php echo icon('arrow-left', 16); ?> Back to Products
+            </a>
         </div>
-        <?php else: ?>
-            <p style="color: red;"><strong>Out of stock</strong></p>
-        <?php endif; ?>
-
-        <p style="margin-top: 20px;"><a href="products">← Back to Products</a></p>
     </div>
+
+    <!-- Product Details Section -->
+    <section class="product-details-section">
+        <div class="container">
+            <div class="product-details-container">
+                <!-- Product Image -->
+                <div class="product-image-gallery">
+                    <div class="main-image">
+                        <?php if (!empty($product['image'])): ?>
+                            <img src="<?php echo asset('images/products/' . $product['image']); ?>" 
+                                 alt="<?php echo e($product['product_name']); ?>"
+                                 onerror="this.src='<?php echo asset('images/product-placeholder.jpg'); ?>'">
+                        <?php else: ?>
+                            <div class="no-image">
+                                <?php echo icon('package', 64); ?>
+                                <p>No image available</p>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($onSale): ?>
+                            <span class="sale-badge">SALE</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info">
+                    <div class="product-header">
+                        <h1><?php echo e($product['product_name']); ?></h1>
+                        <span class="product-category-badge"><?php echo ucfirst(e($product['category'])); ?></span>
+                    </div>
+
+                    <div class="product-price-section">
+                        <?php if ($onSale): ?>
+                            <div class="price-block">
+                                <span class="original-price"><?php echo CURRENCY_SYMBOL . number_format($product['price'], 2); ?></span>
+                                <span class="sale-price"><?php echo CURRENCY_SYMBOL . number_format($product['sale_price'], 2); ?></span>
+                            </div>
+                            <span class="discount-badge">Save <?php echo CURRENCY_SYMBOL . number_format($product['price'] - $product['sale_price'], 2); ?></span>
+                        <?php else: ?>
+                            <div class="price-block">
+                                <span class="regular-price"><?php echo CURRENCY_SYMBOL . number_format($product['price'], 2); ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="stock-status <?php echo $inStock ? 'in-stock' : 'out-of-stock'; ?>">
+                        <?php echo icon($inStock ? 'check' : 'x', 16); ?>
+                        <span>
+                            <?php echo $inStock 
+                                ? 'In Stock (' . (int)$product['quantity_in_stock'] . ' available)' 
+                                : 'Out of Stock'; ?>
+                        </span>
+                    </div>
+
+                    <?php if (!empty($product['description'])): ?>
+                    <div class="product-description">
+                        <h2>Description</h2>
+                        <p><?php echo nl2br(e($product['description'])); ?></p>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($inStock): ?>
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <label for="qty_<?php echo $id; ?>">Quantity:</label>
+                            <select id="qty_<?php echo $id; ?>" class="qty-select">
+                                <?php for ($i = 1; $i <= min(10, (int)$product['quantity_in_stock']); $i++): ?>
+                                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                        <button data-add-to-cart="<?php echo $id; ?>" class="btn btn-primary btn-large">
+                            <?php echo icon('cart', 18); ?> Add to Cart
+                        </button>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="product-meta">
+                        <p><strong>Category:</strong> <?php echo ucfirst(e($product['category'])); ?></p>
+                        <?php if (!empty($product['brand'])): ?>
+                            <p><strong>Brand:</strong> <?php echo e($product['brand']); ?></p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="product-share">
+                        <span>Share:</span>
+                        <a href="#" class="share-link" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href), 'facebook-share', 'width=580,height=296');return false;">
+                            <?php echo icon('facebook', 18); ?>
+                        </a>
+                        <a href="#" class="share-link" onclick="window.open('https://twitter.com/intent/tweet?text=<?php echo urlencode('Check out ' . $product['product_name'] . '!'); ?>&url='+encodeURIComponent(window.location.href), 'twitter-share', 'width=550,height=235');return false;">
+                            <?php echo icon('twitter', 18); ?>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <?php if ($relatedProducts->num_rows > 0): ?>
+    <section class="related-products-section">
+        <div class="container">
+            <h2>Related Products</h2>
+            <div class="related-products-grid">
+                <?php while ($rel = $relatedProducts->fetch_assoc()): ?>
+                    <div class="related-product-card">
+                        <a href="<?php echo url('product_details?id=' . $rel['id']); ?>">
+                            <div class="related-product-image">
+                                <?php if (!empty($rel['image'])): ?>
+                                    <img src="<?php echo asset('images/products/' . $rel['image']); ?>" 
+                                         alt="<?php echo e($rel['product_name']); ?>"
+                                         onerror="this.src='<?php echo asset('images/product-placeholder.jpg'); ?>'">
+                                <?php else: ?>
+                                    <div class="no-image">
+                                        <?php echo icon('package', 24); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <h3><?php echo e($rel['product_name']); ?></h3>
+                            <p class="related-product-price"><?php echo CURRENCY_SYMBOL . number_format($rel['price'], 2); ?></p>
+                        </a>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Recently Viewed -->
+    <?php if (!empty($_SESSION['recently_viewed']) && count($_SESSION['recently_viewed']) > 1): ?>
+    <section class="recently-viewed-section">
+        <div class="container">
+            <h2>Recently Viewed</h2>
+            <div class="recently-viewed-grid">
+                <?php foreach ($_SESSION['recently_viewed'] as $viewed): ?>
+                    <?php if ($viewed['id'] != $id): ?>
+                        <div class="recently-viewed-card">
+                            <a href="<?php echo url('product_details?id=' . $viewed['id']); ?>">
+                                <div class="recently-viewed-image">
+                                    <?php if (!empty($viewed['image'])): ?>
+                                        <img src="<?php echo asset('images/products/' . $viewed['image']); ?>" 
+                                             alt="<?php echo e($viewed['name']); ?>"
+                                             onerror="this.src='<?php echo asset('images/product-placeholder.jpg'); ?>'">
+                                    <?php else: ?>
+                                        <div class="no-image">
+                                            <?php echo icon('package', 20); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <h4><?php echo e($viewed['name']); ?></h4>
+                                <p><?php echo CURRENCY_SYMBOL . number_format($viewed['price'], 2); ?></p>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 </div>
 
-<?php if ($relatedProducts->num_rows > 0): ?>
-    <h2>Related Products</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">
-        <?php while ($rel = $relatedProducts->fetch_assoc()): ?>
-            <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; background: #fff;">
-                <h4 style="margin: 0 0 8px 0;"><a href="product_details?id=<?php echo $rel['id']; ?>" style="text-decoration: none; color: inherit;"><?php echo htmlspecialchars($rel['product_name']); ?></a></h4>
-                <p style="margin: 0;">₱<?php echo number_format($rel['price'], 2); ?></p>
-            </div>
-        <?php endwhile; ?>
-    </div>
-<?php endif; ?>
-
-<?php require_once '../../backend/includes/footer.php'; ?>
+<?php 
+$relatedProducts->close();
+require_once __DIR__ . '/../../backend/includes/footer.php'; 
+?>

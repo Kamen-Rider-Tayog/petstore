@@ -101,9 +101,6 @@
         <div class="spinner"></div>
     </div>
 
-    <script src="<?php echo asset('js/cart.js'); ?>?v=<?php echo ASSET_VERSION; ?>"></script>
-    <script src="<?php echo asset('js/main.js'); ?>?v=<?php echo ASSET_VERSION; ?>"></script>
-
     <?php if (!empty($page_scripts)): ?>
         <?php foreach ($page_scripts as $script): ?>
             <script src="<?php echo $script; ?>?v=<?php echo ASSET_VERSION; ?>"></script>

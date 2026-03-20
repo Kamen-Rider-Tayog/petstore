@@ -1,0 +1,116 @@
+/* ===== CUSTOM DROPDOWN STYLES ===== */
+
+.custom-dropdown {
+  position: relative; width: 100%; min-width: 150px; max-width: 300px;
+  font-family: var(--font-secondary); user-select: none;
+}
+
+/* Selected option display */
+.custom-dropdown .selected {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown .selected:hover {
+  border-color: var(--accent-400);
+  background: var(--accent-50);
+}
+
+.custom-dropdown.active .selected {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+.custom-dropdown .selected svg {
+  transition: transform 0.2s ease;
+  color: var(--accent-500);
+}
+
+.custom-dropdown .selected.open svg {
+  transform: rotate(180deg);
+}
+
+/* Options dropdown */
+.custom-dropdown .options {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+  margin-top: 4px; max-height: 0; overflow: hidden;
+  background: var(--bg-primary);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.2s ease;
+}
+
+.custom-dropdown .options.show {
+  max-height: 200px; overflow-y: auto;
+}
+
+/* Option items */
+.custom-dropdown .option {
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.custom-dropdown .option:hover {
+  background: var(--accent-100);
+  color: var(--accent-700);
+  padding-left: 1.25rem;
+}
+
+.custom-dropdown .option.selected {
+  background: var(--accent-200);
+  color: var(--accent-800);
+  font-weight: 500;
+}
+
+/* Disabled state */
+.custom-dropdown.disabled .selected {
+  background: var(--bg-tertiary);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  border-color: var(--border-light);
+}
+
+.custom-dropdown.disabled .selected:hover {
+  border-color: var(--border-light);
+  background: var(--bg-tertiary);
+}
+
+/* Scrollbar styling */
+.custom-dropdown .options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-dropdown .options::-webkit-scrollbar-track {
+  background: var(--accent-100);
+  border-radius: 3px;
+}
+
+.custom-dropdown .options::-webkit-scrollbar-thumb {
+  background: var(--accent-400);
+  border-radius: 3px;
+}
+
+.custom-dropdown .options::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-500);
+}
+
+/* For Firefox */
+.custom-dropdown .options {
+  scrollbar-color: var(--accent-400) var(--accent-100);
+  scrollbar-width: thin;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .custom-dropdown { max-width: 100%; }
+}

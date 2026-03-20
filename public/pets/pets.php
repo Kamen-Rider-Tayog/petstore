@@ -1,162 +1,110 @@
 <?php
-require_once '../../backend/config/database.php';
+$page_title = 'Available Pets';
+$page_description = 'Browse our available pets - dogs, cats, rabbits, birds and more.';
 
-$selectedSpecies = isset($_GET['species']) ? trim($_GET['species']) : 'all';
+require_once __DIR__ . '/../../backend/includes/header.php';
 
-// Load available species for dropdown
-$speciesResult = $conn->query("SELECT DISTINCT species FROM pets ORDER BY species");
-
-// Load pets list (will also be updated via AJAX)
-$petsql = "SELECT * FROM pets";
-$params = [];
-$types = '';
-
-if (!empty($selectedSpecies) && $selectedSpecies !== 'all') {
-    $petsql .= " WHERE species = ?";
-    $params[] = $selectedSpecies;
-    $types .= 's';
+// Get distinct species for filter
+$speciesResult = $conn->query("SELECT DISTINCT species FROM pets WHERE pet_status = 'available' ORDER BY species");
+$speciesList = [];
+while ($row = $speciesResult->fetch_assoc()) {
+    $speciesList[] = $row['species'];
 }
-
-$petsql .= " ORDER BY id ASC";
-$stmt = $conn->prepare($petsql);
-if (!empty($params)) {
-    $stmt->bind_param($types, ...$params);
-}
-$stmt->execute();
-$pets = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pets</title>
-    <link rel="stylesheet" href="../../assets/css/pets.css">
-</head>
-<body>
-    <h1>Our Pets</h1>
+<link rel="stylesheet" href="http://localhost/Ria-Pet-Store/assets/css/pets/pets.css?v=<?php echo ASSET_VERSION; ?>">
 
-    <div class="filter-row">
-        <label for="species">Filter by species:</label>
-        <select id="species" onchange="loadPets()">
-            <option value="all" <?php echo $selectedSpecies === 'all' ? 'selected' : ''; ?>>All species</option>
-            <?php while ($row = $speciesResult->fetch_assoc()): ?>
-                <option value="<?php echo htmlspecialchars($row['species']); ?>" <?php echo $selectedSpecies === $row['species'] ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars(ucfirst($row['species'])); ?>
-                </option>
-            <?php endwhile; ?>
-        </select>
+<div class="pets-page">
+    <!-- Hero Section -->
+    <section class="pets-hero">
+        <div class="container">
+            <h1>Available Pets</h1>
+            <p>Find your new best friend among our loving pets</p>
+        </div>
+    </section>
 
-        <div id="loading" style="display: none;">Loading...</div>
-    </div>
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-bar">
+                <!-- Species Filter (custom dropdown) -->
+                <div class="filter-group">
+                    <label for="species">Filter by species:</label>
+                    <div class="custom-dropdown" id="speciesDropdown">
+                        <div class="selected" data-value="all">
+                            All Species
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                        <div class="options">
+                            <div class="option selected" data-value="all">All Species</div>
+                            <?php foreach ($speciesList as $species): ?>
+                                <div class="option" data-value="<?php echo e($species); ?>">
+                                    <?php echo ucfirst(e($species)); ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Filter -->
+                <div class="filter-group">
+                    <label for="search">Search by name:</label>
+                    <input type="text" id="search" class="form-control filter-input" placeholder="Enter pet name...">
+                </div>
+                
+                <!-- Clear Button -->
+                <div class="filter-actions">
+                    <button id="clearFilters" class="btn btn-outline btn-small">Clear</button>
+                </div>
+            </div>
+            
+            <!-- Results Count -->
+            <div id="pets-count" class="results-count"></div>
+        </div>
+    </section>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Name</th>
-                <th>Species</th>
-                <th>Age</th>
-                <th>Price</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="petsTableBody">
-            <?php if($pets->num_rows > 0) : ?>
-                <?php while($row = $pets->fetch_assoc()) : ?>
-                    <tr>
-                        <td>
-                            <?php if(!empty($row['image'])): ?>
-                            <img src="../../assets/uploads/pets/<?php echo htmlspecialchars($row['image']); ?>" 
-                                 width="50" height="50">
-                            <?php else: ?>
-                            No photo
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['species']); ?></td>
-                        <td><?php echo $row['age']; ?> year old</td>
-                        <td>₱<?php echo $row['price']; ?></td>
-                        <td>
-                            <a href="pet_details?id=<?php echo $row['id']; ?>">View</a>
-                            <?php if(isset($_SESSION['user_id'])): ?>
-                            | <a href="edit_pet?id=<?php echo $row['id']; ?>">Edit</a>
-                            | <a href="delete_pet?id=<?php echo $row['id']; ?>" 
-                                 onclick="return confirm('Are you sure?')">Delete</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else : ?>
-                <tr><td colspan='6'>No pets available.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+    <!-- Pets Grid -->
+    <section class="pets-section">
+        <div class="container">
+            <div id="pets-results-area" class="pets-grid">
+                <!-- Results loaded via AJAX -->
+            </div>
+            
+            <!-- Load More Container -->
+            <div id="loadMoreContainer" class="load-more-container">
+                <button id="loadMoreBtn" class="btn btn-outline btn-large">Load More</button>
+            </div>
+        </div>
+    </section>
+</div>
 
-    <br>
-    <a href="index">Back to Home</a>
-
-    <script>
-    function buildRow(pet) {
-        const hasImage = pet.image && pet.image.trim() !== '';
-        const imageHtml = hasImage
-            ? `<img src="../../assets/uploads/pets/${encodeURIComponent(pet.image)}" width="50" height="50">`
-            : 'No photo';
-
-        const actions = [
-            `<a href="pet_details?id=${encodeURIComponent(pet.id)}">View</a>`
-        ];
-        <?php if(isset($_SESSION['user_id'])): ?>
-        actions.push(`<a href="edit_pet?id=${encodeURIComponent(pet.id)}">Edit</a>`);
-        actions.push(`<a href="delete_pet?id=${encodeURIComponent(pet.id)}" onclick="return confirm('Are you sure?')">Delete</a>`);
-        <?php endif; ?>
-
-        return `
-            <tr>
-                <td>${imageHtml}</td>
-                <td>${pet.name}</td>
-                <td>${pet.species}</td>
-                <td>${pet.age} year old</td>
-                <td>₱${parseFloat(pet.price).toFixed(2)}</td>
-                <td>${actions.join(' | ')}</td>
-            </tr>
-        `;
+<script>
+// Clear filters functionality (minimal, since filter.js handles most)
+document.getElementById('clearFilters')?.addEventListener('click', function() {
+    // Reset species dropdown
+    const dropdownSelected = document.querySelector('#speciesDropdown .selected');
+    const allOption = document.querySelector('#speciesDropdown .option[data-value="all"]');
+    
+    if (dropdownSelected && allOption) {
+        dropdownSelected.innerHTML = 'All Species <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+        dropdownSelected.dataset.value = 'all';
+        
+        document.querySelectorAll('#speciesDropdown .option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        allOption.classList.add('selected');
     }
-
-    async function loadPets() {
-        const species = document.getElementById('species').value;
-        const loadingEl = document.getElementById('loading');
-        const tbody = document.getElementById('petsTableBody');
-
-        loadingEl.style.display = 'inline';
-        tbody.innerHTML = '';
-
-        try {
-            const res = await fetch('../../backend/api/search_pets.php?species=' + encodeURIComponent(species));
-            const data = await res.json();
-
-            if (!data.success) {
-                tbody.innerHTML = '<tr><td colspan="6">Failed to load pets.</td></tr>';
-                return;
-            }
-
-            if (data.count === 0) {
-                tbody.innerHTML = '<tr><td colspan="6">No pets found.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.data.map(buildRow).join('');
-        } catch (error) {
-            tbody.innerHTML = `<tr><td colspan="6" style="color: red;">Error loading pets: ${error.message}</td></tr>`;
-        } finally {
-            loadingEl.style.display = 'none';
-        }
+    
+    // Clear search
+    document.getElementById('search').value = '';
+    
+    // Trigger filter update
+    if (window.filterManager) {
+        window.filterManager.resetAndLoad();
     }
+});
+</script>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('species').addEventListener('change', loadPets);
-    });
-    </script>
-</body>
-</html>
+<?php require_once __DIR__ . '/../../backend/includes/footer.php'; ?>

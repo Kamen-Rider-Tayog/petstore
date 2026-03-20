@@ -36,7 +36,7 @@ $page_title = "Frequently Asked Questions";
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo asset('css/faq.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset('css/pages/faq.css'); ?>">
 
 <!-- FAQ Hero Section -->
 <section class="faq-hero">

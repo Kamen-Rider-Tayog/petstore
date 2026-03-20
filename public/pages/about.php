@@ -134,7 +134,7 @@ try {
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo asset('css/about.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset('css/pages/about.css'); ?>">
 
 <div class="about-page">
     <!-- Hero Section -->

@@ -83,3 +83,6 @@ RewriteRule ^sitemap$                 public/pages/sitemap.php [QSA,L]
 
 # ── 404 fallback ────────────────────────────────────────────
 RewriteRule ^404$                     public/errors/404.php [QSA,L]
+
+# API routes
+RewriteRule ^api/([a-zA-Z0-9_-]+)$ backend/api/$1.php [QSA,L]

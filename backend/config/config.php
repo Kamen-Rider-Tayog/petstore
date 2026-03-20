@@ -57,7 +57,7 @@ class Config
         self::$config = [
             'APP_NAME' => 'Ria Pet Store',
             'APP_ENV' => 'development',
-            'APP_URL' => 'http://localhost/petstore',
+            'APP_URL' => 'http://localhost/Ria-Pet-Store',
             'APP_DEBUG' => true,
             'DB_HOST' => 'localhost',
             'DB_USER' => 'root',
@@ -103,8 +103,10 @@ class Config
      */
     public static function baseUrl($path = '')
     {
-        $url = self::get('APP_URL', 'http://localhost/petstore');
-        return $url . ($path ? '/' . ltrim($path, '/') : '');
+        $url = self::get('APP_URL', 'http://localhost/Ria-Pet-Store');
+        // Ensure URL has trailing slash
+        $url = rtrim($url, '/') . '/';
+        return $url . ltrim($path, '/');
     }
     
     /**

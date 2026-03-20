@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 16, 2026 at 09:09 PM
+-- Generation Time: Mar 19, 2026 at 06:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -270,7 +270,7 @@ CREATE TABLE `pets` (
   `price` decimal(10,2) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `pet_status` enum('available','sold','reserved','adopted') DEFAULT 'available',
-  `image` varchar(255) DEFAULT NULL,
+  `pet_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `featured` tinyint(1) DEFAULT 0
@@ -280,12 +280,32 @@ CREATE TABLE `pets` (
 -- Dumping data for table `pets`
 --
 
-INSERT INTO `pets` (`id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `price`, `description`, `pet_status`, `image`, `created_at`, `updated_at`, `featured`) VALUES
+INSERT INTO `pets` (`id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `price`, `description`, `pet_status`, `pet_image`, `created_at`, `updated_at`, `featured`) VALUES
 (1, 'Max', 'dog', NULL, NULL, 2, NULL, 350.00, 'Friendly golden retriever, great with kids and other pets.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
 (2, 'Luna', 'cat', NULL, NULL, 3, NULL, 180.00, 'Playful tabby cat, loves to cuddle and play with toys.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
 (3, 'Coco', 'rabbit', NULL, NULL, 4, NULL, 75.50, 'Gentle lop-eared rabbit, perfect for first-time owners.', 'sold', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
 (4, 'Kiwi', 'bird', NULL, NULL, 2, NULL, 120.00, 'Colorful parakeet, sings beautifully and loves attention.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(5, 'Charlie', 'hamster', NULL, NULL, 1, NULL, 45.00, 'Adorable teddy bear hamster, very active and friendly.', 'reserved', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0);
+(5, 'Charlie', 'hamster', NULL, NULL, 1, NULL, 45.00, 'Adorable teddy bear hamster, very active and friendly.', 'reserved', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
+(6, 'Charlie', 'dog', 'Beagle', 'Tri-color', 3, 'male', 280.00, 'Charlie is an energetic Beagle who loves to play and explore. Great with kids and other dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(7, 'Bella', 'dog', 'French Bulldog', 'Fawn', 2, 'female', 450.00, 'Bella is a sweet French Bulldog with a calm temperament. She loves cuddles and short walks.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(8, 'Rocky', 'dog', 'German Shepherd', 'Black and Tan', 4, 'male', 380.00, 'Rocky is a loyal German Shepherd looking for an active family. Knows basic commands.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(9, 'Luna', 'dog', 'Siberian Husky', 'Gray and White', 1, 'female', 520.00, 'Luna is a playful Husky puppy with beautiful blue eyes. Very energetic and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(10, 'Cooper', 'dog', 'Golden Retriever', 'Golden', 5, 'male', 320.00, 'Cooper is a gentle Golden Retriever who loves children. Well-trained and calm.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(11, 'Oliver', 'cat', 'Maine Coon', 'Brown Tabby', 3, 'male', 220.00, 'Oliver is a majestic Maine Coon with a fluffy coat. Very affectionate and good with dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(12, 'Chloe', 'cat', 'Persian', 'White', 2, 'female', 280.00, 'Chloe is a beautiful Persian cat with stunning blue eyes. Quiet and elegant.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(13, 'Simba', 'cat', 'Bengal', 'Spotted', 1, 'male', 350.00, 'Simba is an active Bengal kitten with beautiful spotted coat. Loves to climb and play.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(14, 'Milo', 'cat', 'Siamese', 'Seal Point', 4, 'male', 190.00, 'Milo is a vocal Siamese who loves attention. Very social and talkative.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(15, 'Nala', 'cat', 'Ragdoll', 'Seal Lynx', 2, 'female', 310.00, 'Nala is a floppy Ragdoll who goes limp when you hold her. Very relaxed and sweet.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(16, 'Mango', 'bird', 'Sun Conure', 'Yellow/Orange', 1, 'male', 180.00, 'Mango is a vibrant Sun Conure parrot. Very colorful and learning to talk.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(17, 'Blue', 'bird', 'Blue Jay', 'Blue', 2, 'female', 95.00, 'Blue is a beautiful Blue Jay with striking blue feathers. Very active and vocal.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(18, 'Kiwi', 'bird', 'Budgie', 'Green', 1, 'female', 35.00, 'Kiwi is a small budgie perfect for first-time bird owners. Sweet and chirpy.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(19, 'Rio', 'bird', 'Macaw', 'Blue and Gold', 5, 'male', 850.00, 'Rio is a stunning Macaw with a large vocabulary. Needs an experienced owner.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(20, 'Thumper', 'rabbit', 'Holland Lop', 'Chocolate', 1, 'male', 75.00, 'Thumper is a cute Holland Lop with floppy ears. Litter box trained and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(21, 'Daisy', 'rabbit', 'Rex', 'White', 2, 'female', 65.00, 'Daisy is a soft Rex rabbit with velvety fur. Very calm and loves to be petted.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(22, 'Oreo', 'rabbit', 'Dutch', 'Black and White', 1, 'female', 55.00, 'Oreo is a playful Dutch rabbit who loves to explore. Great with older children.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
+(23, 'Peanut', 'hamster', 'Syrian', 'Golden', 0, 'male', 18.00, 'Peanut is a friendly Syrian hamster. Active at night and fun to watch.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(24, 'Squeaky', 'guinea pig', 'Abyssinian', 'Brown/White', 1, 'female', 28.00, 'Squeaky is a vocal guinea pig who wheeks for treats. Very social.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
+(25, 'Gizmo', 'ferret', 'Sable', 'Dark Brown', 2, 'male', 120.00, 'Gizmo is a curious ferret who loves tunnels and toys. Very playful and energetic.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1);
 
 -- --------------------------------------------------------
 
@@ -696,7 +716,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `products`

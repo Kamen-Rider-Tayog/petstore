@@ -34,7 +34,7 @@ $page_title = "Sitemap";
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo asset('css/sitemap.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset('css/pages/sitemap.css'); ?>">
 
 
 <!-- Quick Navigation -->

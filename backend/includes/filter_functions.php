@@ -1,15 +1,29 @@
 <?php
+// backend/includes/filter_functions.php
+
+/**
+ * Build filter query for products
+ */
 function buildProductFilterQuery($filters) {
     $where = [];
     $params = [];
     $types = '';
 
-    if (!empty($filters['category'])) {
+    // Category filter (can be multiple)
+    if (!empty($filters['category']) && is_array($filters['category'])) {
+        $placeholders = implode(',', array_fill(0, count($filters['category']), '?'));
+        $where[] = "category IN ($placeholders)";
+        foreach ($filters['category'] as $cat) {
+            $params[] = $cat;
+            $types .= 's';
+        }
+    } elseif (!empty($filters['category']) && !is_array($filters['category'])) {
         $where[] = "category = ?";
         $params[] = $filters['category'];
         $types .= 's';
     }
 
+    // Price range
     if (!empty($filters['min_price'])) {
         $where[] = "price >= ?";
         $params[] = $filters['min_price'];
@@ -22,16 +36,22 @@ function buildProductFilterQuery($filters) {
         $types .= 'd';
     }
 
+    // In stock only
     if (!empty($filters['in_stock'])) {
         $where[] = "quantity_in_stock > 0";
     }
 
-    if (!empty($filters['brand'])) {
-        $where[] = "brand = ?";
-        $params[] = $filters['brand'];
-        $types .= 's';
+    // Brand filter
+    if (!empty($filters['brand']) && is_array($filters['brand'])) {
+        $placeholders = implode(',', array_fill(0, count($filters['brand']), '?'));
+        $where[] = "brand IN ($placeholders)";
+        foreach ($filters['brand'] as $brand) {
+            $params[] = $brand;
+            $types .= 's';
+        }
     }
 
+    // Search
     if (!empty($filters['search'])) {
         $where[] = "(product_name LIKE ? OR description LIKE ?)";
         $search_term = "%" . $filters['search'] . "%";
@@ -49,47 +69,29 @@ function buildProductFilterQuery($filters) {
     ];
 }
 
+/**
+ * Build filter query for pets
+ */
 function buildPetFilterQuery($filters) {
     $where = [];
     $params = [];
     $types = '';
 
-    if (!empty($filters['species'])) {
+    // Species filter
+    if (!empty($filters['species']) && $filters['species'] !== 'all') {
         $where[] = "species = ?";
         $params[] = $filters['species'];
         $types .= 's';
     }
 
-    if (!empty($filters['breed'])) {
-        $where[] = "breed LIKE ?";
-        $params[] = "%{$filters['breed']}%";
+    // Search by name
+    if (!empty($filters['search'])) {
+        $where[] = "name LIKE ?";
+        $params[] = '%' . $filters['search'] . '%';
         $types .= 's';
     }
 
-    if (!empty($filters['min_age'])) {
-        $where[] = "age >= ?";
-        $params[] = $filters['min_age'];
-        $types .= 'i';
-    }
-
-    if (!empty($filters['max_age'])) {
-        $where[] = "age <= ?";
-        $params[] = $filters['max_age'];
-        $types .= 'i';
-    }
-
-    if (!empty($filters['gender'])) {
-        $where[] = "gender = ?";
-        $params[] = $filters['gender'];
-        $types .= 's';
-    }
-
-    if (!empty($filters['color'])) {
-        $where[] = "color LIKE ?";
-        $params[] = "%{$filters['color']}%";
-        $types .= 's';
-    }
-
+    // Price range
     if (!empty($filters['min_price'])) {
         $where[] = "price >= ?";
         $params[] = $filters['min_price'];
@@ -102,6 +104,26 @@ function buildPetFilterQuery($filters) {
         $types .= 'd';
     }
 
+    // Age range
+    if (!empty($filters['min_age'])) {
+        $where[] = "age >= ?";
+        $params[] = $filters['min_age'];
+        $types .= 'i';
+    }
+
+    if (!empty($filters['max_age'])) {
+        $where[] = "age <= ?";
+        $params[] = $filters['max_age'];
+        $types .= 'i';
+    }
+
+    // Gender filter
+    if (!empty($filters['gender']) && $filters['gender'] !== 'all') {
+        $where[] = "gender = ?";
+        $params[] = $filters['gender'];
+        $types .= 's';
+    }
+
     $where_clause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
 
     return [
@@ -111,14 +133,17 @@ function buildPetFilterQuery($filters) {
     ];
 }
 
+/**
+ * Get sort order for products
+ */
 function getSortOrder($sort) {
     $sort_options = [
-        'relevance' => 'product_name ASC',
+        'relevance' => 'id DESC',
         'price_low' => 'price ASC',
         'price_high' => 'price DESC',
-        'name' => 'product_name ASC',
+        'name_asc' => 'product_name ASC',
+        'name_desc' => 'product_name DESC',
         'newest' => 'id DESC'
     ];
-    return $sort_options[$sort] ?? 'product_name ASC';
+    return $sort_options[$sort] ?? 'id DESC';
 }
-?>

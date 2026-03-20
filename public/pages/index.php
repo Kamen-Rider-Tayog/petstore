@@ -5,9 +5,6 @@ $page_description = 'Ria Pet Store - Your one-stop shop for pets, supplies, and 
 
 require_once __DIR__ . '/../../backend/includes/header.php';
 
-// Now asset() is available — add page-specific CSS
-$page_styles = [asset('css/index.css')];
-
 // ── Featured products ──────────────────────────────────────
 $featured_products = Cache::get('home_featured_products');
 if ($featured_products === null) {
@@ -22,11 +19,36 @@ if ($featured_products === null) {
 // ── Available pets ─────────────────────────────────────────
 $featured_pets = Cache::get('home_featured_pets');
 if ($featured_pets === null) {
+    // First try to get featured pets
     $r = $conn->query(
-        "SELECT id, name, species, breed, age
-         FROM pets WHERE pet_status = 'available' ORDER BY id DESC LIMIT 4"
+        "SELECT id, name, species, breed, age, pet_image
+         FROM pets 
+         WHERE pet_status = 'available' AND featured = 1 
+         ORDER BY id DESC 
+         LIMIT 4"
     );
-    $featured_pets = $r->fetch_all(MYSQLI_ASSOC);
+    
+    $featured = $r->fetch_all(MYSQLI_ASSOC);
+    $featured_count = count($featured);
+    
+    // If we have less than 4 featured pets, fill with recent available pets
+    if ($featured_count < 4) {
+        $remaining = 4 - $featured_count;
+        $r2 = $conn->query(
+            "SELECT id, name, species, breed, age, pet_image
+             FROM pets 
+             WHERE pet_status = 'available' AND featured = 0
+             ORDER BY id DESC 
+             LIMIT $remaining"
+        );
+        $recent = $r2->fetch_all(MYSQLI_ASSOC);
+        
+        // Merge featured and recent pets
+        $featured_pets = array_merge($featured, $recent);
+    } else {
+        $featured_pets = $featured;
+    }
+    
     Cache::put('home_featured_pets', $featured_pets, 86400);
 }
 
@@ -58,9 +80,7 @@ if ($reviews === null) {
     Cache::put('home_reviews', $reviews, 3600);
 }
 
-// Inject index.css into the page now that header has already output <head>
-// We do this via inline style injection since header already closed <head>
-echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VERSION . '">';
+echo '<link rel="stylesheet" href="' . asset('css/pages/index.css') . '?v=' . ASSET_VERSION . '">';
 ?>
 
 <!-- HERO -->
@@ -90,6 +110,15 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <?php foreach ($featured_pets as $pet): ?>
             <div class="pet-card">
                 <div class="pet-card-image">
+                    <?php if (!empty($pet['pet_image'])): ?>
+                        <img src="<?php echo asset('images/pets/' . $pet['pet_image']); ?>" 
+                             alt="<?php echo e($pet['name']); ?>"
+                             onerror="this.src='<?php echo asset('images/pet-placeholder.jpg'); ?>'">
+                    <?php else: ?>
+                        <div class="no-image">
+                            <?php echo icon('paw', 32); ?>
+                        </div>
+                    <?php endif; ?>
                     <span class="pet-species-badge"><?php echo ucfirst(e($pet['species'])); ?></span>
                 </div>
                 <div class="pet-card-body">
@@ -97,7 +126,9 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
                     <?php if (!empty($pet['breed'])): ?>
                         <p class="pet-breed"><?php echo e($pet['breed']); ?></p>
                     <?php endif; ?>
-                    <p class="pet-age"><?php echo (int)$pet['age']; ?> <?php echo $pet['age'] == 1 ? 'year' : 'years'; ?> old</p>
+                    <p class="pet-age">
+                        <?php echo icon('calendar', 14); ?> <?php echo (int)$pet['age']; ?> <?php echo $pet['age'] == 1 ? 'year' : 'years'; ?> old
+                    </p>
                 </div>
                 <div class="pet-card-footer">
                     <a href="<?php echo url('pet_details?id=' . (int)$pet['id']); ?>" class="btn btn-primary btn-small">
@@ -126,7 +157,6 @@ echo '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . ASSET_VE
         <?php foreach ($featured_products as $product): ?>
             <div class="product-card">
                 <div class="product-info">
-                    <!-- Badges removed -->
                     <h3>
                         <a href="<?php echo url('product_details?id=' . (int)$product['id']); ?>">
                             <?php echo e($product['product_name']); ?>

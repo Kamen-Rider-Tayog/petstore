@@ -8,7 +8,7 @@ $page_title = "Terms of Service";
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo asset('css/terms.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset('css/pages/terms.css'); ?>">
 
 <!-- Terms of Service Content -->
 <section class="terms-content">

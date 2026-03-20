@@ -8,7 +8,7 @@ $page_title = "Privacy Policy";
 include '../../backend/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo asset('css/privacy.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset('css/pages/privacy.css'); ?>">
 
 <!-- Privacy Policy Content -->
 <section class="privacy-content">

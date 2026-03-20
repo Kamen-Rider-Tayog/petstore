@@ -1,3 +1,5 @@
+//to be refractored 
+
 <?php
 require_once '../../backend/config/database.php';
 
