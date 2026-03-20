@@ -68,78 +68,78 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │       └── search_analytics.php
 ├── assets/
 │   ├── css/
-│   │   ├── 404.css
-│   │   ├── about.css
-│   │   ├── admin.css
-│   │   ├── admin_backups.css
-│   │   ├── admin_bulk_operations.css
-│   │   ├── admin_featured_products.css
-│   │   ├── admin_login.css
-│   │   ├── admin_manage_categories.css
-│   │   ├── admin_manage_reviews.css
-│   │   ├── admin_manage_suppliers.css
-│   │   ├── admin_products.css
-│   │   ├── admin_reports.css
-│   │   ├── admin_search_analytics.css
-│   │   ├── admin_settings.css
-│   │   ├── advanced_search.css
-│   │   ├── animations.css
-│   │   ├── appointments.css
-│   │   ├── base.css
-│   │   ├── btn.css
-│   │   ├── cancel_appointment.css
-│   │   ├── cancel_order.css
-│   │   ├── cart.css
-│   │   ├── categories.css
-│   │   ├── category_products.css
-│   │   ├── checkout.css
-│   │   ├── components.css
-│   │   ├── contact.css
-│   │   ├── contact_process.css
-│   │   ├── customer_order.css
-│   │   ├── dogs.css
-│   │   ├── dropdown.css
-│   │   ├── edit_profile.css
-│   │   ├── faq.css
-│   │   ├── featured.css
-│   │   ├── footer.css
-│   │   ├── icons.css
-│   │   ├── index.css
+│   │   ├── admin/
+│   │   │   ├── admin.css
+│   │   │   ├── admin_backups.css
+│   │   │   ├── admin_bulk_operations.css
+│   │   │   ├── admin_featured_products.css
+│   │   │   ├── admin_login.css
+│   │   │   ├── admin_manage_categories.css
+│   │   │   ├── admin_manage_reviews.css
+│   │   │   ├── admin_manage_suppliers.css
+│   │   │   ├── admin_products.css
+│   │   │   ├── admin_reports.css
+│   │   │   ├── admin_search_analytics.css
+│   │   │   └── admin_settings.css
+│   │   ├── appointments/
+│   │   │   ├── appointments.css
+│   │   │   ├── cancel_appointment.css
+│   │   │   ├── my_appointments.css
+│   │   │   └── reschedule_appointment.css
+│   │   ├── auth/
+│   │   │   ├── login.css
+│   │   │   ├── login_process.css
+│   │   │   ├── logout.css
+│   │   │   ├── register.css
+│   │   │   └── register_process.css
+│   │   ├── cart/
+│   │   │   ├── cancel_order.css
+│   │   │   ├── cart.css
+│   │   │   ├── checkout.css
+│   │   │   ├── order_confirmation.css
+│   │   │   └── place_order.css
+│   │   ├── components/
+│   │   │   ├── dropdown.css
+│   │   │   ├── footer.css
+│   │   │   └── navigation.css
+│   │   ├── core/
+│   │   │   ├── animations.css
+│   │   │   ├── base.css
+│   │   │   ├── btn.css
+│   │   │   ├── components.css
+│   │   │   ├── icons.css
+│   │   │   ├── layout.css
+│   │   │   ├── print.css
+│   │   │   └── utilities.css
 │   │   ├── install.css
-│   │   ├── layout.css
-│   │   ├── login.css
-│   │   ├── login_process.css
-│   │   ├── logout.css
-│   │   ├── low_stock.css
-│   │   ├── my_appointments.css
-│   │   ├── navigation.css
-│   │   ├── new_arrivals.css
-│   │   ├── on_sale.css
-│   │   ├── order_confirmation.css
-│   │   ├── order_details.css
-│   │   ├── order_history.css
-│   │   ├── pets.css
-│   │   ├── pet_details.css
-│   │   ├── place_order.css
-│   │   ├── print.css
-│   │   ├── privacy.css
-│   │   ├── products.css
-│   │   ├── product_details.css
-│   │   ├── product_reviews.css
-│   │   ├── recently_viewed.css
-│   │   ├── register.css
-│   │   ├── register_process.css
-│   │   ├── reschedule_appointment.css
-│   │   ├── search.css
-│   │   ├── search_results.css
-│   │   ├── services.css
-│   │   ├── service_details.css
-│   │   ├── sitemap.css
-│   │   ├── supplier_products.css
-│   │   ├── terms.css
-│   │   ├── user_profile.css
-│   │   ├── utilities.css
-│   │   └── write_review.css
+│   │   ├── orders/
+│   │   │   ├── contact.css
+│   │   │   ├── contact_process.css
+│   │   │   ├── customer_order.css
+│   │   │   ├── order_details.css
+│   │   │   └── order_history.css
+│   │   ├── pages/
+│   │   │   ├── 404.css
+│   │   │   ├── about.css
+│   │   │   ├── faq.css
+│   │   │   ├── index.css
+│   │   │   ├── privacy.css
+│   │   │   ├── sitemap.css
+│   │   │   └── terms.css
+│   │   ├── pets/
+│   │   │   ├── pets.css
+│   │   │   └── pet_details.css
+│   │   ├── reviews/
+│   │   │   ├── product_reviews.css
+│   │   │   └── write_review.css
+│   │   ├── shop/
+│   │   │   ├── products.css
+│   │   │   ├── product_details.css
+│   │   │   ├── services.css
+│   │   │   └── service_details.css
+│   │   └── user/
+│   │       ├── edit_profile.css
+│   │       └── user_profile.css
 │   ├── images/
 │   └── js/
 │       ├── appointment.js
@@ -240,21 +240,11 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   ├── product_reviews.php
 │   │   └── write_review.php
 │   ├── shop/
-│   │   ├── advanced_search.php
-│   │   ├── categories.php
-│   │   ├── category_products.php
 │   │   ├── featured.php
-│   │   ├── low_stock.php
 │   │   ├── new_arrivals.php
 │   │   ├── on_sale.php
 │   │   ├── products.php
-│   │   ├── product_details.php
-│   │   ├── recently_viewed.php
-│   │   ├── search.php
-│   │   ├── search_results.php
-│   │   ├── services.php
-│   │   ├── service_details.php
-│   │   └── supplier_products.php
+│   │   └── product_details.php
 │   └── user/
 │       ├── edit_profile.php
 │       └── user_profile.php
@@ -262,10 +252,8 @@ c:/xampp/htdocs/Ria-Pet-Store/
 ├── sitemap.xml
 └── storage/
     └── cache/
-        ├── 0f15ea13765c62433d91f7ca81f1999b.cache
         ├── 6fd856e1d2ef4e1c800a25daed7f0140.cache
         ├── 98d910e36f6b2361d6615320be7090b5.cache
-        ├── a099cadd303feb8e54cc026adae5057b.cache
         ├── b94ae0f47140cce385db2926966b3bd7.cache
         ├── eadbbc5cbb03598f1096ad08549a2784.cache
         └── f6323b31f14e87e345afb417991781ac.cache

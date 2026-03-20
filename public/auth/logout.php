@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__ . '/../../backend/functions/helpers.php';
 session_start();
 session_destroy();
-header('Location: index?message=You have been logged out');
+header('Location: ' . url(''));
 exit;
 ?>
-<link rel="stylesheet" href="../../assets/css/logout.css">

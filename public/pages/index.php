@@ -25,15 +25,15 @@ if ($featured_pets === null) {
          FROM pets 
          WHERE pet_status = 'available' AND featured = 1 
          ORDER BY id DESC 
-         LIMIT 4"
+         LIMIT 3"
     );
     
     $featured = $r->fetch_all(MYSQLI_ASSOC);
     $featured_count = count($featured);
     
-    // If we have less than 4 featured pets, fill with recent available pets
-    if ($featured_count < 4) {
-        $remaining = 4 - $featured_count;
+    // If we have less than 3 featured pets, fill with recent available pets
+    if ($featured_count < 3) {
+        $remaining = 3 - $featured_count;
         $r2 = $conn->query(
             "SELECT id, name, species, breed, age, pet_image
              FROM pets 
