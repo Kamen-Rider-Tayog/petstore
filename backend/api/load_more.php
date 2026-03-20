@@ -84,26 +84,93 @@ try {
         
     } else {
         // ===== PRODUCTS LOAD MORE =====
-        $filterQuery = buildProductFilterQuery($data['filters'] ?? []);
-        $sort = getSortOrder($data['filters']['sort'] ?? 'relevance');
-        
+        $whereConditions = [];
+        $params = [];
+        $types = '';
+
+        // Search
+        if (!empty($data['search'])) {
+            $whereConditions[] = "(product_name LIKE ? OR description LIKE ?)";
+            $search_term = "%" . $data['search'] . "%";
+            $params[] = $search_term;
+            $params[] = $search_term;
+            $types .= 'ss';
+        }
+
+        // Category filter
+        if (!empty($data['category']) && $data['category'] !== 'all') {
+            $whereConditions[] = "category = ?";
+            $params[] = $data['category'];
+            $types .= 's';
+        }
+
+        // Featured filter
+        if (!empty($data['featured'])) {
+            $whereConditions[] = "featured = 1";
+        }
+
+        // On Sale filter
+        if (!empty($data['on_sale'])) {
+            $whereConditions[] = "on_sale = 1";
+        }
+
+        // New Arrivals filter (products from last 30 days)
+        if (!empty($data['new_arrivals'])) {
+            $whereConditions[] = "created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+        }
+
+        // Price range
+        if (!empty($data['min_price'])) {
+            $whereConditions[] = "price >= ?";
+            $params[] = (float)$data['min_price'];
+            $types .= 'd';
+        }
+
+        if (!empty($data['max_price'])) {
+            $whereConditions[] = "price <= ?";
+            $params[] = (float)$data['max_price'];
+            $types .= 'd';
+        }
+
+        // In stock only
+        if (!empty($data['in_stock'])) {
+            $whereConditions[] = "quantity_in_stock > 0";
+        }
+
+        $where = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+
+        // Sorting
+        $sort = 'id DESC';
+        if (!empty($data['sort'])) {
+            switch ($data['sort']) {
+                case 'name_asc': $sort = 'product_name ASC'; break;
+                case 'name_desc': $sort = 'product_name DESC'; break;
+                case 'price_asc': $sort = 'price ASC'; break;
+                case 'price_desc': $sort = 'price DESC'; break;
+            }
+        }
+
         // Get total count
-        $countSql = "SELECT COUNT(*) as total FROM products " . $filterQuery['where'];
+        $countSql = "SELECT COUNT(*) as total FROM products $where";
         $countStmt = $conn->prepare($countSql);
-        if (!empty($filterQuery['params'])) {
-            $countStmt->bind_param($filterQuery['types'], ...$filterQuery['params']);
+        if (!empty($params)) {
+            $countStmt->bind_param($types, ...$params);
         }
         $countStmt->execute();
         $total = $countStmt->get_result()->fetch_assoc()['total'];
         $countStmt->close();
-        
+
         // Get paginated results
-        $sql = "SELECT * FROM products " . $filterQuery['where'] . " ORDER BY " . $sort . " LIMIT ? OFFSET ?";
+        $sql = "SELECT * FROM products $where ORDER BY $sort LIMIT ? OFFSET ?";
         
         $stmt = $conn->prepare($sql);
-        $params = array_merge($filterQuery['params'], [$per_page, $offset]);
-        $types = $filterQuery['types'] . 'ii';
-        $stmt->bind_param($types, ...$params);
+        if (!empty($params)) {
+            $allParams = array_merge($params, [$per_page, $offset]);
+            $allTypes = $types . 'ii';
+            $stmt->bind_param($allTypes, ...$allParams);
+        } else {
+            $stmt->bind_param('ii', $per_page, $offset);
+        }
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -113,6 +180,8 @@ try {
             while ($product = $result->fetch_assoc()) {
                 include __DIR__ . '/../../backend/includes/product_card.php';
             }
+        } else {
+            echo '<div class="no-results">No products found.</div>';
         }
         $html = ob_get_clean();
     }
