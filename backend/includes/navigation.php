@@ -23,7 +23,7 @@ if ($hour < 12) {
 }
 
 $greeting_text = isset($_SESSION['customer_name'])
-    ? $greeting . ', ' . e($_SESSION['customer_name'])
+    ? $greeting . ', ' . e(explode(' ', $_SESSION['customer_name'])[0])
     : $greeting;
 ?>
 

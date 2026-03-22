@@ -7,18 +7,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$username = trim($_POST['username'] ?? '');
+$first_name = trim($_POST['first_name'] ?? '');
+$last_name = trim($_POST['last_name'] ?? '');
+$email = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $confirm_password = $_POST['confirm_password'] ?? '';
-$full_name = trim($_POST['full_name'] ?? '');
-$email = trim($_POST['email'] ?? '');
 
 $errors = [];
 
-if (empty($username)) {
-    $errors[] = "Username is required";
-} elseif (strlen($username) < 3) {
-    $errors[] = "Username must be at least 3 characters";
+if (empty($first_name)) {
+    $errors[] = "First name is required";
+}
+
+if (empty($last_name)) {
+    $errors[] = "Last name is required";
+}
+
+if (empty($email)) {
+    $errors[] = "Email is required";
+} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Invalid email address";
 }
 
 if (empty($password)) {
@@ -31,20 +39,16 @@ if ($password !== $confirm_password) {
     $errors[] = "Passwords do not match";
 }
 
-if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = "Invalid email address";
-}
-
-// Check if username exists
+// Check if email exists
 if (empty($errors)) {
-    $check_sql = "SELECT id FROM users WHERE username = ?";
+    $check_sql = "SELECT id FROM customers WHERE email = ?";
     $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $check_result = $stmt->get_result();
     
     if ($check_result->num_rows > 0) {
-        $errors[] = "Username already exists";
+        $errors[] = "Email already registered";
     }
     $stmt->close();
 }
@@ -55,12 +59,12 @@ if (!empty($errors)) {
     exit;
 }
 
-// Create user
+// Create customer
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-$insert_sql = "INSERT INTO users (username, password, full_name, email) VALUES (?, ?, ?, ?)";
+$insert_sql = "INSERT INTO customers (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 $stmt = $conn->prepare($insert_sql);
-$stmt->bind_param("ssss", $username, $hashed_password, $full_name, $email);
+$stmt->bind_param("ssss", $first_name, $last_name, $email, $hashed_password);
 
 if ($stmt->execute()) {
     $stmt->close();

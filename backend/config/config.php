@@ -68,6 +68,7 @@ class Config
             'UPLOAD_PATH' => '../assets/uploads/',
             'PLACEHOLDER_IMAGE_SMALL' => 'https://via.placeholder.com/200x150?text=No+Image',
             'PLACEHOLDER_IMAGE_LARGE' => 'https://via.placeholder.com/400x300?text=No+Image',
+            'SESSION_NAME' => 'petstore_session',
         ];
         
         foreach (self::$config as $key => $value) {

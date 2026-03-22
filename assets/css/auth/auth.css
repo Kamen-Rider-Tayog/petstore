@@ -219,3 +219,38 @@ body {
     .auth-footer-links { flex-direction: column; gap: 0.5rem; }
     .footer-links { gap: 1rem; }
 }   
+
+/* Form Row for two columns */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Textarea */
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-medium, #fcc1d8);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--bg-primary, #fff9fc);
+    resize: vertical;
+}
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-500, #f26b98);
+    box-shadow: 0 0 0 3px var(--accent-100, #ffe8ef);
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}

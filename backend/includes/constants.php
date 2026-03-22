@@ -47,7 +47,8 @@ define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
 define('ALLOWED_DOCUMENT_TYPES', ['pdf', 'doc', 'docx']);
 
 // Session and Security
-define('SESSION_TIMEOUT', 3600); // 1 hour
+define('SESSION_NAME', 'petstore_session');
+define('SESSION_TIMEOUT', 3600);
 define('CSRF_TOKEN_LENGTH', 32);
 define('PASSWORD_MIN_LENGTH', 8);
 define('PASSWORD_RESET_EXPIRY', 3600); // 1 hour
