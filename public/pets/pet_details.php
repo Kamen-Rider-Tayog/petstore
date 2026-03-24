@@ -9,8 +9,8 @@ if ($id <= 0) {
 
 require_once __DIR__ . '/../../backend/config/database.php';
 
-// Fetch pet details - use pet_image column
-$stmt = $conn->prepare("SELECT * FROM pets WHERE id = ? AND pet_status = 'available'");
+// Fetch pet details - using store_pets
+$stmt = $conn->prepare("SELECT * FROM store_pets WHERE id = ? AND pet_status = 'available'");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();

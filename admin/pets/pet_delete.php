@@ -10,7 +10,7 @@ if (!$petId) {
 }
 
 // Get pet data
-$stmt = $conn->prepare("SELECT * FROM pets WHERE id = ?");
+$stmt = $conn->prepare("SELECT * FROM store_pets WHERE id = ?");
 $stmt->bind_param('i', $petId);
 $stmt->execute();
 $pet = $stmt->get_result()->fetch_assoc();
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     }
 
     // Delete from database
-    $stmt = $conn->prepare("DELETE FROM pets WHERE id = ?");
+    $stmt = $conn->prepare("DELETE FROM store_pets WHERE id = ?");
     $stmt->bind_param('i', $petId);
 
     if ($stmt->execute()) {

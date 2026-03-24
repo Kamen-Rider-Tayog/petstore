@@ -85,7 +85,7 @@ $greeting_text = isset($_SESSION['customer_name'])
             <li><a href="<?php echo url('products'); ?>" class="nav-link">Products</a></li>
             <li><a href="<?php echo url('pets'); ?>" class="nav-link">Pets</a></li>
             <li><a href="<?php echo url('services'); ?>" class="nav-link">Services</a></li>
-            <li><a href="<?php echo url('appointments'); ?>" class="nav-link">Appointments</a></li>
+            <li><a href="<?php echo url('book_appointment'); ?>" class="nav-link">Appointments</a></li>
         </ul>
     </div>
 

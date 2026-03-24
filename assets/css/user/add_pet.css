@@ -1,0 +1,125 @@
+/* ===== ADD/EDIT PET PAGE ===== */
+.add-pet-page {
+    background: var(--bg-secondary);
+    min-height: calc(100vh - 200px);
+}
+
+.page-hero {
+    background: linear-gradient(135deg, var(--accent-500), var(--accent-600));
+    padding: 3rem 0;
+    text-align: center;
+}
+.page-hero h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+.page-hero p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.add-pet-content {
+    padding: 3rem 0;
+}
+
+.add-pet-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--border-light);
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-medium);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    background: var(--bg-primary);
+    transition: all 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px var(--accent-100);
+}
+.form-group textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+.btn-group .btn {
+    flex: 1;
+    justify-content: center;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+}
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .add-pet-card {
+        padding: 1.5rem;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .btn-group {
+        flex-direction: column;
+    }
+    .btn-group .btn {
+        width: 100%;
+    }
+}

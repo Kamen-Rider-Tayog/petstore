@@ -88,7 +88,7 @@ $stats = [];
 
 try {
     // Get total available pets
-    $result = $conn->query("SELECT COUNT(*) as total FROM pets WHERE status = 'available'");
+    $result = $conn->query("SELECT COUNT(*) as total FROM store_pets WHERE status = 'available'");
     if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $stats['pets'] = $row['total'];

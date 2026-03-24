@@ -11,7 +11,7 @@ if (!$petId) {
 }
 
 // Get pet data
-$stmt = $conn->prepare("SELECT * FROM pets WHERE id = ?");
+$stmt = $conn->prepare("SELECT * FROM store_pets WHERE id = ?");
 $stmt->bind_param('i', $petId);
 $stmt->execute();
 $pet = $stmt->get_result()->fetch_assoc();
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->query("ALTER TABLE pets ADD COLUMN status ENUM('available', 'sold') DEFAULT 'available'");
         }
 
-        $stmt = $conn->prepare("UPDATE pets SET name = ?, species = ?, age = ?, price = ?, description = ?, status = ?, image = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE store_pets SET name = ?, species = ?, age = ?, price = ?, description = ?, status = ?, image = ? WHERE id = ?");
         $stmt->bind_param('ssidsssi', $name, $species, $age, $price, $description, $status, $image, $petId);
 
         if ($stmt->execute()) {

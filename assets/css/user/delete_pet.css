@@ -1,5 +1,5 @@
-/* ===== CANCEL APPOINTMENT PAGE ===== */
-.cancel-appointment-page {
+/* ===== DELETE PET PAGE ===== */
+.delete-pet-page {
     background: var(--bg-secondary);
     min-height: calc(100vh - 200px);
 }
@@ -15,12 +15,12 @@
     color: white;
 }
 
-.cancel-content {
+.delete-content {
     padding: 3rem 0;
 }
 
-.cancel-card {
-    max-width: 600px;
+.delete-card {
+    max-width: 500px;
     margin: 0 auto;
     background: var(--card-bg);
     border-radius: 1rem;
@@ -29,26 +29,34 @@
     text-align: center;
 }
 
-.appointment-info {
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
+.pet-info {
     margin-bottom: 1.5rem;
-    text-align: left;
 }
-.appointment-info h3 {
-    margin: 0 0 1rem 0;
-    color: var(--text-primary);
+.pet-info svg {
+    width: 64px;
+    height: 64px;
+    color: var(--accent-500);
+    margin-bottom: 1rem;
 }
-.appointment-info p {
-    margin: 0.5rem 0;
+.pet-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+}
+.pet-info p {
+    margin: 0;
     color: var(--text-secondary);
+}
+.pet-info .pet-age {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
 }
 
 .warning-text {
     color: #ef4444;
     font-weight: 500;
     margin-bottom: 1.5rem;
+    line-height: 1.5;
 }
 
 .action-buttons {
@@ -57,9 +65,23 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+.action-buttons .btn {
+    min-width: 150px;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
 
 @media (max-width: 768px) {
-    .cancel-card {
+    .delete-card {
         padding: 1.5rem;
     }
     .action-buttons {

@@ -4,8 +4,8 @@ $page_description = 'Browse our available pets - dogs, cats, rabbits, birds and 
 
 require_once __DIR__ . '/../../backend/includes/header.php';
 
-// Get distinct species for filter
-$speciesResult = $conn->query("SELECT DISTINCT species FROM pets WHERE pet_status = 'available' ORDER BY species");
+// Get distinct species for filter - using store_pets
+$speciesResult = $conn->query("SELECT DISTINCT species FROM store_pets WHERE pet_status = 'available' ORDER BY species");
 $speciesList = [];
 while ($row = $speciesResult->fetch_assoc()) {
     $speciesList[] = $row['species'];

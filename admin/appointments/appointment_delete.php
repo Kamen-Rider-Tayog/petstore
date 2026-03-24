@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $sql = "SELECT a.id, a.appointment_date, c.first_name AS customer_first, c.last_name AS customer_last, p.name AS pet_name
         FROM appointments a
         LEFT JOIN customers c ON a.customer_id = c.id
-        LEFT JOIN pets p ON a.pet_id = p.id
+        LEFT JOIN store_pets p ON a.pet_id = p.id
         WHERE a.id = ?";
 
 $stmt = $conn->prepare($sql);

@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->query("ALTER TABLE pets ADD COLUMN status ENUM('available', 'sold') DEFAULT 'available'");
         }
 
-        $stmt = $conn->prepare("INSERT INTO pets (name, species, age, price, description, status, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO store_pets (name, species, age, price, description, status, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param('ssidsss', $name, $species, $age, $price, $description, $status, $image);
 
         if ($stmt->execute()) {

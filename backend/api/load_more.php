@@ -49,7 +49,7 @@ try {
         $where = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
         // Get total count
-        $countSql = "SELECT COUNT(*) as total FROM pets $where";
+        $countSql = "SELECT COUNT(*) as total FROM store_pets $where";
         $countStmt = $conn->prepare($countSql);
         if (!empty($params)) {
             $countStmt->bind_param($types, ...$params);
@@ -60,7 +60,7 @@ try {
         
         // Get paginated results
         $sql = "SELECT id, name, species, breed, age, gender, pet_image, description 
-                FROM pets $where ORDER BY id DESC LIMIT ? OFFSET ?";
+                FROM store_pets $where ORDER BY id DESC LIMIT ? OFFSET ?";
         
         $stmt = $conn->prepare($sql);
         if (!empty($params)) {

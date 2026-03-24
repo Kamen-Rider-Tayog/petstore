@@ -13,7 +13,7 @@ try {
     // Check if tables exist
     $petsTable = $conn->query("SHOW TABLES LIKE 'pets'");
     if ($petsTable && $petsTable->num_rows > 0) {
-        $stmt = $conn->prepare("SELECT DISTINCT category FROM pets WHERE status = 'available' ORDER BY category");
+        $stmt = $conn->prepare("SELECT DISTINCT category FROM store_pets WHERE status = 'available' ORDER BY category");
         $stmt->execute();
         $result = $stmt->get_result();
         $petCategories = array_column($result->fetch_all(MYSQLI_ASSOC), 'category');

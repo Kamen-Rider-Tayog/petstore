@@ -95,8 +95,14 @@ $page_title = 'My Profile';
                         <a href="#profile" class="profile-nav-link active">
                             <?php echo icon('user', 16); ?> Profile Information
                         </a>
+                        <a href="<?php echo url('my_pets'); ?>" class="profile-nav-link">
+                            <?php echo icon('paw', 16); ?> My Pets
+                        </a>
                         <a href="<?php echo url('order_history'); ?>" class="profile-nav-link">
                             <?php echo icon('package', 16); ?> Order History
+                        </a>
+                        <a href="<?php echo url('my_appointments'); ?>" class="profile-nav-link">
+                            <?php echo icon('calendar', 16); ?> My Appointments
                         </a>
                         <a href="<?php echo url('edit_profile'); ?>" class="profile-nav-link">
                             <?php echo icon('edit', 16); ?> Edit Profile

@@ -30,7 +30,7 @@ $sql = "SELECT a.*, c.first_name AS customer_first, c.last_name AS customer_last
                e.first_name AS emp_first, e.last_name AS emp_last
         FROM appointments a
         LEFT JOIN customers c ON a.customer_id = c.id
-        LEFT JOIN pets p ON a.pet_id = p.id
+        LEFT JOIN store_pets p ON a.pet_id = p.id
         LEFT JOIN services s ON a.service_type = s.service_name
         LEFT JOIN employees e ON a.employee_id = e.id
         WHERE a.id = ?";

@@ -65,6 +65,10 @@ RewriteRule ^register_process$        public/auth/register_process.php [QSA,L]
 # ── User ────────────────────────────────────────────────────
 RewriteRule ^user_profile$            public/user/user_profile.php [QSA,L]
 RewriteRule ^edit_profile$            public/user/edit_profile.php [QSA,L]
+RewriteRule ^my_pets$                 public/user/my_pets.php [QSA,L]
+RewriteRule ^add_pet$                 public/user/add_pet.php [QSA,L]
+RewriteRule ^edit_pet$                public/user/edit_pet.php [QSA,L]
+RewriteRule ^delete_pet$              public/user/delete_pet.php [QSA,L]
 
 # ── Reviews ─────────────────────────────────────────────────
 RewriteRule ^product_reviews$         public/reviews/product_reviews.php [QSA,L]

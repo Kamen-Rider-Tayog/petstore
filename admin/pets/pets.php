@@ -10,7 +10,7 @@ $limit = 20;
 $offset = ($page - 1) * $limit;
 
 // Build query
-$query = "SELECT * FROM pets WHERE 1=1";
+$query = "SELECT * FROM store_pets WHERE 1=1";
 $params = [];
 $types = '';
 
@@ -41,7 +41,7 @@ $stmt->execute();
 $pets = $stmt->get_result();
 
 // Get total count for pagination
-$countQuery = "SELECT COUNT(*) as total FROM pets WHERE 1=1";
+$countQuery = "SELECT COUNT(*) as total FROM store_pets WHERE 1=1";
 $countParams = [];
 $countTypes = '';
 

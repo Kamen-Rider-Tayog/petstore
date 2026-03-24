@@ -1,4 +1,97 @@
+/* ===== RESCHEDULE APPOINTMENT PAGE ===== */
 .reschedule-appointment-page {
-    padding: 2rem 0;
-    animation: fadeIn 0.5s ease-in-out;
+    background: var(--bg-secondary);
+    min-height: calc(100vh - 200px);
+}
+
+.page-hero {
+    background: linear-gradient(135deg, var(--accent-500), var(--accent-600));
+    padding: 3rem 0;
+    text-align: center;
+}
+.page-hero h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+}
+
+.reschedule-content {
+    padding: 3rem 0;
+}
+
+.reschedule-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--border-light);
+    padding: 2rem;
+}
+
+.current-appointment {
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.current-appointment h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+.current-appointment p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+}
+
+.reschedule-form {
+    margin-top: 1.5rem;
+}
+.reschedule-form .form-group {
+    margin-bottom: 1.5rem;
+}
+.reschedule-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+.reschedule-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-medium);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.reschedule-form input:focus {
+    outline: none;
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px var(--accent-100);
+}
+.required {
+    color: #ef4444;
+}
+.help-text {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .reschedule-card {
+        padding: 1.5rem;
+    }
+    .action-buttons {
+        flex-direction: column;
+    }
+    .action-buttons .btn {
+        width: 100%;
+    }
 }

@@ -1,65 +1,94 @@
 <?php
-require_once '../../backend/includes/header.php';
-<link rel="stylesheet" href="../../assets/css/cancel_appointment.css">
+session_name('petstore_session');
+session_start();
 
-require_once '../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/functions/helpers.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+// Check if user is logged in
+if (!isset($_SESSION['customer_id'])) {
+    header('Location: ' . url('login'));
     exit;
 }
 
-$appointmentId = (int)($_GET['id'] ?? 0);
-$customerId = $_SESSION['user_id'];
+require_once __DIR__ . '/../../backend/includes/header.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_cancel'])) {
-    $stmt = $conn->prepare('UPDATE appointments SET status = ? WHERE id = ? AND customer_id = ?');
-    $status = 'cancelled';
-    $stmt->bind_param('sii', $status, $appointmentId, $customerId);
-    if ($stmt->execute() && $stmt->affected_rows > 0) {
-        header('Location: my_appointments.php?cancelled=1');
-        exit;
-    } else {
-        $error = 'Failed to cancel appointment.';
-    }
+$customerId = $_SESSION['customer_id'];
+$appointmentId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$error = '';
+
+if ($appointmentId <= 0) {
+    header('Location: ' . url('my_appointments'));
+    exit;
 }
 
-// Fetch appointment
-$stmt = $conn->prepare('
-    SELECT a.*, p.name as pet_name, s.service_name
+// Get appointment details
+$stmt = $conn->prepare("
+    SELECT a.*, p.name as pet_name, s.service_name 
     FROM appointments a
-    JOIN pets p ON a.pet_id = p.id
-    JOIN services s ON a.service_type = s.service_name
-    WHERE a.id = ? AND a.customer_id = ?
-');
-$stmt->bind_param('ii', $appointmentId, $customerId);
+    LEFT JOIN store_pets p ON a.pet_id = p.id
+    LEFT JOIN services s ON a.service_id = s.id
+    WHERE a.id = ? AND a.customer_id = ? AND a.status != 'cancelled'
+");
+$stmt->bind_param("ii", $appointmentId, $customerId);
 $stmt->execute();
 $appointment = $stmt->get_result()->fetch_assoc();
 
 if (!$appointment) {
-    echo '<p>Appointment not found.</p>';
-    require_once '../../backend/includes/footer.php';
+    header('Location: ' . url('my_appointments'));
     exit;
 }
 
+// Handle cancellation
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $stmt = $conn->prepare("UPDATE appointments SET status = 'cancelled' WHERE id = ? AND customer_id = ?");
+    $stmt->bind_param("ii", $appointmentId, $customerId);
+    
+    if ($stmt->execute()) {
+        header('Location: ' . url('my_appointments?cancelled=1'));
+        exit;
+    } else {
+        $error = 'Failed to cancel appointment. Please try again.';
+    }
+}
+
+$page_title = 'Cancel Appointment';
 ?>
 
-<h1>Cancel Appointment</h1>
+<link rel="stylesheet" href="/Ria-Pet-Store/assets/css/appointments/cancel_appointment.css?v=<?php echo time(); ?>">
 
-<?php if (isset($error)): ?>
-    <div style="color: red;"><?php echo $error; ?></div>
-<?php endif; ?>
+<div class="cancel-appointment-page">
+    <section class="page-hero">
+        <div class="container">
+            <h1>Cancel Appointment</h1>
+        </div>
+    </section>
 
-<p>Are you sure you want to cancel this appointment?</p>
+    <section class="cancel-content">
+        <div class="container">
+            <div class="cancel-card">
+                <?php if ($error): ?>
+                    <div class="message error"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
 
-<div style="border: 1px solid rgba(0,0,0,0.1); padding: 16px; border-radius: 10px; margin: 20px 0;">
-    <h3><?php echo htmlspecialchars($appointment['service_name']); ?> for <?php echo htmlspecialchars($appointment['pet_name']); ?></h3>
-    <p><strong>Date & Time:</strong> <?php echo date('F j, Y \a\t g:i A', strtotime($appointment['appointment_date'])); ?></p>
+                <div class="appointment-info">
+                    <h3><?php echo htmlspecialchars($appointment['service_name'] ?? 'Service'); ?></h3>
+                    <p><strong>Pet:</strong> <?php echo htmlspecialchars($appointment['pet_name'] ?? 'N/A'); ?></p>
+                    <p><strong>Date:</strong> <?php echo date('F j, Y', strtotime($appointment['appointment_date'])); ?></p>
+                    <p><strong>Time:</strong> <?php echo date('g:i A', strtotime($appointment['appointment_date'])); ?></p>
+                </div>
+
+                <p class="warning-text">Are you sure you want to cancel this appointment? This action cannot be undone.</p>
+
+                <div class="action-buttons">
+                    <form method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger"><?php echo icon('x', 16); ?> Yes, Cancel Appointment</button>
+                    </form>
+                    <a href="<?php echo url('my_appointments'); ?>" class="btn btn-secondary"><?php echo icon('arrow-left', 16); ?> No, Go Back</a>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
-<form method="post">
-    <button type="submit" name="confirm_cancel" value="1" class="btn btn-danger">Yes, Cancel Appointment</button>
-    <a href="my_appointments.php" class="btn">No, Go Back</a>
-</form>
-
-<?php require_once '../../backend/includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../backend/includes/footer.php'; ?>

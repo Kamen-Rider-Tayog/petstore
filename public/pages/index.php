@@ -22,7 +22,7 @@ if ($featured_pets === null) {
     // First try to get featured pets
     $r = $conn->query(
         "SELECT id, name, species, breed, age, pet_image
-         FROM pets 
+         FROM store_pets 
          WHERE pet_status = 'available' AND featured = 1 
          ORDER BY id DESC 
          LIMIT 3"

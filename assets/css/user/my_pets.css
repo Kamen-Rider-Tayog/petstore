@@ -1,0 +1,147 @@
+/* ===== MY PETS PAGE ===== */
+.my-pets-page {
+    background: var(--bg-secondary);
+    min-height: calc(100vh - 200px);
+}
+
+.page-hero {
+    background: linear-gradient(135deg, var(--accent-500), var(--accent-600));
+    padding: 3rem 0;
+    text-align: center;
+}
+.page-hero h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+.page-hero p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.pets-content {
+    padding: 3rem 0;
+}
+
+.pets-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+.pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.pet-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--border-light);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.pet-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pet-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--accent-500);
+}
+.pet-avatar svg {
+    width: 48px;
+    height: 48px;
+}
+
+.pet-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+}
+.pet-details {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0 0 0.25rem 0;
+}
+.pet-age {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+    margin: 0 0 0.25rem 0;
+}
+.pet-gender {
+    color: var(--accent-600);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.pet-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+.pet-actions .btn-small {
+    flex: 1;
+}
+
+.no-pets {
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--border-light);
+}
+.no-pets svg {
+    width: 48px;
+    height: 48px;
+    color: var(--text-tertiary);
+    margin-bottom: 1rem;
+}
+.no-pets h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+.no-pets p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .pets-grid {
+        grid-template-columns: 1fr;
+    }
+    .pets-header {
+        justify-content: center;
+    }
+}
