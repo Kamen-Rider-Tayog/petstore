@@ -87,11 +87,7 @@ c:/xampp/htdocs/Ria-Pet-Store/
 │   │   │   ├── my_appointments.css
 │   │   │   └── reschedule_appointment.css
 │   │   ├── auth/
-│   │   │   ├── login.css
-│   │   │   ├── login_process.css
-│   │   │   ├── logout.css
-│   │   │   ├── register.css
-│   │   │   └── register_process.css
+│   │   │   └── auth.css
 │   │   ├── cart/
 │   │   │   ├── cancel_order.css
 │   │   │   ├── cart.css
@@ -255,5 +251,4 @@ c:/xampp/htdocs/Ria-Pet-Store/
         ├── 6fd856e1d2ef4e1c800a25daed7f0140.cache
         ├── 98d910e36f6b2361d6615320be7090b5.cache
         ├── b94ae0f47140cce385db2926966b3bd7.cache
-        ├── eadbbc5cbb03598f1096ad08549a2784.cache
-        └── f6323b31f14e87e345afb417991781ac.cache
+        └── eadbbc5cbb03598f1096ad08549a2784.cache

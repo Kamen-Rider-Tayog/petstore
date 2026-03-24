@@ -14,7 +14,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 try {
     // Simple query without filters first to test
-    $sql = "SELECT id, name, species, breed, age, price, pet_image FROM pets WHERE pet_status = 'available' ORDER BY id DESC";
+    $sql = "SELECT id, name, species, breed, age, pet_image FROM pets WHERE pet_status = 'available' ORDER BY id DESC";
     $result = $conn->query($sql);
     
     // Generate HTML

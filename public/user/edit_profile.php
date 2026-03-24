@@ -324,9 +324,6 @@ $page_title = 'Edit Profile';
                         <a href="<?php echo url('user_profile'); ?>" class="btn btn-secondary">
                             <?php echo icon('x', 16); ?> Cancel
                         </a>
-                        <a href="<?php echo url('logout'); ?>" class="btn btn-danger">
-                            <?php echo icon('x', 16); ?> Logout
-                        </a>
                     </div>
                 </form>
             </div>

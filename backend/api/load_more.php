@@ -59,7 +59,7 @@ try {
         $countStmt->close();
         
         // Get paginated results
-        $sql = "SELECT id, name, species, breed, age, price, gender, pet_image, description 
+        $sql = "SELECT id, name, species, breed, age, gender, pet_image, description 
                 FROM pets $where ORDER BY id DESC LIMIT ? OFFSET ?";
         
         $stmt = $conn->prepare($sql);

@@ -1,6 +1,6 @@
 <?php
 // Pet card template for filter results
-$pet = $pet ?? []; // Ensure $pet is defined
+$pet = $pet ?? [];
 
 // Safely get values with defaults
 $id = isset($pet['id']) ? (int)$pet['id'] : 0;
@@ -8,7 +8,6 @@ $name = isset($pet['name']) ? htmlspecialchars($pet['name']) : '';
 $species = isset($pet['species']) ? ucfirst(htmlspecialchars($pet['species'])) : 'Pet';
 $breed = isset($pet['breed']) ? htmlspecialchars($pet['breed']) : '';
 $age = isset($pet['age']) ? (int)$pet['age'] : 0;
-$price = isset($pet['price']) ? (float)$pet['price'] : 0;
 $image = isset($pet['pet_image']) ? $pet['pet_image'] : '';
 $baseUrl = defined('BASE_URL') ? BASE_URL : '/Ria-Pet-Store/';
 ?>
@@ -46,9 +45,6 @@ $baseUrl = defined('BASE_URL') ? BASE_URL : '/Ria-Pet-Store/';
             </svg>
             <?php echo $age; ?> <?php echo $age == 1 ? 'year' : 'years'; ?> old
         </p>
-        <?php if ($price > 0): ?>
-            <p class="pet-price">₱<?php echo number_format($price, 2); ?></p>
-        <?php endif; ?>
     </div>
     <div class="pet-card-footer">
         <a href="<?php echo $baseUrl; ?>pet_details?id=<?php echo $id; ?>" class="btn btn-primary btn-small">

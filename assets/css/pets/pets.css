@@ -100,9 +100,6 @@
   color: var(--text-secondary); font-size: 0.875rem;
 }
 .pet-age svg { width: 14px; height: 14px; color: var(--accent-500); }
-.pet-price {
-  font-size: 1.25rem; font-weight: 600; color: var(--accent-600); margin: 0.5rem 0 0;
-}
 
 /* Card Footer */
 .pet-card-footer { padding: 0 1.5rem 1.5rem; }

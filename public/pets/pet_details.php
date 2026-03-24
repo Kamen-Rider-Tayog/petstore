@@ -68,11 +68,6 @@ require_once __DIR__ . '/../../backend/includes/header.php';
                         <span class="pet-species-badge"><?php echo ucfirst(e($pet['species'])); ?></span>
                     </div>
 
-                    <div class="pet-price">
-                        <span class="price-label">Price:</span>
-                        <span class="price-value"><?php echo CURRENCY_SYMBOL . number_format($pet['price'], 2); ?></span>
-                    </div>
-
                     <div class="pet-details-grid">
                         <div class="detail-item">
                             <span class="detail-icon"><?php echo icon('paw', 20); ?></span>
