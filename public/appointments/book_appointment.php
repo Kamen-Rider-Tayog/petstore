@@ -26,9 +26,9 @@ while ($row = $result->fetch_assoc()) {
     $services[] = $row;
 }
 
-// Get customer's pets
+// Get customer's pets - should be from customer_pets
 $pets = [];
-$stmt = $conn->prepare("SELECT * FROM customer_pets WHERE customer_id = ? AND is_active = 1");
+$stmt = $conn->prepare("SELECT * FROM customer_pets WHERE customer_id = ? AND is_active = 1 ORDER BY name");
 $stmt->bind_param("i", $customerId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     VALUES (?, ?, ?, ?, ?, 'confirmed')
                 ");
                 $insertStmt->bind_param("iisss", $customerId, $petId, $service['service_name'], $employeeId, $appointmentDate);
-                
+
                 if ($insertStmt->execute()) {
                     unset($_SESSION['booking']);
                     $success = true;

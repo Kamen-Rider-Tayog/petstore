@@ -21,24 +21,31 @@ $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $species = trim($_POST['species'] ?? '');
+    $customSpecies = trim($_POST['custom_species'] ?? '');
+    
+    // If "other" is selected, use custom species input
+    if ($species === 'other' && !empty($customSpecies)) {
+        $species = $customSpecies;
+    }
+    
     $breed = trim($_POST['breed'] ?? '');
     $age = (int)($_POST['age'] ?? 0);
     $gender = $_POST['gender'] ?? '';
     $color = trim($_POST['color'] ?? '');
     $weight = (float)($_POST['weight'] ?? 0);
     $weight_unit = $_POST['weight_unit'] ?? 'kg';
-    $microchip_id = trim($_POST['microchip_id'] ?? '');
-    $medical_notes = trim($_POST['medical_notes'] ?? '');
 
     // Validate
-    if (empty($name) || empty($species)) {
-        $error = 'Pet name and species are required.';
+    if (empty($name)) {
+        $error = 'Pet name is required.';
+    } elseif (empty($species)) {
+        $error = 'Species is required.';
     } else {
         $stmt = $conn->prepare("
-            INSERT INTO customer_pets (customer_id, name, species, breed, age, gender, color, weight, weight_unit, microchip_id, medical_notes, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            INSERT INTO customer_pets (customer_id, name, species, breed, age, gender, color, weight, weight_unit, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
         ");
-        $stmt->bind_param("isssissssss", $customerId, $name, $species, $breed, $age, $gender, $color, $weight, $weight_unit, $microchip_id, $medical_notes);
+        $stmt->bind_param("isssissss", $customerId, $name, $species, $breed, $age, $gender, $color, $weight, $weight_unit);
         
         if ($stmt->execute()) {
             $success = true;
@@ -93,6 +100,10 @@ $page_title = 'Add Pet';
                                     <option value="other">Other</option>
                                 </select>
                             </div>
+                            <div class="form-group" id="customSpeciesGroup" style="display: none;">
+                                <label for="custom_species">Other Species <span class="required">*</span></label>
+                                <input type="text" id="custom_species" name="custom_species" placeholder="Enter species name">
+                            </div>
                             <div class="form-group">
                                 <label for="breed">Breed</label>
                                 <input type="text" id="breed" name="breed">
@@ -131,16 +142,6 @@ $page_title = 'Add Pet';
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="microchip_id">Microchip ID</label>
-                            <input type="text" id="microchip_id" name="microchip_id">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="medical_notes">Medical Notes</label>
-                            <textarea id="medical_notes" name="medical_notes" rows="3"></textarea>
-                        </div>
-
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary"><?php echo icon('check', 16); ?> Add Pet</button>
                             <a href="<?php echo url('my_pets'); ?>" class="btn btn-secondary"><?php echo icon('x', 16); ?> Cancel</a>
@@ -151,5 +152,20 @@ $page_title = 'Add Pet';
         </div>
     </section>
 </div>
+
+<script>
+// Show/hide custom species input when "Other" is selected
+document.getElementById('species').addEventListener('change', function() {
+    const customSpeciesGroup = document.getElementById('customSpeciesGroup');
+    if (this.value === 'other') {
+        customSpeciesGroup.style.display = 'block';
+        document.getElementById('custom_species').required = true;
+    } else {
+        customSpeciesGroup.style.display = 'none';
+        document.getElementById('custom_species').required = false;
+        document.getElementById('custom_species').value = '';
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../../backend/includes/footer.php'; ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 19, 2026 at 06:41 PM
+-- Generation Time: Mar 26, 2026 at 04:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,37 @@ SET time_zone = "+00:00";
 --
 -- Database: `pet_store`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `addresses`
+--
+
+CREATE TABLE `addresses` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `address_line1` varchar(255) NOT NULL,
+  `address_line2` varchar(255) DEFAULT NULL,
+  `city` varchar(100) NOT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `zip_code` varchar(20) DEFAULT NULL,
+  `country` varchar(100) DEFAULT 'Philippines',
+  `is_default` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `addresses`
+--
+
+INSERT INTO `addresses` (`id`, `customer_id`, `address_line1`, `address_line2`, `city`, `state`, `zip_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
+(1, 1, '123 Maple Street, Springfield', NULL, '', NULL, NULL, 'Philippines', 1, '2026-03-22 16:28:17', '2026-03-22 16:28:17'),
+(2, 2, '456 Oak Avenue, Springfield', NULL, '', NULL, NULL, 'Philippines', 1, '2026-03-22 16:28:17', '2026-03-22 16:28:17'),
+(3, 3, '789 Pine Road, Springfield', NULL, '', NULL, NULL, 'Philippines', 1, '2026-03-22 16:28:17', '2026-03-22 16:28:17'),
+(4, 4, '321 Elm Street, Springfield', NULL, '', NULL, NULL, 'Philippines', 1, '2026-03-22 16:28:17', '2026-03-22 16:28:17'),
+(8, 5, '', '', '', '', '', 'Philippines', 1, '2026-03-22 16:29:56', '2026-03-22 16:29:56');
 
 -- --------------------------------------------------------
 
@@ -45,7 +76,8 @@ CREATE TABLE `appointments` (
 INSERT INTO `appointments` (`id`, `customer_id`, `pet_id`, `employee_id`, `appointment_date`, `service_type`, `duration_minutes`, `status`) VALUES
 (1, 1, 1, 1, '2024-03-05 10:00:00', 'grooming', 60, 'pending'),
 (2, 2, 2, 2, '2024-03-05 14:00:00', 'checkup', 30, 'pending'),
-(3, 3, 3, 1, '2024-03-06 11:30:00', 'nail trim', 20, 'pending');
+(3, 3, 3, 1, '2024-03-06 11:30:00', 'nail trim', 20, 'pending'),
+(5, 5, 3, 1, '2026-03-30 23:35:00', 'Grooming', 0, 'confirmed');
 
 -- --------------------------------------------------------
 
@@ -60,6 +92,13 @@ CREATE TABLE `cart` (
   `quantity` int(11) DEFAULT 1,
   `added_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`id`, `customer_id`, `product_id`, `quantity`, `added_date`) VALUES
+(1, 5, 8, 1, '2026-03-22 10:08:58');
 
 -- --------------------------------------------------------
 
@@ -141,7 +180,7 @@ CREATE TABLE `customers` (
   `last_name` varchar(50) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `address` text DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -150,11 +189,73 @@ CREATE TABLE `customers` (
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 'Emma', 'Wilson', 'emma@email.com', '555-9876', '123 Maple Street, Springfield', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
-(2, 'David', 'Brown', 'david@email.com', '555-5678', '456 Oak Avenue, Springfield', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
-(3, 'Jessica', 'Taylor', 'jessica@email.com', '555-4321', '789 Pine Road, Springfield', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
-(4, 'Robert', 'Garcia', 'robert@email.com', '555-8765', '321 Elm Street, Springfield', '2024-01-01 00:00:00', '2024-01-01 00:00:00');
+INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `phone`, `password`, `created_at`, `updated_at`) VALUES
+(1, 'Emma', 'Wilson', 'emma@email.com', '555-9876', '', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+(2, 'David', 'Brown', 'david@email.com', '555-5678', '', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+(3, 'Jessica', 'Taylor', 'jessica@email.com', '555-4321', '', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+(4, 'Robert', 'Garcia', 'robert@email.com', '555-8765', '', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+(5, 'Ria', 'Basallo', 'riabasallo@email.com', '09053351213', '$2y$10$x3RsnYQnVMge/6h0brSA3eugxMcG04BeDTg03z/85KfFsvL5RqAfa', '2026-03-21 17:38:23', '2026-03-22 16:38:34');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_pets`
+--
+
+CREATE TABLE `customer_pets` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `species` varchar(50) NOT NULL,
+  `breed` varchar(100) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT NULL,
+  `color` varchar(50) DEFAULT NULL,
+  `weight` decimal(5,2) DEFAULT NULL,
+  `weight_unit` varchar(10) DEFAULT 'kg',
+  `microchip_id` varchar(50) DEFAULT NULL,
+  `medical_notes` text DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_pets`
+--
+
+INSERT INTO `customer_pets` (`id`, `customer_id`, `name`, `species`, `breed`, `age`, `gender`, `color`, `weight`, `weight_unit`, `microchip_id`, `medical_notes`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Max', 'dog', NULL, 2, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(2, 1, 'Luna', 'cat', NULL, 3, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(3, 1, 'Coco', 'rabbit', NULL, 4, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(4, 1, 'Kiwi', 'bird', NULL, 2, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(5, 1, 'Charlie', 'hamster', NULL, 1, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(6, 1, 'Charlie', 'dog', 'Beagle', 3, 'male', 'Tri-color', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(7, 1, 'Bella', 'dog', 'French Bulldog', 2, 'female', 'Fawn', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(8, 1, 'Rocky', 'dog', 'German Shepherd', 4, 'male', 'Black and Tan', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(9, 1, 'Luna', 'dog', 'Siberian Husky', 1, 'female', 'Gray and White', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(10, 1, 'Cooper', 'dog', 'Golden Retriever', 5, 'male', 'Golden', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(11, 1, 'Oliver', 'cat', 'Maine Coon', 3, 'male', 'Brown Tabby', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(12, 1, 'Chloe', 'cat', 'Persian', 2, 'female', 'White', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(13, 1, 'Simba', 'cat', 'Bengal', 1, 'male', 'Spotted', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(14, 1, 'Milo', 'cat', 'Siamese', 4, 'male', 'Seal Point', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(15, 1, 'Nala', 'cat', 'Ragdoll', 2, 'female', 'Seal Lynx', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(16, 1, 'Mango', 'bird', 'Sun Conure', 1, 'male', 'Yellow/Orange', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(17, 1, 'Blue', 'bird', 'Blue Jay', 2, 'female', 'Blue', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(18, 1, 'Kiwi', 'bird', 'Budgie', 1, 'female', 'Green', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(19, 1, 'Rio', 'bird', 'Macaw', 5, 'male', 'Blue and Gold', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(20, 1, 'Thumper', 'rabbit', 'Holland Lop', 1, 'male', 'Chocolate', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(21, 1, 'Daisy', 'rabbit', 'Rex', 2, 'female', 'White', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(22, 1, 'Oreo', 'rabbit', 'Dutch', 1, 'female', 'Black and White', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(23, 1, 'Peanut', 'hamster', 'Syrian', 0, 'male', 'Golden', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(24, 1, 'Squeaky', 'guinea pig', 'Abyssinian', 1, 'female', 'Brown/White', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(25, 1, 'Gizmo', 'ferret', 'Sable', 2, 'male', 'Dark Brown', NULL, 'kg', NULL, NULL, 1, '2026-03-24 16:25:27', '2026-03-24 16:25:27'),
+(26, 5, 'Megatron', 'cat', 'Puspin', 1, '', 'Black', 67.00, 'kg', NULL, NULL, 1, '2026-03-26 15:34:54', '2026-03-26 15:34:54'),
+(27, 5, 'Maui', 'cat', 'Puspin', 0, 'female', 'Black and gray', 5.00, 'kg', NULL, NULL, 1, '2026-03-26 15:44:26', '2026-03-26 15:44:26'),
+(28, 1, 'Buddy', 'dog', 'Golden Retriever', 3, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-26 15:48:26', '2026-03-26 15:48:26'),
+(29, 1, 'Whiskers', 'cat', 'Siamese', 2, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-26 15:48:26', '2026-03-26 15:48:26'),
+(30, 2, 'Tweety', 'bird', 'Parakeet', 1, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-26 15:48:26', '2026-03-26 15:48:26'),
+(31, 5, 'Fluffy', 'rabbit', 'Holland Lop', 1, NULL, NULL, NULL, 'kg', NULL, NULL, 1, '2026-03-26 15:48:26', '2026-03-26 15:48:26');
 
 -- --------------------------------------------------------
 
@@ -256,60 +357,6 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pets`
---
-
-CREATE TABLE `pets` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `species` varchar(30) DEFAULT NULL,
-  `breed` varchar(100) DEFAULT NULL,
-  `color` varchar(50) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `gender` enum('male','female') DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `pet_status` enum('available','sold','reserved','adopted') DEFAULT 'available',
-  `pet_image` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `featured` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `pets`
---
-
-INSERT INTO `pets` (`id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `price`, `description`, `pet_status`, `pet_image`, `created_at`, `updated_at`, `featured`) VALUES
-(1, 'Max', 'dog', NULL, NULL, 2, NULL, 350.00, 'Friendly golden retriever, great with kids and other pets.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(2, 'Luna', 'cat', NULL, NULL, 3, NULL, 180.00, 'Playful tabby cat, loves to cuddle and play with toys.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(3, 'Coco', 'rabbit', NULL, NULL, 4, NULL, 75.50, 'Gentle lop-eared rabbit, perfect for first-time owners.', 'sold', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(4, 'Kiwi', 'bird', NULL, NULL, 2, NULL, 120.00, 'Colorful parakeet, sings beautifully and loves attention.', 'available', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(5, 'Charlie', 'hamster', NULL, NULL, 1, NULL, 45.00, 'Adorable teddy bear hamster, very active and friendly.', 'reserved', NULL, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 0),
-(6, 'Charlie', 'dog', 'Beagle', 'Tri-color', 3, 'male', 280.00, 'Charlie is an energetic Beagle who loves to play and explore. Great with kids and other dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(7, 'Bella', 'dog', 'French Bulldog', 'Fawn', 2, 'female', 450.00, 'Bella is a sweet French Bulldog with a calm temperament. She loves cuddles and short walks.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(8, 'Rocky', 'dog', 'German Shepherd', 'Black and Tan', 4, 'male', 380.00, 'Rocky is a loyal German Shepherd looking for an active family. Knows basic commands.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(9, 'Luna', 'dog', 'Siberian Husky', 'Gray and White', 1, 'female', 520.00, 'Luna is a playful Husky puppy with beautiful blue eyes. Very energetic and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(10, 'Cooper', 'dog', 'Golden Retriever', 'Golden', 5, 'male', 320.00, 'Cooper is a gentle Golden Retriever who loves children. Well-trained and calm.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(11, 'Oliver', 'cat', 'Maine Coon', 'Brown Tabby', 3, 'male', 220.00, 'Oliver is a majestic Maine Coon with a fluffy coat. Very affectionate and good with dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(12, 'Chloe', 'cat', 'Persian', 'White', 2, 'female', 280.00, 'Chloe is a beautiful Persian cat with stunning blue eyes. Quiet and elegant.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(13, 'Simba', 'cat', 'Bengal', 'Spotted', 1, 'male', 350.00, 'Simba is an active Bengal kitten with beautiful spotted coat. Loves to climb and play.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(14, 'Milo', 'cat', 'Siamese', 'Seal Point', 4, 'male', 190.00, 'Milo is a vocal Siamese who loves attention. Very social and talkative.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(15, 'Nala', 'cat', 'Ragdoll', 'Seal Lynx', 2, 'female', 310.00, 'Nala is a floppy Ragdoll who goes limp when you hold her. Very relaxed and sweet.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(16, 'Mango', 'bird', 'Sun Conure', 'Yellow/Orange', 1, 'male', 180.00, 'Mango is a vibrant Sun Conure parrot. Very colorful and learning to talk.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(17, 'Blue', 'bird', 'Blue Jay', 'Blue', 2, 'female', 95.00, 'Blue is a beautiful Blue Jay with striking blue feathers. Very active and vocal.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(18, 'Kiwi', 'bird', 'Budgie', 'Green', 1, 'female', 35.00, 'Kiwi is a small budgie perfect for first-time bird owners. Sweet and chirpy.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(19, 'Rio', 'bird', 'Macaw', 'Blue and Gold', 5, 'male', 850.00, 'Rio is a stunning Macaw with a large vocabulary. Needs an experienced owner.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(20, 'Thumper', 'rabbit', 'Holland Lop', 'Chocolate', 1, 'male', 75.00, 'Thumper is a cute Holland Lop with floppy ears. Litter box trained and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(21, 'Daisy', 'rabbit', 'Rex', 'White', 2, 'female', 65.00, 'Daisy is a soft Rex rabbit with velvety fur. Very calm and loves to be petted.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(22, 'Oreo', 'rabbit', 'Dutch', 'Black and White', 1, 'female', 55.00, 'Oreo is a playful Dutch rabbit who loves to explore. Great with older children.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1),
-(23, 'Peanut', 'hamster', 'Syrian', 'Golden', 0, 'male', 18.00, 'Peanut is a friendly Syrian hamster. Active at night and fun to watch.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(24, 'Squeaky', 'guinea pig', 'Abyssinian', 'Brown/White', 1, 'female', 28.00, 'Squeaky is a vocal guinea pig who wheeks for treats. Very social.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 0),
-(25, 'Gizmo', 'ferret', 'Sable', 'Dark Brown', 2, 'male', 120.00, 'Gizmo is a curious ferret who loves tunnels and toys. Very playful and energetic.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-19 17:41:27', 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `products`
 --
 
@@ -319,6 +366,7 @@ CREATE TABLE `products` (
   `category` varchar(50) DEFAULT NULL,
   `brand` varchar(100) DEFAULT NULL,
   `description` text DEFAULT NULL,
+  `product_image` varchar(255) DEFAULT NULL,
   `quantity_in_stock` int(11) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `sale_price` decimal(10,2) DEFAULT NULL,
@@ -336,20 +384,71 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `product_name`, `category`, `brand`, `description`, `quantity_in_stock`, `price`, `sale_price`, `weight`, `weight_unit`, `supplier`, `featured`, `rating`, `review_count`, `created_at`, `on_sale`) VALUES
-(1, 'Dog Food - Premium', 'food', 'Pedigree', 'Premium dog food for adult dogs', 25, 45.99, NULL, 5.00, 'kg', 1, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
-(2, 'Cat Food - Wet', 'food', 'Whiskas', 'Wet cat food in gravy', 40, 2.50, NULL, 400.00, 'g', 1, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(3, 'Dog Leash', 'accessories', NULL, NULL, 15, 12.99, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(4, 'Cat Toy - Mouse', 'toy', NULL, NULL, 60, 3.25, NULL, NULL, NULL, 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(5, 'Fish Tank Filter', 'equipment', NULL, NULL, 8, 35.50, NULL, NULL, NULL, 4, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(6, 'Hamster Wheel', 'accessories', NULL, NULL, 12, 8.75, NULL, NULL, NULL, 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(7, 'Bird Cage - Small', 'housing', NULL, NULL, 5, 45.00, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(8, 'Dog Bed - Large', 'accessories', NULL, NULL, 3, 65.00, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(9, 'Organic Dog Food', 'Dog Food', 'Organic Paws', 'Organic, grain-free dog food', 20, 65.99, NULL, 3.00, 'kg', 1, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
-(10, 'Cat Scratcher Post', 'Accessories', 'Kitty Fun', 'Sisal scratching post for cats', 15, 25.99, NULL, 2.00, 'kg', 2, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
-(11, 'Bird Swing', 'Toys', 'Parrot Paradise', 'Wooden swing for birds', 30, 12.50, NULL, 0.50, 'kg', 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(12, 'Hamster Exercise Ball', 'Accessories', 'FunPets', 'Clear exercise ball for hamsters', 25, 8.99, NULL, 0.20, 'kg', 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
-(13, 'Fish Tank Heater', 'Tanks', 'AquaWorld', 'Submersible aquarium heater', 10, 32.99, NULL, 0.30, 'kg', 4, 1, 0.0, 0, '2026-03-15 13:21:34', 0);
+INSERT INTO `products` (`id`, `product_name`, `category`, `brand`, `description`, `product_image`, `quantity_in_stock`, `price`, `sale_price`, `weight`, `weight_unit`, `supplier`, `featured`, `rating`, `review_count`, `created_at`, `on_sale`) VALUES
+(1, 'Dog Food - Premium', 'food', 'Pedigree', 'Premium dog food for adult dogs', NULL, 25, 45.99, NULL, 5.00, 'kg', 1, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
+(2, 'Cat Food - Wet', 'food', 'Whiskas', 'Wet cat food in gravy', NULL, 40, 2.50, NULL, 400.00, 'g', 1, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(3, 'Dog Leash', 'accessories', NULL, NULL, NULL, 15, 12.99, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(4, 'Cat Toy - Mouse', 'Toys', NULL, NULL, NULL, 60, 3.25, NULL, NULL, NULL, 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(5, 'Fish Tank Filter', 'equipment', NULL, NULL, NULL, 8, 35.50, NULL, NULL, NULL, 4, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(6, 'Hamster Wheel', 'accessories', NULL, NULL, NULL, 12, 8.75, NULL, NULL, NULL, 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(7, 'Bird Cage - Small', 'housing', NULL, NULL, NULL, 5, 45.00, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(8, 'Dog Bed - Large', 'accessories', NULL, NULL, NULL, 3, 65.00, NULL, NULL, NULL, 2, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(9, 'Organic Dog Food', 'Dog Food', 'Organic Paws', 'Organic, grain-free dog food', NULL, 20, 65.99, NULL, 3.00, 'kg', 1, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
+(10, 'Cat Scratcher Post', 'Accessories', 'Kitty Fun', 'Sisal scratching post for cats', NULL, 15, 25.99, NULL, 2.00, 'kg', 2, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
+(11, 'Bird Swing', 'Toys', 'Parrot Paradise', 'Wooden swing for birds', NULL, 30, 12.50, NULL, 0.50, 'kg', 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(12, 'Hamster Exercise Ball', 'Accessories', 'FunPets', 'Clear exercise ball for hamsters', NULL, 25, 8.99, NULL, 0.20, 'kg', 3, 0, 0.0, 0, '2026-03-15 13:21:34', 0),
+(13, 'Fish Tank Heater', 'Tanks', 'AquaWorld', 'Submersible aquarium heater', NULL, 10, 32.99, NULL, 0.30, 'kg', 4, 1, 0.0, 0, '2026-03-15 13:21:34', 0),
+(14, 'Premium Adult Dog Food - 2kg', 'Dog Food', 'Royal Canin', 'Complete nutrition for adult dogs with balanced vitamins and minerals', NULL, 45, 550.00, NULL, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 0),
+(15, 'Puppy Formula Dog Food - 1.5kg', 'Dog Food', 'Pedigree', 'Specially formulated for growing puppies', NULL, 60, 320.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(16, 'Dog Dental Chews - 30 pcs', 'Dog Treats', 'Greenies', 'Helps clean teeth and freshen breath', NULL, 100, 280.00, 230.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(17, 'Dog Harness - Medium', 'Accessories', 'PetSafe', 'Comfortable and adjustable harness for medium dogs', NULL, 35, 450.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(18, 'Dog Bed - Orthopedic', 'Bedding', 'Furhaven', 'Memory foam bed for senior dogs', NULL, 20, 1200.00, 999.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(19, 'Dog Shampoo - 500ml', 'Grooming', 'Earthbath', 'All-natural oatmeal shampoo for sensitive skin', NULL, 50, 380.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(20, 'Dog Nail Clipper', 'Grooming', 'Safari', 'Professional grade nail clipper for all dog sizes', NULL, 75, 150.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(21, 'Collapsible Dog Bowl', 'Accessories', 'Kurgo', 'Portable silicone bowl for travel', NULL, 90, 180.00, 150.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(22, 'Dog Life Jacket - Small', 'Safety', 'Outward Hound', 'Buoyant vest for water activities', NULL, 25, 650.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(23, 'Dog Raincoat - Adjustable', 'Apparel', 'Pawz', 'Waterproof raincoat with hood', NULL, 40, 320.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(24, 'Adult Cat Food - 1.5kg', 'Cat Food', 'Whiskas', 'Complete nutrition for adult cats', NULL, 55, 280.00, NULL, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 0),
+(25, 'Kitten Formula - 1kg', 'Cat Food', 'Royal Canin', 'Specially formulated for growing kittens', NULL, 40, 350.00, 299.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(26, 'Cat Scratching Post', 'Accessories', 'Petmate', 'Sisal rope scratching post with platform', NULL, 30, 450.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(27, 'Cat Litter - 10L', 'Litter', 'Catsan', 'Clumping litter with odor control', NULL, 80, 320.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(28, 'Cat Tunnel Toy', 'Toys', 'Petstages', 'Collapsible tunnel for play and exercise', NULL, 45, 280.00, 220.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(29, 'Laser Pointer Cat Toy', 'Toys', 'PetSafe', 'Interactive laser toy for exercise', NULL, 120, 150.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(30, 'Cat Bed - Donut', 'Bedding', 'Best Friends', 'Cozy donut-shaped bed for cats', NULL, 35, 420.00, NULL, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 0),
+(31, 'Cat Brush - De-shedding', 'Grooming', 'Furminator', 'Removes loose hair and reduces shedding', NULL, 50, 280.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(32, 'Bird Cage - Large', 'Housing', 'Prevue', 'Spacious cage for medium to large birds', NULL, 15, 2800.00, 2500.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(33, 'Bird Perch - Natural Wood', 'Accessories', 'JW Pet', 'Natural wood perch for bird health', NULL, 60, 180.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(34, 'Bird Food - Premium Mix', 'Food', 'Zupreem', 'Nutritional blend for parrots and parakeets', NULL, 45, 380.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(35, 'Bird Toy - Bell', 'Toys', 'Super Bird', 'Colorful bell toy for mental stimulation', NULL, 85, 120.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(36, 'Bird Swing', 'Toys', 'Paradise', 'Wooden swing for birds to perch and play', NULL, 50, 150.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(37, 'Aquarium Filter', 'Equipment', 'AquaClear', 'Power filter for 20-50 gallon tanks', NULL, 30, 950.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(38, 'Fish Food - 100g', 'Food', 'Tetra', 'Nutritional flakes for tropical fish', NULL, 100, 120.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(39, 'Aquarium Heater', 'Equipment', 'Eheim', 'Submersible heater for consistent temperature', NULL, 25, 450.00, 380.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(40, 'Aquarium Decor - Plant Set', 'Decor', 'Penn-Plax', 'Set of artificial aquarium plants', NULL, 40, 280.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(41, 'Water Conditioner - 250ml', 'Supplies', 'Seachem', 'Removes chlorine and heavy metals', NULL, 70, 180.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(42, 'Hamster Cage - Large', 'Housing', 'Kaytee', 'Spacious cage with tubes and tunnels', NULL, 20, 1800.00, 1500.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(43, 'Hamster Food - 1kg', 'Food', 'Oxbow', 'Nutritional pellets for hamsters', NULL, 45, 220.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(44, 'Hamster Wheel - Silent', 'Accessories', 'Ware', 'Quiet exercise wheel', NULL, 35, 280.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(45, 'Rabbit Hay - 1kg', 'Food', 'Oxbow', 'Timothy hay for digestive health', NULL, 40, 180.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(46, 'Rabbit Hutch - Outdoor', 'Housing', 'Trixie', 'Weather-resistant outdoor rabbit hutch', NULL, 10, 3500.00, 2999.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(47, 'Guinea Pig Cage Liner', 'Bedding', 'GuineaDad', 'Washable fleece cage liner', NULL, 25, 450.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(48, 'Pet Grooming Kit', 'Grooming', 'Wahl', 'Complete grooming kit with clippers and blades', NULL, 20, 2200.00, 1899.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(49, 'Pet Nail Grinder', 'Grooming', 'Dremel', 'Electric nail grinder for safe trimming', NULL, 30, 650.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(50, 'Pet Hair Remover', 'Grooming', 'ChomChom', 'Reusable roller for pet hair removal', NULL, 60, 380.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(51, 'Pet Toothbrush Set', 'Grooming', 'Vet\'s Best', 'Dual-headed toothbrush with toothpaste', NULL, 80, 220.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(52, 'Flea & Tick Treatment', 'Health', 'Frontline', 'Spot-on treatment for dogs', NULL, 45, 480.00, 399.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(53, 'Multivitamin for Dogs', 'Supplements', 'Pet Naturals', 'Daily multivitamin chews', NULL, 50, 320.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(54, 'Joint Supplement for Dogs', 'Supplements', 'Cosequin', 'Supports joint health and mobility', NULL, 40, 580.00, NULL, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 0),
+(55, 'Pet First Aid Kit', 'Health', 'Adventure', 'Complete first aid kit for pets', NULL, 35, 450.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(56, 'Pet Carrier - Soft Sided', 'Travel', 'Pet Gear', 'Comfortable carrier for small pets', NULL, 25, 890.00, 750.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(57, 'Pet Stroller', 'Travel', 'Pet Gear', 'Stroller for small dogs and cats', NULL, 12, 3200.00, 2800.00, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 1),
+(58, 'Car Seat Cover', 'Travel', 'Kurgo', 'Protects car seats from pet hair and scratches', NULL, 30, 650.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(59, 'Pet Travel Bowl', 'Travel', 'Outward Hound', 'Collapsible silicone bowl for travel', NULL, 80, 120.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(60, 'Squeaky Toy Set', 'Toys', 'KONG', 'Set of 3 squeaky plush toys', NULL, 70, 280.00, 220.00, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 1),
+(61, 'Rope Tug Toy', 'Toys', 'KONG', 'Durable rope toy for interactive play', NULL, 60, 150.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(62, 'Treat Dispensing Ball', 'Toys', 'KONG', 'Ball that dispenses treats as it rolls', NULL, 45, 380.00, NULL, NULL, NULL, NULL, 1, 0.0, 0, '2026-03-24 14:21:44', 0),
+(63, 'Feather Wand Cat Toy', 'Toys', 'GoCat', 'Interactive wand toy with feathers', NULL, 55, 180.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0),
+(64, 'Crinkle Cat Tunnel', 'Toys', 'Petstages', 'Crinkle tunnel for cats to hide and play', NULL, 40, 280.00, NULL, NULL, NULL, NULL, 0, 0.0, 0, '2026-03-24 14:21:44', 0);
 
 -- --------------------------------------------------------
 
@@ -475,6 +574,61 @@ INSERT INTO `settings` (`id`, `setting_key`, `setting_value`, `created_at`, `upd
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `store_pets`
+--
+
+CREATE TABLE `store_pets` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `name` varchar(50) NOT NULL,
+  `species` varchar(30) DEFAULT NULL,
+  `breed` varchar(100) DEFAULT NULL,
+  `color` varchar(50) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `pet_status` enum('available','sold','reserved','adopted') DEFAULT 'available',
+  `pet_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `featured` tinyint(1) DEFAULT 0,
+  `is_available` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `store_pets`
+--
+
+INSERT INTO `store_pets` (`id`, `customer_id`, `name`, `species`, `breed`, `color`, `age`, `gender`, `description`, `pet_status`, `pet_image`, `created_at`, `updated_at`, `featured`, `is_available`) VALUES
+(1, 1, 'Max', 'dog', NULL, NULL, 2, NULL, 'Friendly golden retriever, great with kids and other pets.', 'available', NULL, '2024-01-01 00:00:00', '2026-03-24 16:08:41', 0, 1),
+(2, 1, 'Luna', 'cat', NULL, NULL, 3, NULL, 'Playful tabby cat, loves to cuddle and play with toys.', 'available', NULL, '2024-01-01 00:00:00', '2026-03-24 16:08:41', 1, 1),
+(3, 1, 'Coco', 'rabbit', NULL, NULL, 4, NULL, 'Gentle lop-eared rabbit, perfect for first-time owners.', 'available', NULL, '2024-01-01 00:00:00', '2026-03-24 16:36:54', 0, 1),
+(4, 1, 'Kiwi', 'bird', NULL, NULL, 2, NULL, 'Colorful parakeet, sings beautifully and loves attention.', 'available', NULL, '2024-01-01 00:00:00', '2026-03-24 16:08:41', 0, 1),
+(5, 1, 'Charlie', 'hamster', NULL, NULL, 1, NULL, 'Adorable teddy bear hamster, very active and friendly.', 'available', NULL, '2024-01-01 00:00:00', '2026-03-24 16:36:54', 0, 1),
+(6, 1, 'Charlie', 'dog', 'Beagle', 'Tri-color', 3, 'male', 'Charlie is an energetic Beagle who loves to play and explore. Great with kids and other dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(7, 1, 'Bella', 'dog', 'French Bulldog', 'Fawn', 2, 'female', 'Bella is a sweet French Bulldog with a calm temperament. She loves cuddles and short walks.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(8, 1, 'Rocky', 'dog', 'German Shepherd', 'Black and Tan', 4, 'male', 'Rocky is a loyal German Shepherd looking for an active family. Knows basic commands.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(9, 1, 'Luna', 'dog', 'Siberian Husky', 'Gray and White', 1, 'female', 'Luna is a playful Husky puppy with beautiful blue eyes. Very energetic and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(10, 1, 'Cooper', 'dog', 'Golden Retriever', 'Golden', 5, 'male', 'Cooper is a gentle Golden Retriever who loves children. Well-trained and calm.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(11, 1, 'Oliver', 'cat', 'Maine Coon', 'Brown Tabby', 3, 'male', 'Oliver is a majestic Maine Coon with a fluffy coat. Very affectionate and good with dogs.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(12, 1, 'Chloe', 'cat', 'Persian', 'White', 2, 'female', 'Chloe is a beautiful Persian cat with stunning blue eyes. Quiet and elegant.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(13, 1, 'Simba', 'cat', 'Bengal', 'Spotted', 1, 'male', 'Simba is an active Bengal kitten with beautiful spotted coat. Loves to climb and play.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(14, 1, 'Milo', 'cat', 'Siamese', 'Seal Point', 4, 'male', 'Milo is a vocal Siamese who loves attention. Very social and talkative.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(15, 1, 'Nala', 'cat', 'Ragdoll', 'Seal Lynx', 2, 'female', 'Nala is a floppy Ragdoll who goes limp when you hold her. Very relaxed and sweet.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(16, 1, 'Mango', 'bird', 'Sun Conure', 'Yellow/Orange', 1, 'male', 'Mango is a vibrant Sun Conure parrot. Very colorful and learning to talk.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(17, 1, 'Blue', 'bird', 'Blue Jay', 'Blue', 2, 'female', 'Blue is a beautiful Blue Jay with striking blue feathers. Very active and vocal.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(18, 1, 'Kiwi', 'bird', 'Budgie', 'Green', 1, 'female', 'Kiwi is a small budgie perfect for first-time bird owners. Sweet and chirpy.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(19, 1, 'Rio', 'bird', 'Macaw', 'Blue and Gold', 5, 'male', 'Rio is a stunning Macaw with a large vocabulary. Needs an experienced owner.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(20, 1, 'Thumper', 'rabbit', 'Holland Lop', 'Chocolate', 1, 'male', 'Thumper is a cute Holland Lop with floppy ears. Litter box trained and friendly.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(21, 1, 'Daisy', 'rabbit', 'Rex', 'White', 2, 'female', 'Daisy is a soft Rex rabbit with velvety fur. Very calm and loves to be petted.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(22, 1, 'Oreo', 'rabbit', 'Dutch', 'Black and White', 1, 'female', 'Oreo is a playful Dutch rabbit who loves to explore. Great with older children.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1),
+(23, 1, 'Peanut', 'hamster', 'Syrian', 'Golden', 0, 'male', 'Peanut is a friendly Syrian hamster. Active at night and fun to watch.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(24, 1, 'Squeaky', 'guinea pig', 'Abyssinian', 'Brown/White', 1, 'female', 'Squeaky is a vocal guinea pig who wheeks for treats. Very social.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 0, 1),
+(25, 1, 'Gizmo', 'ferret', 'Sable', 'Dark Brown', 2, 'male', 'Gizmo is a curious ferret who loves tunnels and toys. Very playful and energetic.', 'available', NULL, '2026-03-19 17:41:27', '2026-03-24 16:08:41', 1, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `suppliers`
 --
 
@@ -497,30 +651,16 @@ INSERT INTO `suppliers` (`id`, `supplier_name`, `contact_person`, `phone`, `emai
 (3, 'FunPets Ltd', 'Mike Chen', '800-555-3000', 'info@funpets.com', '789 Toy St, Miami, FL'),
 (4, 'AquaWorld', 'Lisa Rodriguez', '800-555-4000', 'support@aquaworld.com', '321 Fish Lane, Seattle, WA');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `full_name` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `created_at`) VALUES
-(1, 'storeManager', 'IamtheStoreManager', 'Store Manager', '2026-03-14 18:47:13');
-
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `addresses`
+--
+ALTER TABLE `addresses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `appointments`
@@ -562,6 +702,13 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `customer_pets`
+--
+ALTER TABLE `customer_pets`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`);
+
+--
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
@@ -590,12 +737,6 @@ ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`),
   ADD KEY `product_id` (`product_id`);
-
---
--- Indexes for table `pets`
---
-ALTER TABLE `pets`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `products`
@@ -642,33 +783,39 @@ ALTER TABLE `settings`
   ADD UNIQUE KEY `setting_key` (`setting_key`);
 
 --
+-- Indexes for table `store_pets`
+--
+ALTER TABLE `store_pets`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`);
+
+--
 -- Indexes for table `suppliers`
 --
 ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `addresses`
+--
+ALTER TABLE `addresses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -686,7 +833,13 @@ ALTER TABLE `contact_messages`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `customer_pets`
+--
+ALTER TABLE `customer_pets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `employees`
@@ -713,16 +866,10 @@ ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pets`
---
-ALTER TABLE `pets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
-
---
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `product_reviews`
@@ -755,27 +902,33 @@ ALTER TABLE `settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT for table `store_pets`
+--
+ALTER TABLE `store_pets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `addresses`
+--
+ALTER TABLE `addresses`
+  ADD CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `appointments`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
-  ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`pet_id`) REFERENCES `pets` (`id`),
+  ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`pet_id`) REFERENCES `customer_pets` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`);
 
 --
@@ -792,11 +945,17 @@ ALTER TABLE `categories`
   ADD CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`);
 
 --
+-- Constraints for table `customer_pets`
+--
+ALTER TABLE `customer_pets`
+  ADD CONSTRAINT `customer_pets_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`pet_id`) REFERENCES `pets` (`id`);
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`pet_id`) REFERENCES `store_pets` (`id`);
 
 --
 -- Constraints for table `order_items`
@@ -831,6 +990,12 @@ ALTER TABLE `sales`
 --
 ALTER TABLE `search_log`
   ADD CONSTRAINT `search_log_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
+
+--
+-- Constraints for table `store_pets`
+--
+ALTER TABLE `store_pets`
+  ADD CONSTRAINT `store_pets_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

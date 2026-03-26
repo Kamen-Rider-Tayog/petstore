@@ -11,11 +11,10 @@ if (!isset($_SESSION['customer_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/../../backend/includes/header.php';
-
 $customerId = $_SESSION['customer_id'];
 $appointmentId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+// Redirect if no appointment ID
 if ($appointmentId <= 0) {
     header('Location: ' . url('my_appointments'));
     exit;
@@ -39,8 +38,8 @@ $stmt = $conn->prepare("
            e.position as employee_position,
            e.phone as employee_phone
     FROM appointments a
-    LEFT JOIN store_pets p ON a.pet_id = p.id
-    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN customer_pets p ON a.pet_id = p.id
+    LEFT JOIN services s ON a.service_type = s.service_name
     LEFT JOIN employees e ON a.employee_id = e.id
     WHERE a.id = ? AND a.customer_id = ?
 ");
@@ -49,6 +48,7 @@ $stmt->bind_param("ii", $appointmentId, $customerId);
 $stmt->execute();
 $appointment = $stmt->get_result()->fetch_assoc();
 
+// Redirect if appointment not found
 if (!$appointment) {
     header('Location: ' . url('my_appointments'));
     exit;
@@ -58,9 +58,11 @@ if (!$appointment) {
 $appointmentTime = strtotime($appointment['appointment_date']);
 $canModify = ($appointmentTime > time() && $appointment['status'] !== 'cancelled');
 
+// Include header AFTER all redirect logic
+require_once __DIR__ . '/../../backend/includes/header.php';
+
 $page_title = 'Appointment Details';
 ?>
-
 <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/appointments/appointment_details.css?v=<?php echo time(); ?>">
 
 <div class="appointment-details-page">

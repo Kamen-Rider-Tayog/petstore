@@ -1,6 +1,18 @@
 <?php
-require_once '../includes/header.php';
-require_once '../includes/sidebar.php';
+session_name('petstore_session');
+session_start();
+
+// Check if user is logged in as admin
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header('Location: ' . url('login?error=Access denied'));
+    exit;
+}
+
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/functions/helpers.php';
+
+$page_title = 'Orders';
+require_once __DIR__ . '/../includes/header.php';
 
 // Handle filters
 $status = isset($_GET['status']) ? $_GET['status'] : 'all';
@@ -46,7 +58,7 @@ $orders = $stmt->get_result();
 
 // Get total count for pagination
 $countQuery = "SELECT COUNT(*) as total FROM orders o LEFT JOIN customers c ON o.customer_id = c.id WHERE 1=1";
-$countParams = array_slice($params, 0, -2); // Remove limit and offset
+$countParams = array_slice($params, 0, -2);
 $countTypes = substr($types, 0, -2);
 
 if ($status !== 'all') {
@@ -64,26 +76,19 @@ $stmt->execute();
 $totalOrders = $stmt->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalOrders / $limit);
 
-// Get status options
-$statusOptions = $conn->query("SELECT DISTINCT status FROM orders ORDER BY status");
+// Admin CSS
+echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . time() . '">';
 ?>
 
-<main class="admin-main">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Orders Management</h2>
-        <a href="order_add.php" class="btn btn-success">Add New Order</a>
-    </div>
-
-    <!-- Filters -->
-    <div style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
-        <form method="get" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-            <div class="form-group" style="margin: 0;">
-                <label for="search" style="display: block; margin-bottom: 0.5rem;">Search:</label>
-                <input type="text" name="search" id="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Order ID, Customer name, Email">
+<div class="admin-dashboard">
+    <!-- Search and Filter -->
+    <div class="search-bar">
+        <form method="get">
+            <div class="form-group">
+                <input type="text" name="search" placeholder="Search by Order ID, Customer name, Email..." value="<?php echo htmlspecialchars($search); ?>">
             </div>
-            <div class="form-group" style="margin: 0;">
-                <label for="status" style="display: block; margin-bottom: 0.5rem;">Status:</label>
-                <select name="status" id="status">
+            <div class="form-group">
+                <select name="status">
                     <option value="all" <?php echo $status === 'all' ? 'selected' : ''; ?>>All Statuses</option>
                     <option value="pending" <?php echo $status === 'pending' ? 'selected' : ''; ?>>Pending</option>
                     <option value="processing" <?php echo $status === 'processing' ? 'selected' : ''; ?>>Processing</option>
@@ -92,77 +97,79 @@ $statusOptions = $conn->query("SELECT DISTINCT status FROM orders ORDER BY statu
                     <option value="cancelled" <?php echo $status === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
                 </select>
             </div>
-            <div style="align-self: flex-end;">
-                <button type="submit" class="btn">Filter</button>
-                <?php if ($search || $status !== 'all'): ?>
-                    <a href="orders.php" class="btn btn-warning" style="margin-left: 0.5rem;">Clear</a>
-                <?php endif; ?>
-            </div>
+            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Filter</button>
+            <?php if ($search || $status !== 'all'): ?>
+                <a href="orders.php" class="btn btn-outline">Clear</a>
+            <?php endif; ?>
         </form>
     </div>
 
     <!-- Orders Table -->
-    <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
-        <table>
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Order Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($orders->num_rows > 0): ?>
-                    <?php while ($order = $orders->fetch_assoc()): ?>
-                        <tr>
-                            <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
-                            <td>
-                                <?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?><br>
-                                <small style="color: #666;"><?php echo htmlspecialchars($order['email']); ?></small>
-                            </td>
-                            <td>₱<?php echo number_format($order['total_amount'], 2); ?></td>
-                            <td>
-                                <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
-                                    <?php echo htmlspecialchars(ucfirst($order['status'])); ?>
-                                </span>
-                            </td>
-                            <td><?php echo date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
-                            <td>
-                                <a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-small">View</a>
-                                <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-small btn-warning">Edit</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
+    <div class="table-container">
+        <?php if ($orders->num_rows > 0): ?>
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 2rem;">No orders found.</td>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th></th>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php while ($order = $orders->fetch_assoc()): ?>
+                    <tr>
+                        <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
+                        <td>
+                            <div class="customer-info">
+                                <span class="customer-name"><?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></span>
+                                <span class="customer-email"><?php echo htmlspecialchars($order['email']); ?></span>
+                            </div>
+                        </td>
+                        <td>₱<?php echo number_format($order['total_amount'], 2); ?></td>
+                        <td>
+                            <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
+                                <?php echo ucfirst($order['status']); ?>
+                            </span>
+                        </td>
+                        <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
+                        <td class="actions">
+                            <a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn-icon" title="View Details">
+                                <?php echo icon('eye', 14); ?>
+                            </a>
+                            <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn-icon" title="Edit">
+                                <?php echo icon('edit', 14); ?>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+                <div class="pagination">
+                    <?php
+                    $queryString = http_build_query(array_filter([
+                        'search' => $search,
+                        'status' => $status !== 'all' ? $status : null
+                    ]));
+                    for ($i = 1; $i <= $totalPages; $i++):
+                        $active = $i === $page ? 'active' : '';
+                        $url = "orders.php?" . ($queryString ? $queryString . '&' : '') . "page=$i";
+                    ?>
+                        <a href="<?php echo $url; ?>" class="pagination-link <?php echo $active; ?>"><?php echo $i; ?></a>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="no-data">
+                <p>No orders found.</p>
+            </div>
+        <?php endif; ?>
     </div>
+</div>
 
-    <!-- Pagination -->
-    <?php if ($totalPages > 1): ?>
-        <div style="margin-top: 2rem; text-align: center;">
-            <?php
-            $queryString = http_build_query(array_filter([
-                'search' => $search,
-                'status' => $status !== 'all' ? $status : null,
-                'page' => null
-            ]));
-
-            for ($i = 1; $i <= $totalPages; $i++):
-                $active = $i === $page ? ' style="font-weight: bold; color: #007bff;"' : '';
-                $url = "orders.php?" . $queryString . "&page=$i";
-            ?>
-                <a href="<?php echo $url; ?>"<?php echo $active; ?> style="margin: 0 0.25rem;"><?php echo $i; ?></a>
-            <?php endfor; ?>
-        </div>
-    <?php endif; ?>
-</main>
-
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -38,17 +38,25 @@ if (!$pet) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $species = trim($_POST['species'] ?? '');
+    $customSpecies = trim($_POST['custom_species'] ?? '');
+    
+    // If "other" is selected, use custom species input
+    if ($species === 'other' && !empty($customSpecies)) {
+        $species = $customSpecies;
+    }
+    
     $breed = trim($_POST['breed'] ?? '');
     $age = (int)($_POST['age'] ?? 0);
     $gender = $_POST['gender'] ?? '';
     $color = trim($_POST['color'] ?? '');
     $weight = (float)($_POST['weight'] ?? 0);
     $weight_unit = $_POST['weight_unit'] ?? 'kg';
-    $microchip_id = trim($_POST['microchip_id'] ?? '');
-    $medical_notes = trim($_POST['medical_notes'] ?? '');
 
-    if (empty($name) || empty($species)) {
-        $error = 'Pet name and species are required.';
+    // Validate
+    if (empty($name)) {
+        $error = 'Pet name is required.';
+    } elseif (empty($species)) {
+        $error = 'Species is required.';
     } else {
         $stmt = $conn->prepare("
             UPDATE customer_pets SET
@@ -60,12 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 color = ?,
                 weight = ?,
                 weight_unit = ?,
-                microchip_id = ?,
-                medical_notes = ?,
                 updated_at = NOW()
             WHERE id = ? AND customer_id = ?
         ");
-        $stmt->bind_param("sssissssssii", $name, $species, $breed, $age, $gender, $color, $weight, $weight_unit, $microchip_id, $medical_notes, $petId, $customerId);
+        $stmt->bind_param("sssissssii", $name, $species, $breed, $age, $gender, $color, $weight, $weight_unit, $petId, $customerId);
         
         if ($stmt->execute()) {
             $success = true;
@@ -109,6 +115,10 @@ $page_title = 'Edit Pet';
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="species">Species <span class="required">*</span></label>
+                                <?php
+                                $commonSpecies = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'guinea pig'];
+                                $isCommonSpecies = in_array(strtolower($pet['species']), $commonSpecies);
+                                ?>
                                 <select id="species" name="species" required>
                                     <option value="">Select Species</option>
                                     <option value="dog" <?php echo $pet['species'] == 'dog' ? 'selected' : ''; ?>>Dog</option>
@@ -117,8 +127,12 @@ $page_title = 'Edit Pet';
                                     <option value="rabbit" <?php echo $pet['species'] == 'rabbit' ? 'selected' : ''; ?>>Rabbit</option>
                                     <option value="hamster" <?php echo $pet['species'] == 'hamster' ? 'selected' : ''; ?>>Hamster</option>
                                     <option value="guinea pig" <?php echo $pet['species'] == 'guinea pig' ? 'selected' : ''; ?>>Guinea Pig</option>
-                                    <option value="other" <?php echo $pet['species'] == 'other' ? 'selected' : ''; ?>>Other</option>
+                                    <option value="other" <?php echo !$isCommonSpecies ? 'selected' : ''; ?>>Other</option>
                                 </select>
+                            </div>
+                            <div class="form-group" id="customSpeciesGroup" style="display: <?php echo !$isCommonSpecies ? 'block' : 'none'; ?>;">
+                                <label for="custom_species">Other Species <span class="required">*</span></label>
+                                <input type="text" id="custom_species" name="custom_species" value="<?php echo !$isCommonSpecies ? htmlspecialchars($pet['species']) : ''; ?>" placeholder="Enter species name">
                             </div>
                             <div class="form-group">
                                 <label for="breed">Breed</label>
@@ -158,16 +172,6 @@ $page_title = 'Edit Pet';
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="microchip_id">Microchip ID</label>
-                            <input type="text" id="microchip_id" name="microchip_id" value="<?php echo htmlspecialchars($pet['microchip_id']); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="medical_notes">Medical Notes</label>
-                            <textarea id="medical_notes" name="medical_notes" rows="3"><?php echo htmlspecialchars($pet['medical_notes']); ?></textarea>
-                        </div>
-
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary"><?php echo icon('check', 16); ?> Save Changes</button>
                             <a href="<?php echo url('my_pets'); ?>" class="btn btn-secondary"><?php echo icon('x', 16); ?> Cancel</a>
@@ -178,5 +182,22 @@ $page_title = 'Edit Pet';
         </div>
     </section>
 </div>
+
+<script>
+// Show/hide custom species input when "Other" is selected
+document.getElementById('species').addEventListener('change', function() {
+    const customSpeciesGroup = document.getElementById('customSpeciesGroup');
+    const customSpeciesInput = document.getElementById('custom_species');
+    
+    if (this.value === 'other') {
+        customSpeciesGroup.style.display = 'block';
+        customSpeciesInput.required = true;
+    } else {
+        customSpeciesGroup.style.display = 'none';
+        customSpeciesInput.required = false;
+        customSpeciesInput.value = '';
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../../backend/includes/footer.php'; ?>

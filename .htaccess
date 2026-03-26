@@ -52,6 +52,7 @@ RewriteRule ^customer_order$          public/orders/customer_order.php [QSA,L]
 RewriteRule ^book_appointment$        public/appointments/book_appointment.php [QSA,L]
 RewriteRule ^appointments$            public/appointments/appointments.php [QSA,L]
 RewriteRule ^my_appointments$         public/appointments/my_appointments.php [QSA,L]
+RewriteRule ^appointment_details$     public/appointments/appointment_details.php [QSA,L]
 RewriteRule ^cancel_appointment$      public/appointments/cancel_appointment.php [QSA,L]
 RewriteRule ^reschedule_appointment$  public/appointments/reschedule_appointment.php [QSA,L]
 

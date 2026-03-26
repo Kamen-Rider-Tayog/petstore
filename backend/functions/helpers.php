@@ -171,3 +171,25 @@ function star_rating($rating, $size = 16)
     $output .= '</div>';
     return $output;
 }
+
+/**
+ * Convert timestamp to "time ago" string
+ */
+function time_ago($timestamp) {
+    $diff = time() - $timestamp;
+    
+    if ($diff < 60) {
+        return $diff . ' seconds ago';
+    } elseif ($diff < 3600) {
+        $mins = floor($diff / 60);
+        return $mins . ' minute' . ($mins > 1 ? 's' : '') . ' ago';
+    } elseif ($diff < 86400) {
+        $hours = floor($diff / 3600);
+        return $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
+    } elseif ($diff < 2592000) {
+        $days = floor($diff / 86400);
+        return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
+    } else {
+        return date('M j, Y', $timestamp);
+    }
+}

@@ -1,6 +1,15 @@
 <?php
-require_once '../includes/header.php';
-require_once '../includes/sidebar.php';
+session_name('petstore_session');
+session_start();
+
+// Check if user is logged in as admin
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header('Location: ' . url('login?error=Access denied'));
+    exit;
+}
+
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/functions/helpers.php';
 
 $orderId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -27,7 +36,7 @@ if (!$order) {
 
 // Get order items
 $stmt = $conn->prepare("
-    SELECT oi.*, p.product_name, p.image
+    SELECT oi.*, p.product_name, p.product_image
     FROM order_items oi
     LEFT JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id = ?
@@ -35,73 +44,83 @@ $stmt = $conn->prepare("
 $stmt->bind_param('i', $orderId);
 $stmt->execute();
 $orderItems = $stmt->get_result();
+
+$page_title = 'Order Details - #' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
+require_once __DIR__ . '/../includes/header.php';
+
+// Admin CSS
+echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . time() . '">';
 ?>
 
-<main class="admin-main">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Order Details - #<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></h2>
-        <div>
-            <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-warning">Edit Order</a>
-            <a href="orders.php" class="btn">Back to Orders</a>
+<div class="admin-dashboard">
+    <div class="page-header">
+        <h1>Order Details</h1>
+        <div class="action-buttons">
+            <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-outline">
+                <?php echo icon('edit', 16); ?> Edit Order
+            </a>
+            <a href="orders.php" class="btn btn-outline">
+                <?php echo icon('arrow-left', 16); ?> Back to Orders
+            </a>
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+    <div class="order-grid">
         <!-- Order Information -->
-        <div style="background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h3>Order Information</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+        <div class="info-card">
+            <h3><?php echo icon('package', 20); ?> Order Information</h3>
+            <table class="info-table">
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold; width: 140px;">Order ID:</td>
-                    <td style="padding: 0.5rem 0;">#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
+                    <td>Order ID</td>
+                    <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
                 </tr>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Status:</td>
-                    <td style="padding: 0.5rem 0;">
+                    <td>Status</td>
+                    <td>
                         <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
-                            <?php echo htmlspecialchars(ucfirst($order['status'])); ?>
+                            <?php echo ucfirst($order['status']); ?>
                         </span>
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Order Date:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
+                    <td>Order Date</td>
+                    <td><?php echo date('F j, Y \a\t g:i A', strtotime($order['created_at'])); ?></td>
                 </tr>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Total Amount:</td>
-                    <td style="padding: 0.5rem 0; font-weight: bold; color: #28a745;">₱<?php echo number_format($order['total_amount'], 2); ?></td>
+                    <td>Total Amount</td>
+                    <td class="total-amount">₱<?php echo number_format($order['total_amount'], 2); ?></td>
                 </tr>
                 <?php if (!empty($order['notes'])): ?>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Notes:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo nl2br(htmlspecialchars($order['notes'])); ?></td>
+                    <td>Notes</td>
+                    <td><?php echo nl2br(htmlspecialchars($order['notes'])); ?></td>
                 </tr>
                 <?php endif; ?>
             </table>
         </div>
 
         <!-- Customer Information -->
-        <div style="background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h3>Customer Information</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+        <div class="info-card">
+            <h3><?php echo icon('user', 20); ?> Customer Information</h3>
+            <table class="info-table">
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold; width: 140px;">Name:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></td>
+                    <td>Name</td>
+                    <td><?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></td>
                 </tr>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Email:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo htmlspecialchars($order['email']); ?></td>
+                    <td>Email</td>
+                    <td><?php echo htmlspecialchars($order['email']); ?></td>
                 </tr>
                 <?php if (!empty($order['phone'])): ?>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Phone:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo htmlspecialchars($order['phone']); ?></td>
+                    <td>Phone</td>
+                    <td><?php echo htmlspecialchars($order['phone']); ?></td>
                 </tr>
                 <?php endif; ?>
                 <?php if (!empty($order['address'])): ?>
                 <tr>
-                    <td style="padding: 0.5rem 0; font-weight: bold;">Address:</td>
-                    <td style="padding: 0.5rem 0;"><?php echo nl2br(htmlspecialchars($order['address'])); ?></td>
+                    <td>Address</td>
+                    <td><?php echo nl2br(htmlspecialchars($order['address'])); ?></td>
                 </tr>
                 <?php endif; ?>
             </table>
@@ -109,68 +128,61 @@ $orderItems = $stmt->get_result();
     </div>
 
     <!-- Order Items -->
-    <div style="background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h3>Order Items</h3>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #dee2e6;">
-                        <th style="padding: 1rem 0.5rem; text-align: left;">Product</th>
-                        <th style="padding: 1rem 0.5rem; text-align: center;">Quantity</th>
-                        <th style="padding: 1rem 0.5rem; text-align: right;">Unit Price</th>
-                        <th style="padding: 1rem 0.5rem; text-align: right;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $subtotal = 0;
-                    while ($item = $orderItems->fetch_assoc()):
-                        $itemTotal = $item['quantity'] * $item['unit_price'];
-                        $subtotal += $itemTotal;
-                    ?>
-                        <tr style="border-bottom: 1px solid #dee2e6;">
-                            <td style="padding: 1rem 0.5rem;">
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    <?php if (!empty($item['image'])): ?>
-                                        <img src="../assets/images/<?php echo htmlspecialchars($item['image']); ?>" width="50" height="50" style="object-fit: cover; border-radius: 4px;">
-                                    <?php endif; ?>
-                                    <div>
-                                        <div style="font-weight: bold;"><?php echo htmlspecialchars($item['product_name']); ?></div>
-                                        <div style="color: #666; font-size: 0.9rem;">Product ID: <?php echo $item['product_id']; ?></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style="padding: 1rem 0.5rem; text-align: center;"><?php echo $item['quantity']; ?></td>
-                            <td style="padding: 1rem 0.5rem; text-align: right;">₱<?php echo number_format($item['unit_price'], 2); ?></td>
-                            <td style="padding: 1rem 0.5rem; text-align: right; font-weight: bold;">₱<?php echo number_format($itemTotal, 2); ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-                <tfoot>
-                    <tr style="border-top: 2px solid #dee2e6;">
-                        <td colspan="3" style="padding: 1rem 0.5rem; text-align: right; font-weight: bold;">Subtotal:</td>
-                        <td style="padding: 1rem 0.5rem; text-align: right; font-weight: bold;">₱<?php echo number_format($subtotal, 2); ?></td>
-                    </tr>
-                    <?php if (isset($order['tax_amount']) && $order['tax_amount'] > 0): ?>
-                    <tr>
-                        <td colspan="3" style="padding: 0.5rem; text-align: right;">Tax:</td>
-                        <td style="padding: 0.5rem; text-align: right;">₱<?php echo number_format($order['tax_amount'], 2); ?></td>
-                    </tr>
-                    <?php endif; ?>
-                    <?php if (isset($order['shipping_amount']) && $order['shipping_amount'] > 0): ?>
-                    <tr>
-                        <td colspan="3" style="padding: 0.5rem; text-align: right;">Shipping:</td>
-                        <td style="padding: 0.5rem; text-align: right;">₱<?php echo number_format($order['shipping_amount'], 2); ?></td>
-                    </tr>
-                    <?php endif; ?>
-                    <tr style="border-top: 2px solid #28a745; background: #f8fff9;">
-                        <td colspan="3" style="padding: 1rem 0.5rem; text-align: right; font-weight: bold; color: #28a745;">Total:</td>
-                        <td style="padding: 1rem 0.5rem; text-align: right; font-weight: bold; color: #28a745; font-size: 1.1rem;">₱<?php echo number_format($order['total_amount'], 2); ?></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+    <div class="items-card">
+        <h3><?php echo icon('shopping-bag', 20); ?> Order Items</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $subtotal = 0;
+                while ($item = $orderItems->fetch_assoc()):
+                    $itemTotal = $item['quantity'] * $item['unit_price'];
+                    $subtotal += $itemTotal;
+                ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($item['product_name']); ?></td>
+                    <td><?php echo $item['quantity']; ?></td>
+                    <td>₱<?php echo number_format($item['unit_price'], 2); ?></td>
+                    <td>₱<?php echo number_format($itemTotal, 2); ?></td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Subtotal</strong></td>
+                    <td>₱<?php echo number_format($subtotal, 2); ?></td>
+                </tr>
+                <?php if (isset($order['shipping_amount']) && $order['shipping_amount'] > 0): ?>
+                <tr>
+                    <td colspan="3" style="text-align: right;">Shipping</td>
+                    <td>₱<?php echo number_format($order['shipping_amount'], 2); ?></td>
+                </tr>
+                <?php endif; ?>
+                <tr class="total-row">
+                    <td colspan="3" style="text-align: right;"><strong>Total</strong></td>
+                    <td><strong>₱<?php echo number_format($order['total_amount'], 2); ?></strong></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
-</main>
 
-<?php require_once '../includes/footer.php'; ?>
+    <div class="action-buttons">
+        <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-primary">
+            <?php echo icon('edit', 16); ?> Edit Order
+        </a>
+        <?php if ($order['status'] !== 'cancelled' && $order['status'] !== 'delivered'): ?>
+        <a href="order_cancel.php?id=<?php echo $order['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this order?')">
+            <?php echo icon('x', 16); ?> Cancel Order
+        </a>
+        <?php endif; ?>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

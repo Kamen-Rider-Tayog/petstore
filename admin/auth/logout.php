@@ -1,12 +1,9 @@
 <?php
+require_once __DIR__ . '/../../backend/functions/helpers.php';
+
+session_name('petstore_session');
 session_start();
 session_destroy();
-
-// Clear remember cookie if exists
-if (isset($_COOKIE['admin_remember'])) {
-    setcookie('admin_remember', '', time() - 3600, '/');
-}
-
-header('Location: login.php?message=Logged out successfully');
-exit();
+header('Location: ' . url(''));
+exit;
 ?>

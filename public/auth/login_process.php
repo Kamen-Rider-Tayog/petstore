@@ -1,5 +1,4 @@
 <?php
-// Set session name BEFORE session_start - must match your site
 session_name('petstore_session');
 session_start();
 
@@ -20,41 +19,55 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-// Use customers table
-$sql = "SELECT * FROM customers WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+// First check if user is an admin (employees table)
+$adminStmt = $conn->prepare("SELECT * FROM employees WHERE email = ? AND is_admin = 1");
+$adminStmt->bind_param("s", $email);
+$adminStmt->execute();
+$adminResult = $adminStmt->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
+if ($adminResult->num_rows > 0) {
+    $admin = $adminResult->fetch_assoc();
     
-    if (password_verify($password, $user['password'])) {
-        // Set session variables
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['customer_id'] = $user['id'];
-        $_SESSION['customer_name'] = $user['first_name'] . ' ' . $user['last_name'];
-        $_SESSION['customer_email'] = $user['email'];
+    if (password_verify($password, $admin['password'])) {
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_name'] = $admin['first_name'] . ' ' . $admin['last_name'];
+        $_SESSION['admin_email'] = $admin['email'];
+        $_SESSION['is_admin'] = true;
+        
+        $adminStmt->close();
+        header('Location: ' . url('admin/pages/dashboard.php'));
+        exit;
+    }
+}
+$adminStmt->close();
+
+// If not admin, check customers table
+$customerStmt = $conn->prepare("SELECT * FROM customers WHERE email = ?");
+$customerStmt->bind_param("s", $email);
+$customerStmt->execute();
+$customerResult = $customerStmt->get_result();
+
+if ($customerResult->num_rows > 0) {
+    $customer = $customerResult->fetch_assoc();
+    
+    if (password_verify($password, $customer['password'])) {
+        $_SESSION['customer_id'] = $customer['id'];
+        $_SESSION['customer_name'] = $customer['first_name'] . ' ' . $customer['last_name'];
+        $_SESSION['customer_email'] = $customer['email'];
 
         // Merge any guest cart items into the user's cart
         if (function_exists('mergeSessionCartIntoUser')) {
-            mergeSessionCartIntoUser($user['id']);
+            mergeSessionCartIntoUser($customer['id']);
         }
 
-        $stmt->close();
-        
-        // Debug - verify session is set
-        error_log("Login successful - Session ID: " . session_id());
-        error_log("Customer ID: " . $_SESSION['customer_id']);
-        error_log("Customer Name: " . $_SESSION['customer_name']);
-        
+        $customerStmt->close();
         header('Location: ' . url(''));
         exit;
     }
 }
+$customerStmt->close();
 
-$stmt->close();
+// If neither admin nor customer found with matching password
 header('Location: ' . url('login?error=Invalid email or password'));
 exit;
 ?>
