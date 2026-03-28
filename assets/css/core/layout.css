@@ -53,7 +53,7 @@ main.container {
 .sale-price,
 .regular-price            { color: var(--pink-primary); font-weight: 700; font-size: 1rem; }
 .product-actions          { display: flex; gap: 0.5rem; padding: 0.875rem 1rem; flex-wrap: wrap; border-top: 0.0625rem solid var(--pink-pale); background: var(--pink-bg); }
-.in-stock                 { color: #2a9d5c; font-size: 0.8rem; margin: 0.25rem 0 0; }
+.in-stock                 { color: #2a9d5c; font-size: 0.8rem; }
 .out-of-stock             { color: var(--pink-dark); font-size: 0.8rem; margin: 0.25rem 0 0; }
 
 /* ===== PAGE HEADER ===== */

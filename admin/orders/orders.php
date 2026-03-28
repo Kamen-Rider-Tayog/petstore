@@ -58,56 +58,102 @@ $orders = $stmt->get_result();
 
 // Get total count for pagination
 $countQuery = "SELECT COUNT(*) as total FROM orders o LEFT JOIN customers c ON o.customer_id = c.id WHERE 1=1";
-$countParams = array_slice($params, 0, -2);
-$countTypes = substr($types, 0, -2);
+$countParams = [];
+$countTypes = '';
 
 if ($status !== 'all') {
     $countQuery .= " AND o.status = ?";
-}
-if (!empty($search)) {
-    $countQuery .= " AND (o.id LIKE ? OR c.first_name LIKE ? OR c.last_name LIKE ? OR c.email LIKE ?)";
+    $countParams[] = $status;
+    $countTypes .= 's';
 }
 
-$stmt = $conn->prepare($countQuery);
-if (!empty($countParams)) {
-    $stmt->bind_param($countTypes, ...$countParams);
+if (!empty($search)) {
+    $countQuery .= " AND (o.id LIKE ? OR c.first_name LIKE ? OR c.last_name LIKE ? OR c.email LIKE ?)";
+    $searchTerm = "%$search%";
+    $countParams = array_merge($countParams, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+    $countTypes .= 'ssss';
 }
-$stmt->execute();
-$totalOrders = $stmt->get_result()->fetch_assoc()['total'];
+
+$countStmt = $conn->prepare($countQuery);
+if (!empty($countParams)) {
+    $countStmt->bind_param($countTypes, ...$countParams);
+}
+$countStmt->execute();
+$totalOrders = $countStmt->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalOrders / $limit);
+
+// Get counts for status filters
+$allCount = $conn->query("SELECT COUNT(*) as count FROM orders")->fetch_assoc()['count'];
+$pendingCount = $conn->query("SELECT COUNT(*) as count FROM orders WHERE status = 'pending'")->fetch_assoc()['count'];
+$processingCount = $conn->query("SELECT COUNT(*) as count FROM orders WHERE status = 'processing'")->fetch_assoc()['count'];
+$shippedCount = $conn->query("SELECT COUNT(*) as count FROM orders WHERE status = 'shipped'")->fetch_assoc()['count'];
+$deliveredCount = $conn->query("SELECT COUNT(*) as count FROM orders WHERE status = 'delivered'")->fetch_assoc()['count'];
+$cancelledCount = $conn->query("SELECT COUNT(*) as count FROM orders WHERE status = 'cancelled'")->fetch_assoc()['count'];
 
 // Admin CSS
 echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . time() . '">';
 ?>
 
 <div class="admin-dashboard">
-    <!-- Search and Filter -->
+    <!-- Search Bar -->
     <div class="search-bar">
-        <form method="get">
-            <div class="form-group">
-                <input type="text" name="search" placeholder="Search by Order ID, Customer name, Email..." value="<?php echo htmlspecialchars($search); ?>">
-            </div>
-            <div class="form-group">
-                <select name="status">
-                    <option value="all" <?php echo $status === 'all' ? 'selected' : ''; ?>>All Statuses</option>
-                    <option value="pending" <?php echo $status === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                    <option value="processing" <?php echo $status === 'processing' ? 'selected' : ''; ?>>Processing</option>
-                    <option value="shipped" <?php echo $status === 'shipped' ? 'selected' : ''; ?>>Shipped</option>
-                    <option value="delivered" <?php echo $status === 'delivered' ? 'selected' : ''; ?>>Delivered</option>
-                    <option value="cancelled" <?php echo $status === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Filter</button>
-            <?php if ($search || $status !== 'all'): ?>
-                <a href="orders.php" class="btn btn-outline">Clear</a>
+        <form method="get" action="">
+            <input type="hidden" name="status" value="<?php echo $status; ?>">
+            <input type="text" name="search" placeholder="Search by Order ID, Customer name, Email..." value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Search</button>
+            <?php if ($search): ?>
+                <a href="?status=<?php echo $status; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
             <?php endif; ?>
         </form>
+        <a href="add_order.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add New Order</a>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div class="filter-tabs">
+        <a href="?status=all" class="filter-tab <?php echo $status === 'all' ? 'active' : ''; ?>">
+            All Orders
+            <span class="filter-count"><?php echo $allCount; ?></span>
+        </a>
+        <a href="?status=pending" class="filter-tab <?php echo $status === 'pending' ? 'active' : ''; ?>">
+            <span class="status-dot pending"></span>
+            Pending
+            <span class="filter-count"><?php echo $pendingCount; ?></span>
+        </a>
+        <a href="?status=processing" class="filter-tab <?php echo $status === 'processing' ? 'active' : ''; ?>">
+            <span class="status-dot processing"></span>
+            Processing
+            <span class="filter-count"><?php echo $processingCount; ?></span>
+        </a>
+        <a href="?status=shipped" class="filter-tab <?php echo $status === 'shipped' ? 'active' : ''; ?>">
+            <span class="status-dot shipped"></span>
+            Shipped
+            <span class="filter-count"><?php echo $shippedCount; ?></span>
+        </a>
+        <a href="?status=delivered" class="filter-tab <?php echo $status === 'delivered' ? 'active' : ''; ?>">
+            <span class="status-dot delivered"></span>
+            Delivered
+            <span class="filter-count"><?php echo $deliveredCount; ?></span>
+        </a>
+        <a href="?status=cancelled" class="filter-tab <?php echo $status === 'cancelled' ? 'active' : ''; ?>">
+            <span class="status-dot cancelled"></span>
+            Cancelled
+            <span class="filter-count"><?php echo $cancelledCount; ?></span>
+        </a>
+    </div>
+
+    <!-- Status Legend -->
+    <div class="status-legend">
+        <span class="legend-item"><span class="status-dot pending"></span> Pending</span>
+        <span class="legend-item"><span class="status-dot processing"></span> Processing</span>
+        <span class="legend-item"><span class="status-dot shipped"></span> Shipped</span>
+        <span class="legend-item"><span class="status-dot delivered"></span> Delivered</span>
+        <span class="legend-item"><span class="status-dot cancelled"></span> Cancelled</span>
     </div>
 
     <!-- Orders Table -->
     <div class="table-container">
         <?php if ($orders->num_rows > 0): ?>
-            <table class="admin-table">
+            <table class="admin-table clickable-rows">
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -115,34 +161,26 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
                         <th>Total</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($order = $orders->fetch_assoc()): ?>
-                    <tr>
-                        <td>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
+                    <tr class="clickable-row" data-href="order_details.php?id=<?php echo $order['id']; ?>">
+                        <td class="order-id">#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></td>
                         <td>
                             <div class="customer-info">
                                 <span class="customer-name"><?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></span>
                                 <span class="customer-email"><?php echo htmlspecialchars($order['email']); ?></span>
                             </div>
                         </td>
-                        <td>₱<?php echo number_format($order['total_amount'], 2); ?></td>
+                        <td class="order-total">₱<?php echo number_format($order['total_amount'], 2); ?></td>
                         <td>
-                            <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
-                                <?php echo ucfirst($order['status']); ?>
-                            </span>
+                            <div class="status-indicators">
+                                <span class="status-dot <?php echo strtolower($order['status']); ?>" title="<?php echo ucfirst($order['status']); ?>"></span>
+                                <span class="status-text"><?php echo ucfirst($order['status']); ?></span>
+                            </div>
                         </td>
                         <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
-                        <td class="actions">
-                            <a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn-icon" title="View Details">
-                                <?php echo icon('eye', 14); ?>
-                            </a>
-                            <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn-icon" title="Edit">
-                                <?php echo icon('edit', 14); ?>
-                            </a>
-                        </td>
                     </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -152,24 +190,68 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
             <?php if ($totalPages > 1): ?>
                 <div class="pagination">
                     <?php
-                    $queryString = http_build_query(array_filter([
+                    $queryParams = array_filter([
                         'search' => $search,
-                        'status' => $status !== 'all' ? $status : null
-                    ]));
-                    for ($i = 1; $i <= $totalPages; $i++):
-                        $active = $i === $page ? 'active' : '';
-                        $url = "orders.php?" . ($queryString ? $queryString . '&' : '') . "page=$i";
+                        'status' => $status !== 'all' ? $status : null,
+                        'page' => null
+                    ]);
+                    $queryString = http_build_query($queryParams);
+                    
+                    // Previous button
+                    if ($page > 1) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page - 1) . '" class="pagination-link">&laquo; Prev</a>';
+                    }
+                    
+                    // Page numbers
+                    $startPage = max(1, $page - 2);
+                    $endPage = min($totalPages, $page + 2);
+                    
+                    if ($startPage > 1) {
+                        echo '<a href="?' . $queryString . '&page=1" class="pagination-link">1</a>';
+                        if ($startPage > 2) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                    }
+                    
+                    for ($i = $startPage; $i <= $endPage; $i++):
+                        $activeClass = $i === $page ? 'active' : '';
                     ?>
-                        <a href="<?php echo $url; ?>" class="pagination-link <?php echo $active; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
+                        <a href="?<?php echo $queryString; ?>&page=<?php echo $i; ?>" class="pagination-link <?php echo $activeClass; ?>"><?php echo $i; ?></a>
+                    <?php endfor;
+                    
+                    if ($endPage < $totalPages) {
+                        if ($endPage < $totalPages - 1) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                        echo '<a href="?' . $queryString . '&page=' . $totalPages . '" class="pagination-link">' . $totalPages . '</a>';
+                    }
+                    
+                    // Next button
+                    if ($page < $totalPages) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page + 1) . '" class="pagination-link">Next &raquo;</a>';
+                    }
+                    ?>
                 </div>
             <?php endif; ?>
         <?php else: ?>
             <div class="no-data">
-                <p>No orders found.</p>
+                <p>No orders found. <?php echo icon('package', 20); ?></p>
             </div>
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+// Make table rows clickable
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+        row.style.cursor = 'pointer';
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

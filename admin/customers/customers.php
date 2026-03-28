@@ -99,7 +99,6 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
                         <th>Orders</th>
                         <th>Total Spent</th>
                         <th>Joined</th>
-                        <th></th>
                      </tr>
                 </thead>
                 <tbody>
@@ -116,14 +115,6 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
                         <td><?php echo $customer['total_orders']; ?></td>
                         <td>₱<?php echo number_format($customer['total_spent'], 2); ?></td>
                         <td><?php echo date('M d, Y', strtotime($customer['created_at'])); ?></td>
-                        <td class="actions">
-                            <a href="customer_details.php?id=<?php echo $customer['id']; ?>" class="btn-icon" title="View Details">
-                                <?php echo icon('eye', 14); ?>
-                            </a>
-                            <a href="customer_edit.php?id=<?php echo $customer['id']; ?>" class="btn-icon" title="Edit">
-                                <?php echo icon('edit', 14); ?>
-                            </a>
-                        </td>
                      </tr>
                     <?php endwhile; ?>
                 </tbody>

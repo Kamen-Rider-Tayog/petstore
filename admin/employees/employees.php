@@ -1,41 +1,55 @@
 <?php
-require_once '../includes/header.php';
-require_once '../includes/sidebar.php';
+session_name('petstore_session');
+session_start();
+
+// Check if user is logged in as admin
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header('Location: ' . url('login?error=Access denied'));
+    exit;
+}
+
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/functions/helpers.php';
+
+$page_title = 'Employees';
+require_once __DIR__ . '/../includes/header.php';
 
 // Handle filters
+$status = isset($_GET['status']) ? $_GET['status'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$role = isset($_GET['role']) ? $_GET['role'] : 'all';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 20;
 $offset = ($page - 1) * $limit;
 
 // Build query
-$query = "SELECT e.* FROM employees e WHERE 1=1";
-
+$query = "SELECT * FROM employees WHERE 1=1";
 $params = [];
 $types = '';
 
-if ($role !== 'all') {
-    if ($role === 'admin') {
-        $query .= " AND e.is_admin = 1";
-    } elseif ($role === 'employee') {
-        $query .= " AND (e.is_admin = 0 OR e.is_admin IS NULL)";
+if ($status !== 'all') {
+    if ($status === 'active') {
+        $query .= " AND is_active = 1";
+    } elseif ($status === 'inactive') {
+        $query .= " AND is_active = 0";
+    } elseif ($status === 'admin') {
+        $query .= " AND is_admin = 1";
+    } elseif ($status === 'staff') {
+        $query .= " AND is_admin = 0";
     }
 }
 
 if (!empty($search)) {
-    $query .= " AND (e.first_name LIKE ? OR e.last_name LIKE ? OR e.email LIKE ? OR e.position LIKE ?)";
+    $query .= " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR position LIKE ? OR phone LIKE ?)";
     $searchTerm = "%$search%";
-    $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
-    $types .= 'ssss';
+    $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+    $types .= 'sssss';
 }
 
-$query .= " ORDER BY e.is_admin DESC, e.created_at DESC LIMIT ? OFFSET ?";
+$query .= " ORDER BY first_name ASC LIMIT ? OFFSET ?";
 $params[] = $limit;
 $params[] = $offset;
 $types .= 'ii';
 
-// Get employees
 $stmt = $conn->prepare($query);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -44,127 +58,197 @@ $stmt->execute();
 $employees = $stmt->get_result();
 
 // Get total count for pagination
-$countQuery = "SELECT COUNT(*) as total FROM employees e WHERE 1=1";
-$countParams = array_slice($params, 0, -2); // Remove limit and offset
-$countTypes = substr($types, 0, -2);
+$countQuery = "SELECT COUNT(*) as total FROM employees WHERE 1=1";
+$countParams = [];
+$countTypes = '';
 
-if ($role !== 'all') {
-    if ($role === 'admin') {
-        $countQuery .= " AND e.is_admin = 1";
-    } elseif ($role === 'employee') {
-        $countQuery .= " AND (e.is_admin = 0 OR e.is_admin IS NULL)";
+if ($status !== 'all') {
+    if ($status === 'active') {
+        $countQuery .= " AND is_active = 1";
+    } elseif ($status === 'inactive') {
+        $countQuery .= " AND is_active = 0";
+    } elseif ($status === 'admin') {
+        $countQuery .= " AND is_admin = 1";
+    } elseif ($status === 'staff') {
+        $countQuery .= " AND is_admin = 0";
     }
 }
 
 if (!empty($search)) {
-    $countQuery .= " AND (e.first_name LIKE ? OR e.last_name LIKE ? OR e.email LIKE ? OR e.position LIKE ?)";
+    $countQuery .= " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR position LIKE ? OR phone LIKE ?)";
+    $searchTerm = "%$search%";
+    $countParams = array_merge($countParams, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+    $countTypes .= 'sssss';
 }
 
-$stmt = $conn->prepare($countQuery);
+$countStmt = $conn->prepare($countQuery);
 if (!empty($countParams)) {
-    $stmt->bind_param($countTypes, ...$countParams);
+    $countStmt->bind_param($countTypes, ...$countParams);
 }
-$stmt->execute();
-$totalEmployees = $stmt->get_result()->fetch_assoc()['total'];
+$countStmt->execute();
+$totalEmployees = $countStmt->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalEmployees / $limit);
+
+// Get counts for filters
+$allCount = $conn->query("SELECT COUNT(*) as count FROM employees")->fetch_assoc()['count'];
+$activeCount = $conn->query("SELECT COUNT(*) as count FROM employees WHERE is_active = 1")->fetch_assoc()['count'];
+$inactiveCount = $conn->query("SELECT COUNT(*) as count FROM employees WHERE is_active = 0")->fetch_assoc()['count'];
+$adminCount = $conn->query("SELECT COUNT(*) as count FROM employees WHERE is_admin = 1")->fetch_assoc()['count'];
+$staffCount = $conn->query("SELECT COUNT(*) as count FROM employees WHERE is_admin = 0")->fetch_assoc()['count'];
+
+// Admin CSS
+echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/employees.css?v=' . time() . '">';
 ?>
 
-<main class="admin-main">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Employees Management</h2>
-        <a href="employee_add.php" class="btn btn-success">Add New Employee</a>
+<div class="admin-dashboard">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form method="get" action="">
+            <input type="hidden" name="status" value="<?php echo $status; ?>">
+            <input type="text" name="search" placeholder="Search by name, email, position, or phone..." value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Search</button>
+            <?php if ($search): ?>
+                <a href="?status=<?php echo $status; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
+            <?php endif; ?>
+        </form>
+        <a href="add_employee.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add Employee</a>
     </div>
 
-    <!-- Filters -->
-    <div style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
-        <form method="get" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-            <div class="form-group" style="margin: 0;">
-                <label for="search" style="display: block; margin-bottom: 0.5rem;">Search:</label>
-                <input type="text" name="search" id="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Name, Email, Position">
-            </div>
-            <div class="form-group" style="margin: 0;">
-                <label for="role" style="display: block; margin-bottom: 0.5rem;">Role:</label>
-                <select name="role" id="role">
-                    <option value="all" <?php echo $role === 'all' ? 'selected' : ''; ?>>All Roles</option>
-                    <option value="admin" <?php echo $role === 'admin' ? 'selected' : ''; ?>>Admins</option>
-                    <option value="employee" <?php echo $role === 'employee' ? 'selected' : ''; ?>>Employees</option>
-                </select>
-            </div>
-            <div style="align-self: flex-end;">
-                <button type="submit" class="btn">Filter</button>
-                <?php if ($search || $role !== 'all'): ?>
-                    <a href="employees.php" class="btn btn-warning" style="margin-left: 0.5rem;">Clear</a>
-                <?php endif; ?>
-            </div>
-        </form>
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <a href="?status=all" class="filter-tab <?php echo $status === 'all' ? 'active' : ''; ?>">
+            All Employees
+            <span class="filter-count"><?php echo $allCount; ?></span>
+        </a>
+        <a href="?status=active" class="filter-tab <?php echo $status === 'active' ? 'active' : ''; ?>">
+            <span class="status-dot active"></span>
+            Active
+            <span class="filter-count"><?php echo $activeCount; ?></span>
+        </a>
+        <a href="?status=inactive" class="filter-tab <?php echo $status === 'inactive' ? 'active' : ''; ?>">
+            <span class="status-dot inactive"></span>
+            Inactive
+            <span class="filter-count"><?php echo $inactiveCount; ?></span>
+        </a>
+        <a href="?status=admin" class="filter-tab <?php echo $status === 'admin' ? 'active' : ''; ?>">
+            <span class="status-dot admin"></span>
+            Admins
+            <span class="filter-count"><?php echo $adminCount; ?></span>
+        </a>
+        <a href="?status=staff" class="filter-tab <?php echo $status === 'staff' ? 'active' : ''; ?>">
+            <span class="status-dot staff"></span>
+            Staff
+            <span class="filter-count"><?php echo $staffCount; ?></span>
+        </a>
+    </div>
+
+    <!-- Status Legend -->
+    <div class="status-legend">
+        <span class="legend-item"><span class="status-dot active"></span> Active</span>
+        <span class="legend-item"><span class="status-dot inactive"></span> Inactive</span>
+        <span class="legend-item"><span class="status-dot admin"></span> Admin</span>
+        <span class="legend-item"><span class="status-dot staff"></span> Staff</span>
     </div>
 
     <!-- Employees Table -->
-    <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Position</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                    <th>Joined</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($employees->num_rows > 0): ?>
-                    <?php while ($employee = $employees->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo $employee['id']; ?></td>
-                            <td><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></td>
-                            <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                            <td><?php echo htmlspecialchars($employee['position'] ?? 'N/A'); ?></td>
-                            <td>
-                                <?php if ($employee['is_admin']): ?>
-                                    <span class="status-badge status-admin">Admin</span>
-                                <?php else: ?>
-                                    <span class="status-badge status-employee">Employee</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($employee['phone'] ?? 'N/A'); ?></td>
-                            <td><?php echo date('M d, Y', strtotime($employee['created_at'])); ?></td>
-                            <td>
-                                <a href="employee_details.php?id=<?php echo $employee['id']; ?>" class="btn btn-small">View</a>
-                                <a href="employee_edit.php?id=<?php echo $employee['id']; ?>" class="btn btn-small btn-warning">Edit</a>
-                                <a href="employee_delete.php?id=<?php echo $employee['id']; ?>" class="btn btn-small btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
+    <div class="table-container">
+        <?php if ($employees->num_rows > 0): ?>
+            <table class="admin-table clickable-rows">
+                <thead>
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 2rem;">No employees found.</td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                     </tr>
+                </thead>
+                <tbody>
+                    <?php while ($employee = $employees->fetch_assoc()): ?>
+                    <tr class="clickable-row" data-href="employee_details.php?id=<?php echo $employee['id']; ?>">
+                        <td class="employee-id">#<?php echo str_pad($employee['id'], 4, '0', STR_PAD_LEFT); ?></td>
+                        <td>
+                            <div class="employee-info">
+                                <span class="employee-name"><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></span>
+                            </div>
+                        </td>
+                        <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                        <td><?php echo htmlspecialchars($employee['position'] ?? 'N/A'); ?></td>
+                        <td><?php echo htmlspecialchars($employee['phone'] ?? 'N/A'); ?></td>
+                        <td>
+                            <div class="status-indicators">
+                                <span class="status-dot <?php echo $employee['is_active'] ? 'active' : 'inactive'; ?>" title="<?php echo $employee['is_active'] ? 'Active' : 'Inactive'; ?>"></span>
+                                <span class="status-dot <?php echo $employee['is_admin'] ? 'admin' : 'staff'; ?>" title="<?php echo $employee['is_admin'] ? 'Admin' : 'Staff'; ?>"></span>
+                            </div>
+                        </td>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+                <div class="pagination">
+                    <?php
+                    $queryParams = array_filter([
+                        'search' => $search,
+                        'status' => $status !== 'all' ? $status : null,
+                        'page' => null
+                    ]);
+                    $queryString = http_build_query($queryParams);
+                    
+                    if ($page > 1) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page - 1) . '" class="pagination-link">&laquo; Prev</a>';
+                    }
+                    
+                    $startPage = max(1, $page - 2);
+                    $endPage = min($totalPages, $page + 2);
+                    
+                    if ($startPage > 1) {
+                        echo '<a href="?' . $queryString . '&page=1" class="pagination-link">1</a>';
+                        if ($startPage > 2) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                    }
+                    
+                    for ($i = $startPage; $i <= $endPage; $i++):
+                        $activeClass = $i === $page ? 'active' : '';
+                    ?>
+                        <a href="?<?php echo $queryString; ?>&page=<?php echo $i; ?>" class="pagination-link <?php echo $activeClass; ?>"><?php echo $i; ?></a>
+                    <?php endfor;
+                    
+                    if ($endPage < $totalPages) {
+                        if ($endPage < $totalPages - 1) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                        echo '<a href="?' . $queryString . '&page=' . $totalPages . '" class="pagination-link">' . $totalPages . '</a>';
+                    }
+                    
+                    if ($page < $totalPages) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page + 1) . '" class="pagination-link">Next &raquo;</a>';
+                    }
+                    ?>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="no-data">
+                <p>No employees found. <?php echo icon('users', 20); ?></p>
+            </div>
+        <?php endif; ?>
     </div>
+</div>
 
-    <!-- Pagination -->
-    <?php if ($totalPages > 1): ?>
-        <div style="margin-top: 2rem; text-align: center;">
-            <?php
-            $queryString = http_build_query(array_filter([
-                'search' => $search,
-                'role' => $role !== 'all' ? $role : null,
-                'page' => null
-            ]));
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+        row.style.cursor = 'pointer';
+    });
+});
+</script>
 
-            for ($i = 1; $i <= $totalPages; $i++):
-                $active = $i === $page ? ' style="font-weight: bold; color: #007bff;"' : '';
-                $url = "employees.php?" . $queryString . "&page=$i";
-            ?>
-                <a href="<?php echo $url; ?>"<?php echo $active; ?> style="margin: 0 0.25rem;"><?php echo $i; ?></a>
-            <?php endfor; ?>
-        </div>
-    <?php endif; ?>
-</main>
-
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -12,11 +12,13 @@
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/base.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/layout.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/btn.css">
+    <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/utilities.css">
     
     <!-- Admin CSS -->
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/dashboard.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css">
+    <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/products.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/pets.css">
     
     <?php if (!empty($page_styles)): ?>
