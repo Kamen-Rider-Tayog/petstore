@@ -12,7 +12,7 @@
   /* Soft pink accent palette */
   --accent-50: #fff5f7; --accent-100: #ffe8ef; --accent-200: #ffd1df; --accent-300: #ffb3c9;
   --accent-400: #fa8eb0; --accent-500: #f26b98; --accent-600: #e34c80; --accent-700: #cf3369;
-  --accent-800: #b11f53; --accent-900: #8f1241;
+  --accent-800: #b11f53; --accent-900: #8f1241; --accent-green: #8ACF8F;
   
   /* Semantic assignments */
   --accent-primary: var(--accent-500); --accent-secondary: var(--accent-400); --accent-tertiary: var(--accent-300);

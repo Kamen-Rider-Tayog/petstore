@@ -159,7 +159,7 @@ $featuredCount = $conn->query("SELECT COUNT(*) as count FROM products WHERE feat
                 <a href="?stock_filter=<?php echo $stock_filter; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
             <?php endif; ?>
         </form>
-        <a href="product_add.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add New Product</a>
+        <a href="add_product.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add New Product</a>
     </div>
 
     <!-- Filter Tabs with Counts -->

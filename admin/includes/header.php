@@ -8,18 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - <?php echo APP_NAME; ?></title>
     
-    <!-- Core CSS -->
+    <!-- Core CSS (shared across all pages) -->
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/base.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/layout.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/btn.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/assets/css/core/utilities.css">
-    
-    <!-- Admin CSS -->
+
+    <!-- Admin CSS (page-specific only) -->
+    <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/admin-core.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/dashboard.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/products.css">
     <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/pets.css">
+    <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/appointments.css">
+    <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/services.css">
+    <link rel="stylesheet" href="/Ria-Pet-Store/admin/css/employees.css">
     
     <?php if (!empty($page_styles)): ?>
         <?php foreach ($page_styles as $style): ?>
