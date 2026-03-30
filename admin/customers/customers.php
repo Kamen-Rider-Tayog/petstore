@@ -54,68 +54,81 @@ $customers = $stmt->get_result();
 
 // Get total count for pagination
 $countQuery = "SELECT COUNT(*) as total FROM customers c WHERE 1=1";
-$countParams = array_slice($params, 0, -2);
-$countTypes = substr($types, 0, -2);
+$countParams = [];
+$countTypes = '';
 
 if (!empty($search)) {
     $countQuery .= " AND (c.first_name LIKE ? OR c.last_name LIKE ? OR c.email LIKE ? OR c.phone LIKE ?)";
+    $searchTerm = "%$search%";
+    $countParams = array_merge($countParams, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+    $countTypes .= 'ssss';
 }
 
-$stmt = $conn->prepare($countQuery);
+$countStmt = $conn->prepare($countQuery);
 if (!empty($countParams)) {
-    $stmt->bind_param($countTypes, ...$countParams);
+    $countStmt->bind_param($countTypes, ...$countParams);
 }
-$stmt->execute();
-$totalCustomers = $stmt->get_result()->fetch_assoc()['total'];
+$countStmt->execute();
+$totalCustomers = $countStmt->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalCustomers / $limit);
+
+// Get counts for stats
+$totalCount = $conn->query("SELECT COUNT(*) as count FROM customers")->fetch_assoc()['count'];
+$withOrdersCount = $conn->query("SELECT COUNT(DISTINCT customer_id) as count FROM orders")->fetch_assoc()['count'];
 
 // Admin CSS
 echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . time() . '">';
 ?>
 
 <div class="admin-dashboard">
-    <!-- Search Bar with Add Button -->
+    <!-- Search Bar -->
     <div class="search-bar">
-        <form method="get">
+        <form method="get" action="">
+            <input type="hidden" name="filter" value="<?php echo isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'all'; ?>">
             <input type="text" name="search" placeholder="Search by name, email, or phone..." value="<?php echo htmlspecialchars($search); ?>">
             <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Search</button>
             <?php if ($search): ?>
-                <a href="customers.php" class="btn btn-outline">Clear</a>
+                <a href="?filter=<?php echo isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'all'; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
             <?php endif; ?>
         </form>
-        <a href="customer_add.php" class="btn btn-primary"><?php echo icon('plus', 16); ?> Add Customer</a>
+        <a href="add_customer.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add Customer</a>
     </div>
 
     <!-- Customers Table -->
     <div class="table-container">
         <?php if ($customers->num_rows > 0): ?>
-            <table class="admin-table">
+            <table class="admin-table clickable-rows">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
+                        <th>Customer</th>
+                        <th>Contact</th>
                         <th>Orders</th>
                         <th>Total Spent</th>
                         <th>Joined</th>
-                     </tr>
+                    </tr>
                 </thead>
                 <tbody>
                     <?php while ($customer = $customers->fetch_assoc()): ?>
-                     <tr>
-                        <td>#<?php echo $customer['id']; ?></td>
+                    <tr class="clickable-row" data-href="customer_details.php?id=<?php echo $customer['id']; ?>">
+                        <td class="customer-id">#<?php echo $customer['id']; ?></td>
                         <td>
-                            <a href="customer_details.php?id=<?php echo $customer['id']; ?>" class="customer-link">
-                                <?php echo htmlspecialchars($customer['first_name'] . ' ' . $customer['last_name']); ?>
-                            </a>
+                            <div class="customer-info">
+                                <span class="customer-name"><?php echo htmlspecialchars($customer['first_name'] . ' ' . $customer['last_name']); ?></span>
+                                <span class="customer-email"><?php echo htmlspecialchars($customer['email']); ?></span>
+                            </div>
                         </td>
-                        <td><?php echo htmlspecialchars($customer['email']); ?></td>
-                        <td><?php echo htmlspecialchars($customer['phone'] ?? '—'); ?></td>
+                        <td>
+                            <?php if (!empty($customer['phone'])): ?>
+                                <span class="customer-phone"><?php echo htmlspecialchars($customer['phone']); ?></span>
+                            <?php else: ?>
+                                <span class="no-phone">—</span>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo $customer['total_orders']; ?></td>
-                        <td>₱<?php echo number_format($customer['total_spent'], 2); ?></td>
+                        <td class="total-spent">₱<?php echo number_format($customer['total_spent'], 2); ?></td>
                         <td><?php echo date('M d, Y', strtotime($customer['created_at'])); ?></td>
-                     </tr>
+                    </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
@@ -124,21 +137,64 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
             <?php if ($totalPages > 1): ?>
                 <div class="pagination">
                     <?php
-                    $queryString = http_build_query(array_filter(['search' => $search]));
-                    for ($i = 1; $i <= $totalPages; $i++):
-                        $active = $i === $page ? 'active' : '';
-                        $url = "customers.php?" . ($queryString ? $queryString . '&' : '') . "page=$i";
+                    $queryParams = array_filter([
+                        'search' => $search,
+                        'filter' => isset($_GET['filter']) && $_GET['filter'] !== 'all' ? $_GET['filter'] : null,
+                        'page' => null
+                    ]);
+                    $queryString = http_build_query($queryParams);
+                    
+                    if ($page > 1) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page - 1) . '" class="pagination-link">&laquo; Prev</a>';
+                    }
+                    
+                    $startPage = max(1, $page - 2);
+                    $endPage = min($totalPages, $page + 2);
+                    
+                    if ($startPage > 1) {
+                        echo '<a href="?' . $queryString . '&page=1" class="pagination-link">1</a>';
+                        if ($startPage > 2) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                    }
+                    
+                    for ($i = $startPage; $i <= $endPage; $i++):
+                        $activeClass = $i === $page ? 'active' : '';
                     ?>
-                        <a href="<?php echo $url; ?>" class="pagination-link <?php echo $active; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
+                        <a href="?<?php echo $queryString; ?>&page=<?php echo $i; ?>" class="pagination-link <?php echo $activeClass; ?>"><?php echo $i; ?></a>
+                    <?php endfor;
+                    
+                    if ($endPage < $totalPages) {
+                        if ($endPage < $totalPages - 1) {
+                            echo '<span class="pagination-dots">...</span>';
+                        }
+                        echo '<a href="?' . $queryString . '&page=' . $totalPages . '" class="pagination-link">' . $totalPages . '</a>';
+                    }
+                    
+                    if ($page < $totalPages) {
+                        echo '<a href="?' . $queryString . '&page=' . ($page + 1) . '" class="pagination-link">Next &raquo;</a>';
+                    }
+                    ?>
                 </div>
             <?php endif; ?>
         <?php else: ?>
             <div class="no-data">
-                <p>No customers found.</p>
+                <p>No customers found. <?php echo icon('users', 20); ?></p>
             </div>
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+        row.style.cursor = 'pointer';
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

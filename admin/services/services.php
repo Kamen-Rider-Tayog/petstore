@@ -102,8 +102,17 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/services.css?v=' . t
 ?>
 
 <div class="admin-dashboard">
-    <div class="page-header">
-        <h1>Services</h1>
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form method="get" action="">
+            <input type="hidden" name="category" value="<?php echo $category; ?>">
+            <input type="hidden" name="featured" value="<?php echo $featured; ?>">
+            <input type="text" name="search" placeholder="Search by service name, description, or category..." value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Search</button>
+            <?php if ($search): ?>
+                <a href="?category=<?php echo $category; ?>&featured=<?php echo $featured; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
+            <?php endif; ?>
+        </form>
         <a href="add_service.php" class="btn btn-success"><?php echo icon('plus', 16); ?> Add Service</a>
     </div>
 
@@ -138,19 +147,6 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/services.css?v=' . t
         <span class="legend-item"><span class="status-dot regular"></span> Regular</span>
     </div>
 
-    <!-- Search Bar -->
-    <div class="search-bar">
-        <form method="get" action="">
-            <input type="hidden" name="category" value="<?php echo $category; ?>">
-            <input type="hidden" name="featured" value="<?php echo $featured; ?>">
-            <input type="text" name="search" placeholder="Search by service name, description, or category..." value="<?php echo htmlspecialchars($search); ?>">
-            <button type="submit" class="btn btn-primary"><?php echo icon('search', 16); ?> Search</button>
-            <?php if ($search): ?>
-                <a href="?category=<?php echo $category; ?>&featured=<?php echo $featured; ?>" class="btn btn-outline"><?php echo icon('x', 16); ?> Clear</a>
-            <?php endif; ?>
-        </form>
-    </div>
-
     <!-- Services Table -->
     <div class="table-container">
         <?php if ($services->num_rows > 0): ?>
@@ -162,7 +158,7 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/services.css?v=' . t
                         <th>Category</th>
                         <th>Duration</th>
                         <th>Price</th>
-                        <th>Status</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,7 +179,6 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/services.css?v=' . t
                         <td>
                             <div class="status-indicators">
                                 <span class="status-dot <?php echo $service['featured'] ? 'featured' : 'regular'; ?>" title="<?php echo $service['featured'] ? 'Featured' : 'Regular'; ?>"></span>
-                                <span class="status-text"><?php echo $service['featured'] ? 'Featured' : 'Regular'; ?></span>
                             </div>
                         </td>
                     </tr>
