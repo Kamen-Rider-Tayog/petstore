@@ -84,12 +84,67 @@
     color: var(--text-secondary);
 }
 
-/* Status Dots */
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+/* Status Badges (for table and legend) */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 500;
     display: inline-block;
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-shipped {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-delivered {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Status Legend */
+.status-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.status-indicators {
+    display: inline-block;
+}
+
+.status-text {
+    display: none;
 }
 
 .status-dot.pending {
@@ -567,12 +622,6 @@
     margin-bottom: 0.25rem;
 }
 
-/* Order Summary (for add order form) */
-.order-summary {
-    max-width: 300px;
-    margin-left: auto;
-}
-
 .summary-row {
     display: flex;
     justify-content: space-between;
@@ -720,5 +769,121 @@ textarea.form-control {
     
     .status-text {
         display: none;
+    }
+}
+
+/* Cancel Confirmation Page */
+.cancel-confirmation {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-light);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.order-summary {
+    margin-bottom: 1.5rem;
+}
+
+.order-summary h2 {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+}
+
+.order-summary div h2{
+    display: flex;
+    justify-content: center;
+}
+
+.summary-grid {
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.summary-item {
+    display: flex;
+    padding: 0.25rem 0;
+}
+
+.summary-item .label {
+    width: 110px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.summary-item .value {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+}
+
+.cancel-form {
+    margin-top: 1rem;
+}
+
+.cancel-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.cancel-form .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.cancel-form .form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-medium);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: var(--bg-primary);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.cancel-form .form-control:focus {
+    outline: none;
+    border-color: var(--accent-500);
+}
+
+.warning-text {
+    margin-top: 1rem !important;
+    font-weight: bold;
+    color: #dc3545 !important;
+}
+
+/* Header Left */
+.header-left {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-item {
+        flex-direction: column;
+    }
+    
+    .summary-item .label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .cancel-confirmation {
+        padding: 1rem;
     }
 }

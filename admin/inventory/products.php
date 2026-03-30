@@ -208,7 +208,7 @@ $featuredCount = $conn->query("SELECT COUNT(*) as count FROM products WHERE feat
     <!-- Products Table -->
     <div class="table-container">
         <?php if ($products->num_rows > 0): ?>
-        <table class="admin-table">
+        <table class="admin-table clickable-rows">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -222,69 +222,65 @@ $featuredCount = $conn->query("SELECT COUNT(*) as count FROM products WHERE feat
                 </tr>
             </thead>
             <tbody>
-                
-                    <?php while ($product = $products->fetch_assoc()): 
-                        // Determine stock status
-                        if ($product['quantity_in_stock'] == 0) {
-                            $stockStatus = 'critical';
-                            $stockTooltip = 'Out of Stock';
-                        } elseif ($product['quantity_in_stock'] <= 10) {
-                            $stockStatus = 'low-stock';
-                            $stockTooltip = 'Low Stock: ' . $product['quantity_in_stock'] . ' units left';
-                        } else {
-                            $stockStatus = 'in-stock';
-                            $stockTooltip = 'In Stock: ' . $product['quantity_in_stock'] . ' units';
-                        }
-                        
-                        // Check if on sale
-                        $isOnSale = !empty($product['sale_price']) && $product['sale_price'] > 0;
-                        // Check if featured
-                        $isFeatured = !empty($product['featured']) && $product['featured'] == 1;
-                    ?>
-                        <tr>
-                            <td><?php echo $product['id']; ?></td>
-                            <td>
-                                <?php if (!empty($product['image'])): ?>
-                                    <img src="../assets/images/<?php echo htmlspecialchars($product['image']); ?>" class="product-photo">
-                                <?php else: ?>
-                                    <div class="no-photo">No image</div>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="product_details.php?id=<?php echo $product['id']; ?>" class="product-link">
-                                    <?php echo htmlspecialchars($product['product_name']); ?>
-                                </a>
-                            </td>
-                            <td><?php echo htmlspecialchars(ucfirst($product['category'])); ?></td>
-                            <td class="product-price">
-                                <?php if ($isOnSale): ?>
-                                    <span class="original-price">₱<?php echo number_format($product['price'], 2); ?></span>
-                                    <span class="sale-price">₱<?php echo number_format($product['sale_price'], 2); ?></span>
-                                <?php else: ?>
-                                    ₱<?php echo number_format($product['price'], 2); ?>
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo $product['quantity_in_stock']; ?></td>
-                            <td>
-                                <div class="status-indicators">
-                                    <span class="status-dot <?php echo $stockStatus; ?>" title="<?php echo $stockTooltip; ?>"></span>
-                                    <?php if ($isOnSale): ?>
-                                        <span class="status-dot on-sale" title="On Sale"></span>
-                                    <?php endif; ?>
-                                    <?php if ($isFeatured): ?>
-                                        <span class="status-dot featured" title="Featured Product"></span>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                            <td><?php echo htmlspecialchars($product['supplier_name'] ?? 'N/A'); ?></td>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <div class="no-data">
-                        <p>No products found. <?php echo icon('package', 20); ?></p>
-                    </div>
-                <?php endif; ?>
+                <?php while ($product = $products->fetch_assoc()): 
+                    // Determine stock status
+                    if ($product['quantity_in_stock'] == 0) {
+                        $stockStatus = 'critical';
+                        $stockTooltip = 'Out of Stock';
+                    } elseif ($product['quantity_in_stock'] <= 10) {
+                        $stockStatus = 'low-stock';
+                        $stockTooltip = 'Low Stock: ' . $product['quantity_in_stock'] . ' units left';
+                    } else {
+                        $stockStatus = 'in-stock';
+                        $stockTooltip = 'In Stock: ' . $product['quantity_in_stock'] . ' units';
+                    }
+                    
+                    // Check if on sale
+                    $isOnSale = !empty($product['sale_price']) && $product['sale_price'] > 0;
+                    // Check if featured
+                    $isFeatured = !empty($product['featured']) && $product['featured'] == 1;
+                ?>
+                <tr class="clickable-row" data-href="product_details.php?id=<?php echo $product['id']; ?>">
+                    <td class="product-id"><?php echo $product['id']; ?></td>
+                    <td>
+                        <?php if (!empty($product['image'])): ?>
+                            <img src="../assets/images/<?php echo htmlspecialchars($product['image']); ?>" class="product-photo">
+                        <?php else: ?>
+                            <div class="no-photo">No image</div>
+                        <?php endif; ?>
+                    </td>
+                    <td class="product-name"><?php echo htmlspecialchars($product['product_name']); ?></td>
+                    <td><?php echo htmlspecialchars(ucfirst($product['category'])); ?></td>
+                    <td class="product-price">
+                        <?php if ($isOnSale): ?>
+                            <span class="original-price">₱<?php echo number_format($product['price'], 2); ?></span>
+                            <span class="sale-price">₱<?php echo number_format($product['sale_price'], 2); ?></span>
+                        <?php else: ?>
+                            ₱<?php echo number_format($product['price'], 2); ?>
+                        <?php endif; ?>
+                    </td>
+                    <td><?php echo $product['quantity_in_stock']; ?></td>
+                    <td>
+                        <div class="status-indicators">
+                            <span class="status-dot <?php echo $stockStatus; ?>" title="<?php echo $stockTooltip; ?>"></span>
+                            <?php if ($isOnSale): ?>
+                                <span class="status-dot on-sale" title="On Sale"></span>
+                            <?php endif; ?>
+                            <?php if ($isFeatured): ?>
+                                <span class="status-dot featured" title="Featured Product"></span>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                    <td><?php echo htmlspecialchars($product['supplier_name'] ?? 'N/A'); ?></td>
+                </tr>
+                <?php endwhile; ?>
             </tbody>
         </table>
+        <?php else: ?>
+            <div class="no-data">
+                <p>No products found. <?php echo icon('package', 20); ?></p>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Pagination -->
@@ -334,5 +330,17 @@ $featuredCount = $conn->query("SELECT COUNT(*) as count FROM products WHERE feat
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+        row.style.cursor = 'pointer';
+    });
+});
+</script>
 
 <?php require_once '../includes/footer.php'; ?>

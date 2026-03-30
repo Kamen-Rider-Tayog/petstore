@@ -33,13 +33,18 @@
         <aside class="admin-sidebar">
             <div class="sidebar-header">
                 <a href="<?php echo url('admin/pages/dashboard.php'); ?>" class="logo">
-                    <?php echo APP_NAME; ?> <span>Admin</span>
+                    <?php echo APP_NAME; ?> 
+                    <br>
+                    <span>Admin Panel</span>
                 </a>
             </div>
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="<?php echo url('admin/pages/dashboard.php'); ?>" class="<?php echo basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : ''; ?>">
                         <?php echo icon('dashboard', 20); ?> Dashboard
+                    </a></li>
+                    <li><a href="<?php echo url('admin/sales/sales'); ?>" class="<?php echo strpos($_SERVER['PHP_SELF'], 'sales') !== false ? 'active' : ''; ?>">
+                        <?php echo icon('line-chart-up', 20); ?> Sales
                     </a></li>
                     <li><a href="<?php echo url('admin/customers/customers.php'); ?>" class="<?php echo strpos($_SERVER['PHP_SELF'], 'customers') !== false ? 'active' : ''; ?>">
                         <?php echo icon('users', 20); ?> Customers
@@ -82,13 +87,65 @@
         
         <!-- Main Content -->
         <main class="admin-main">
+            <!-- Top Bar -->
             <div class="top-bar">
-                <div class="page-title">
-                    <h1><?php echo $page_title ?? 'Dashboard'; ?></h1>
-                    <p>Welcome back, <?php echo htmlspecialchars($_SESSION['admin_name']); ?></p>
+                <div class="greeting-wrapper">
+                    <p id="greetingMessage"></p>
                 </div>
-                <div class="user-info">
-                    <span class="user-name"><?php echo htmlspecialchars($_SESSION['admin_name']); ?></span>
-                    <?php echo icon('user', 24); ?>
+                <div class="info">
+                    <div class="datetime">
+                        <div class="current-date" id="currentDate">
+                            <?php echo date('F j, Y'); ?>
+                        </div>
+                        <div class="current-time" id="currentTime">
+                            --:--:--
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <script>
+                // Greeting based on time of day
+                function updateGreeting() {
+                    const now = new Date();
+                    const hours = now.getHours();
+                    let greeting = '';
+                    
+                    if (hours >= 5 && hours < 12) {
+                        greeting = 'Good morning';
+                    } else if (hours >= 12 && hours < 17) {
+                        greeting = 'Good afternoon';
+                    } else if (hours >= 17 && hours < 22) {
+                        greeting = 'Good evening';
+                    } else {
+                        greeting = 'Good night';
+                    }
+                    
+                    const adminName = '<?php echo htmlspecialchars($_SESSION['admin_name']); ?>';
+                    const greetingElement = document.getElementById('greetingMessage');
+                    if (greetingElement) {
+                        greetingElement.textContent = `${greeting}, ${adminName}!`;
+                    }
+                }
+                
+                // Update current time
+                function updateCurrentTime() {
+                    const now = new Date();
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    const timeString = `${hours}:${minutes}:${seconds}`;
+                    
+                    const timeElement = document.getElementById('currentTime');
+                    if (timeElement) {
+                        timeElement.textContent = timeString;
+                    }
+                }
+                
+                // Update greeting and time immediately
+                updateGreeting();
+                updateCurrentTime();
+                
+                // Update time every second
+                setInterval(updateCurrentTime, 1000);
+            </script>

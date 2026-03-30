@@ -18,7 +18,7 @@ require_once __DIR__ . '/../includes/header.php';
 $status = isset($_GET['status']) ? $_GET['status'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 20;
+$limit = 10;
 $offset = ($page - 1) * $limit;
 
 // Build query
@@ -115,39 +115,25 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
             <span class="filter-count"><?php echo $allCount; ?></span>
         </a>
         <a href="?status=pending" class="filter-tab <?php echo $status === 'pending' ? 'active' : ''; ?>">
-            <span class="status-dot pending"></span>
             Pending
             <span class="filter-count"><?php echo $pendingCount; ?></span>
         </a>
         <a href="?status=processing" class="filter-tab <?php echo $status === 'processing' ? 'active' : ''; ?>">
-            <span class="status-dot processing"></span>
             Processing
             <span class="filter-count"><?php echo $processingCount; ?></span>
         </a>
         <a href="?status=shipped" class="filter-tab <?php echo $status === 'shipped' ? 'active' : ''; ?>">
-            <span class="status-dot shipped"></span>
             Shipped
             <span class="filter-count"><?php echo $shippedCount; ?></span>
         </a>
         <a href="?status=delivered" class="filter-tab <?php echo $status === 'delivered' ? 'active' : ''; ?>">
-            <span class="status-dot delivered"></span>
             Delivered
             <span class="filter-count"><?php echo $deliveredCount; ?></span>
         </a>
         <a href="?status=cancelled" class="filter-tab <?php echo $status === 'cancelled' ? 'active' : ''; ?>">
-            <span class="status-dot cancelled"></span>
             Cancelled
             <span class="filter-count"><?php echo $cancelledCount; ?></span>
         </a>
-    </div>
-
-    <!-- Status Legend -->
-    <div class="status-legend">
-        <span class="legend-item"><span class="status-dot pending"></span> Pending</span>
-        <span class="legend-item"><span class="status-dot processing"></span> Processing</span>
-        <span class="legend-item"><span class="status-dot shipped"></span> Shipped</span>
-        <span class="legend-item"><span class="status-dot delivered"></span> Delivered</span>
-        <span class="legend-item"><span class="status-dot cancelled"></span> Cancelled</span>
     </div>
 
     <!-- Orders Table -->
@@ -175,74 +161,69 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
                         </td>
                         <td class="order-total">₱<?php echo number_format($order['total_amount'], 2); ?></td>
                         <td>
-                            <div class="status-indicators">
-                                <span class="status-dot <?php echo strtolower($order['status']); ?>" title="<?php echo ucfirst($order['status']); ?>"></span>
-                                <span class="status-text"><?php echo ucfirst($order['status']); ?></span>
-                            </div>
+                            <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
+                                <?php echo ucfirst($order['status']); ?>
+                            </span>
                         </td>
                         <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
                     </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
-
-            <!-- Pagination -->
-            <?php if ($totalPages > 1): ?>
-                <div class="pagination">
-                    <?php
-                    $queryParams = array_filter([
-                        'search' => $search,
-                        'status' => $status !== 'all' ? $status : null,
-                        'page' => null
-                    ]);
-                    $queryString = http_build_query($queryParams);
-                    
-                    // Previous button
-                    if ($page > 1) {
-                        echo '<a href="?' . $queryString . '&page=' . ($page - 1) . '" class="pagination-link">&laquo; Prev</a>';
-                    }
-                    
-                    // Page numbers
-                    $startPage = max(1, $page - 2);
-                    $endPage = min($totalPages, $page + 2);
-                    
-                    if ($startPage > 1) {
-                        echo '<a href="?' . $queryString . '&page=1" class="pagination-link">1</a>';
-                        if ($startPage > 2) {
-                            echo '<span class="pagination-dots">...</span>';
-                        }
-                    }
-                    
-                    for ($i = $startPage; $i <= $endPage; $i++):
-                        $activeClass = $i === $page ? 'active' : '';
-                    ?>
-                        <a href="?<?php echo $queryString; ?>&page=<?php echo $i; ?>" class="pagination-link <?php echo $activeClass; ?>"><?php echo $i; ?></a>
-                    <?php endfor;
-                    
-                    if ($endPage < $totalPages) {
-                        if ($endPage < $totalPages - 1) {
-                            echo '<span class="pagination-dots">...</span>';
-                        }
-                        echo '<a href="?' . $queryString . '&page=' . $totalPages . '" class="pagination-link">' . $totalPages . '</a>';
-                    }
-                    
-                    // Next button
-                    if ($page < $totalPages) {
-                        echo '<a href="?' . $queryString . '&page=' . ($page + 1) . '" class="pagination-link">Next &raquo;</a>';
-                    }
-                    ?>
-                </div>
-            <?php endif; ?>
         <?php else: ?>
             <div class="no-data">
                 <p>No orders found. <?php echo icon('package', 20); ?></p>
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination">
+            <?php
+            $queryParams = array_filter([
+                'search' => $search,
+                'status' => $status !== 'all' ? $status : null,
+                'page' => null
+            ]);
+            $queryString = http_build_query($queryParams);
+            
+            if ($page > 1) {
+                echo '<a href="?' . $queryString . '&page=' . ($page - 1) . '" class="pagination-link">&laquo; Prev</a>';
+            }
+            
+            $startPage = max(1, $page - 2);
+            $endPage = min($totalPages, $page + 2);
+            
+            if ($startPage > 1) {
+                echo '<a href="?' . $queryString . '&page=1" class="pagination-link">1</a>';
+                if ($startPage > 2) {
+                    echo '<span class="pagination-dots">...</span>';
+                }
+            }
+            
+            for ($i = $startPage; $i <= $endPage; $i++):
+                $activeClass = $i === $page ? 'active' : '';
+            ?>
+                <a href="?<?php echo $queryString; ?>&page=<?php echo $i; ?>" class="pagination-link <?php echo $activeClass; ?>"><?php echo $i; ?></a>
+            <?php endfor;
+            
+            if ($endPage < $totalPages) {
+                if ($endPage < $totalPages - 1) {
+                    echo '<span class="pagination-dots">...</span>';
+                }
+                echo '<a href="?' . $queryString . '&page=' . $totalPages . '" class="pagination-link">' . $totalPages . '</a>';
+            }
+            
+            if ($page < $totalPages) {
+                echo '<a href="?' . $queryString . '&page=' . ($page + 1) . '" class="pagination-link">Next &raquo;</a>';
+            }
+            ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <script>
-// Make table rows clickable
 document.addEventListener('DOMContentLoaded', function() {
     const rows = document.querySelectorAll('.clickable-row');
     rows.forEach(row => {
@@ -254,4 +235,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../includes/footer.php' ?>

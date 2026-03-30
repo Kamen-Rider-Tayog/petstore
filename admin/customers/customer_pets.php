@@ -87,7 +87,7 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
             <?php echo icon('arrow-left', 16); ?> Back to Customer
         </a>
         <div class="action-buttons-group">
-            <a href="../customer_pets/add_customer_pet.php?customer_id=<?php echo $customerId; ?>" class="btn btn-success">
+            <a href="../pets/add_customer_pet.php?customer_id=<?php echo $customerId; ?>" class="btn btn-success">
                 <?php echo icon('plus', 16); ?> Add Pet
             </a>
         </div>
@@ -111,7 +111,7 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
                 </thead>
                 <tbody>
                     <?php while ($pet = $pets->fetch_assoc()): ?>
-                    <tr class="clickable-row" data-href="../customer_pets/customer_pet_details.php?id=<?php echo $pet['id']; ?>">
+                    <tr class="clickable-row" data-href="../pets/customer_pet_details.php?id=<?php echo $pet['id']; ?>">
                         <td>#<?php echo $pet['id']; ?></td>
                         <td class="pet-name"><?php echo htmlspecialchars($pet['name']); ?></td>
                         <td><?php echo htmlspecialchars(ucfirst($pet['species'])); ?></td>
@@ -172,7 +172,7 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/customers.css?v=' . 
         <?php else: ?>
             <div class="no-data">
                 <p>No pets found for this customer. <?php echo icon('paw', 20); ?></p>
-                <a href="../customer_pets/add_customer_pet.php?customer_id=<?php echo $customerId; ?>" class="btn btn-outline btn-small">
+                <a href="../customers/add_customer_pet.php?customer_id=<?php echo $customerId; ?>" class="btn btn-outline btn-small">
                     <?php echo icon('plus', 14); ?> Add First Pet
                 </a>
             </div>

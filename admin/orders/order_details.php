@@ -54,14 +54,19 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
 
 <div class="admin-dashboard">
     <div class="page-header">
-        <h1>Order Details</h1>
+        <a href="orders.php" class="btn btn-outline">
+            <?php echo icon('arrow-left', 16); ?> Back to Orders
+        </a>
         <div class="action-buttons">
-            <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-outline">
+            <a href="edit_order.php?id=<?php echo $order['id']; ?>" class="btn btn-primary">
                 <?php echo icon('edit', 16); ?> Edit Order
             </a>
-            <a href="orders.php" class="btn btn-outline">
-                <?php echo icon('arrow-left', 16); ?> Back to Orders
+            <?php if ($order['status'] !== 'cancelled' && $order['status'] !== 'delivered'): ?>
+            <a href="cancel_order.php?id=<?php echo $order['id']; ?>" class="btn btn-danger">
+                <?php echo icon('x', 16); ?> Cancel Order
             </a>
+            <?php endif; ?>
+
         </div>
     </div>
 
@@ -171,17 +176,6 @@ echo '<link rel="stylesheet" href="/Ria-Pet-Store/admin/css/orders.css?v=' . tim
                 </tr>
             </tfoot>
         </table>
-    </div>
-
-    <div class="action-buttons">
-        <a href="order_edit.php?id=<?php echo $order['id']; ?>" class="btn btn-primary">
-            <?php echo icon('edit', 16); ?> Edit Order
-        </a>
-        <?php if ($order['status'] !== 'cancelled' && $order['status'] !== 'delivered'): ?>
-        <a href="order_cancel.php?id=<?php echo $order['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this order?')">
-            <?php echo icon('x', 16); ?> Cancel Order
-        </a>
-        <?php endif; ?>
     </div>
 </div>
 
